@@ -1,0 +1,175 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL") 
+
+}
+
+// ─── ENUMS ────────────────────────────────────────────────────
+
+enum Role {
+  TOURIST
+  GUIDE
+  ADMIN
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+  REFUNDED
+}
+
+enum BookingDuration {
+  HALF_DAY // 4h
+  FULL_DAY  // 8h
+}
+
+enum VisitType {
+  CULINAIRE
+  SHOPPING
+  MONUMENTS
+  HISTOIRE
+  AVENTURE
+  DESERT
+  ARTISANAT
+  EXPERIENCE_LOCALE
+  NIGHTLIFE
+  PHOTOGRAPHIE
+}
+
+enum GuideStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  SUSPENDED
+}
+
+// ─── MODELS ───────────────────────────────────────────────────
+
+model User {
+  id        String   @id @default(cuid())
+  supabaseId String  @unique
+  email     String   @unique
+  name      String?
+  avatar    String?
+  role      Role     @default(TOURIST)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  guideProfile GuideProfile?
+  bookings     Booking[]     @relation("TouristBookings")
+  reviews      Review[]
+
+  @@map("users")
+}
+
+model GuideProfile {
+  id           String      @id @default(cuid())
+  userId       String      @unique
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Identity
+  displayName  String
+  bio          String      @db.Text
+  avatar       String?
+  gallery      String[]    @default([])
+  city         String
+  coveredCities String[]   @default([])
+
+  // Expertise
+  languages    String[]    @default([])
+  visitTypes   VisitType[] @default([])
+  specialties  String[]    @default([])
+  certifications String[]  @default([])
+  yearsExp     Int         @default(0)
+
+  // Pricing (MAD)
+  halfDayPrice Float       @default(350)
+  fullDayPrice Float       @default(650)
+
+  // Status & ratings
+  status       GuideStatus @default(PENDING)
+  avgRating    Float       @default(0)
+  totalReviews Int         @default(0)
+
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  bookings     Booking[]
+  availability Availability[]
+
+  @@map("guide_profiles")
+}
+
+model Booking {
+  id          String          @id @default(cuid())
+  touristId   String
+  tourist     User            @relation("TouristBookings", fields: [touristId], references: [id])
+  guideId     String
+  guide       GuideProfile    @relation(fields: [guideId], references: [id])
+
+  date        DateTime
+  duration    BookingDuration
+  persons     Int             @default(1)
+  totalPrice  Float
+  status      BookingStatus   @default(PENDING)
+
+  // Stripe
+  stripeSessionId  String?    @unique
+  stripePaymentId  String?
+
+  notes       String?         @db.Text
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  review      Review?
+
+  commission  Float    @default(0)
+  slots       BookingSlot[]
+
+  @@map("bookings")
+}
+
+model BookingSlot {
+  id        String   @id @default(cuid())
+  bookingId String
+  booking   Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  date      DateTime
+  duration  String
+  price     Float
+  @@map("booking_slots")
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  bookingId String   @unique
+  booking   Booking  @relation(fields: [bookingId], references: [id])
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+  guideId   String
+
+  rating    Int      // 1-5
+  comment   String   @db.Text
+  createdAt DateTime @default(now())
+
+  @@map("reviews")
+}
+
+model Availability {
+  id      String   @id @default(cuid())
+  guideId String
+  guide   GuideProfile @relation(fields: [guideId], references: [id], onDelete: Cascade)
+
+  date    DateTime
+  isFree  Boolean  @default(true)
+
+  @@unique([guideId, date])
+  @@map("availabilities")
+}

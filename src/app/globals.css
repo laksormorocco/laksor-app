@@ -1,0 +1,11 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Segoe UI', system-ui, sans-serif; background: #F8F5F0; color: #1a1a1a; -webkit-font-smoothing: antialiased; }
+a { text-decoration: none; color: inherit; }
+button { cursor: pointer; font-family: inherit; border: none; background: none; }
+img { display: block; max-width: 100%; }
+input, select, textarea { font-family: inherit; }
+a:focus-visible, button:focus-visible, input:focus-visible { outline: 3px solid #F4C542; outline-offset: 2px; }
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-thumb { background: #123EAB; border-radius: 3px; }
+@media (max-width: 768px) { .desktop-only { display: none !important; } }
+@media (min-width: 769px) { .mobile-only { display: none !important; } }

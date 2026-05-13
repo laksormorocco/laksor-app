@@ -1,0 +1,81 @@
+"use client";
+import { motion } from "framer-motion";
+import Link from "next/link";
+import { Star, Shield, MapPin } from "lucide-react";
+import { useState, useEffect } from "react";
+
+const SLIDES = [
+  { url: "https://source.unsplash.com/1920x1080/?chefchaouen,morocco", city: "Chefchaouen" },
+    { url: "https://source.unsplash.com/1920x1080/?marrakech,morocco", city: "Marrakech" },
+      { url: "https://source.unsplash.com/1920x1080/?sahara,desert", city: "Sahara" },
+        { url: "https://source.unsplash.com/1920x1080/?fes,morocco", city: "Fès" },
+          { url: "https://source.unsplash.com/1920x1080/?essaouira,morocco", city: "Essaouira" },
+          ];
+
+          export function Hero() {
+            const [current, setCurrent] = useState(0);
+
+              useEffect(() => {
+                  const t = setInterval(() => setCurrent(c => (c + 1) % SLIDES.length), 5000);
+                      return () => clearInterval(t);
+                        }, []);
+
+                          return (
+                              <section className="relative min-h-[90vh] flex items-center overflow-hidden">
+
+                                    {/* SLIDESHOW */}
+                                          {SLIDES.map((s, i) => (
+                                                  <div key={i} style={{
+                                                            position: "absolute", inset: 0,
+                                                                      backgroundImage: `url(${s.url})`,
+                                                                                backgroundSize: "cover",
+                                                                                          backgroundPosition: "center",
+                                                                                                    opacity: i === current ? 1 : 0,
+                                                                                                              transition: "opacity 1.2s ease-in-out",
+                                                                                                                        zIndex: 0,
+                                                                                                                                }} />
+                                                                                                                                      ))}
+
+                                                                                                                                            {/* Overlay */}
+                                                                                                                                                  <div className="absolute inset-0 gradient-hero opacity-75" style={{ zIndex: 1 }} />
+
+                                                                                                                                                        {/* Indicateurs */}
+                                                                                                                                                              <div style={{ position: "absolute", bottom: 20, left: "50%", transform: "translateX(-50%)", display: "flex", gap: 8, zIndex: 10 }}>
+                                                                                                                                                                      {SLIDES.map((_, i) => (
+                                                                                                                                                                                <button key={i} onClick={() => setCurrent(i)} style={{
+                                                                                                                                                                                            width: i === current ? 24 : 8, height: 8,
+                                                                                                                                                                                                        borderRadius: 4, border: "none",
+                                                                                                                                                                                                                    background: i === current ? "#F4C542" : "rgba(255,255,255,0.5)",
+                                                                                                                                                                                                                                cursor: "pointer", transition: "all 0.3s", padding: 0,
+                                                                                                                                                                                                                                          }} />
+                                                                                                                                                                                                                                                  ))}
+                                                                                                                                                                                                                                                        </div>
+
+                                                                                                                                                                                                                                                              {/* Ville */}
+                                                                                                                                                                                                                                                                    <div style={{ position: "absolute", bottom: 40, right: 20, zIndex: 10, color: "rgba(255,255,255,0.7)", fontSize: 11, letterSpacing: 2 }}>
+                                                                                                                                                                                                                                                                            {SLIDES[current].city.toUpperCase()}
+                                                                                                                                                                                                                                                                                  </div>
+
+                                                                                                                                                                                                                                                                                        {/* Contenu */}
+                                                                                                                                                                                                                                                                                              <div className="relative max-w-6xl mx-auto px-4 py-20 md:py-32" style={{ zIndex: 2 }}>
+                                                                                                                                                                                                                                                                                                      <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease: "easeOut" }} className="max-w-2xl">
+                                                                                                                                                                                                                                                                                                                <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur rounded-full px-4 py-2 mb-6">
+                                                                                                                                                                                                                                                                                                                            <Star size={14} className="text-safran fill-safran" />
+                                                                                                                                                                                                                                                                                                                                        <span className="text-white text-sm font-medium">DÉCOUVREZ LE VRAI MAROC</span>
+                                                                                                                                                                                                                                                                                                                                                  </div>
+                                                                                                                                                                                                                                                                                                                                                            <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
+                                                                                                                                                                                                                                                                                                                                                                        Trouvez le guide idéal<br />
+                                                                                                                                                                                                                                                                                                                                                                                    <span className="text-safran">pour une expérience authentique</span>
+                                                                                                                                                                                                                                                                                                                                                                                              </h1>
+                                                                                                                                                                                                                                                                                                                                                                                                        <p className="text-white/80 text-lg mb-8">
+                                                                                                                                                                                                                                                                                                                                                                                                                    Des guides locaux passionnés pour vous faire vivre le Maroc autrement.
+                                                                                                                                                                                                                                                                                                                                                                                                                              </p>
+                                                                                                                                                                                                                                                                                                                                                                                                                                        <Link href="/search" className="inline-flex items-center gap-2 bg-safran text-night font-bold px-8 py-4 rounded-full text-lg hover:bg-safran/90 transition-all">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                    Trouver un guide →
+                                                                                                                                                                                                                                                                                                                                                                                                                                                              </Link>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                      </motion.div>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </div>
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </section>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  );
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  }
