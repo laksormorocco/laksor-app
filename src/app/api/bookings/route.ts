@@ -29,7 +29,24 @@ export async function POST(req: Request) {
       },
     });
 
-    return NextResponse.json({ booking });
+    let whatsappUrl = null;
+    if (guide.phone) {
+      const phone = guide.phone.replace(/[^0-9]/g, "");
+      const date = new Date(slots[0].date).toLocaleDateString("fr-FR");
+      const duree = slots[0].duration === "half" ? "Demi-journee (4h)" : "Journee complete (8h)";
+      const msg = encodeURIComponent(
+        "🧭 Nouvelle reservation Laksor !\n\n" +
+        "Date: " + date + "\n" +
+        "Duree: " + duree + "\n" +
+        "Personnes: " + persons + "\n" +
+        "Prix total: " + total + " MAD\n\n" +
+        "Accepter ou refuser sur:\n" +
+        "https://laksor.vercel.app/dashboard/guide?id=" + guideId
+      );
+      whatsappUrl = "https://wa.me/" + phone + "?text=" + msg;
+    }
+
+    return NextResponse.json({ booking, whatsappUrl });
   } catch (e) {
     console.error(e);
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });

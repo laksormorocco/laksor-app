@@ -65,6 +65,7 @@ model User {
 
   guideProfile GuideProfile?
   bookings     Booking[]     @relation("TouristBookings")
+  customRequests CustomRequest[] @relation("TouristRequests")
   reviews      Review[]
 
   @@map("users")
@@ -79,6 +80,7 @@ model GuideProfile {
   displayName  String
   bio          String      @db.Text
   avatar       String?
+  phone        String?
   gallery      String[]    @default([])
   city         String
   coveredCities String[]   @default([])
@@ -103,6 +105,7 @@ model GuideProfile {
   updatedAt    DateTime    @updatedAt
 
   bookings     Booking[]
+  customRequests CustomRequest[]
   availability Availability[]
 
   @@map("guide_profiles")
@@ -172,4 +175,28 @@ model Availability {
 
   @@unique([guideId, date])
   @@map("availabilities")
+}
+
+enum CustomRequestStatus {
+  PENDING
+  QUOTED
+  ACCEPTED
+  REFUSED
+}
+
+model CustomRequest {
+  id          String              @id @default(cuid())
+  touristId   String
+  tourist     User                @relation("TouristRequests", fields: [touristId], references: [id])
+  guideId     String
+  guide       GuideProfile        @relation(fields: [guideId], references: [id])
+  startDate   DateTime
+  days        Int
+  persons     Int
+  description String              @db.Text
+  proposedPrice Float?
+  status      CustomRequestStatus @default(PENDING)
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+  @@map("custom_requests")
 }

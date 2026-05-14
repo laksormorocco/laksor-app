@@ -1,11 +1,6 @@
-export const dynamic = "force-dynamic";
-import Testimonials from "@/components/Testimonials";
-import Footer from "@/components/Footer";
-import StatsSection from "@/components/StatsSection";
-import HowItWorks from "@/components/HowItWorks";
-import SearchBar from "@/components/SearchBar";
-import Navbar from "@/components/Navbar";
-import HeroSlider from "@/components/HeroSlider";
+^X
+
+X
 import { prisma } from "@/lib/prisma";
 
 const B = "#123EAB";
@@ -32,16 +27,30 @@ const TRUST = [
 export default async function HomePage() {
   const guides = await prisma.guideProfile.findMany({
     where: { status: "APPROVED" },
-    take: 10,
+    take: 4,
     orderBy: { avgRating: "desc" },
   });
 
   return (
     <div style={{ background: S, minHeight: "100vh" }}>
-      <Navbar />
+      <nav style={{ background: "#fff", borderBottom: "1px solid #e8e0d8", padding: "0 clamp(16px,4vw,40px)", height: 66, display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 200 }}>
+        <a href="/" style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <div style={{ width: 40, height: 40, borderRadius: 12, background: B, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <span style={{ color: Y, fontWeight: 900, fontSize: 22, fontFamily: "Georgia, serif" }}>L</span>
+          </div>
+          <div>
+            <div style={{ fontWeight: 800, fontSize: 16, color: B }}>LAKSOR</div>
+            <div style={{ fontSize: 9, color: "#aaa", letterSpacing: 1 }}>TOUR GUIDE MOROCCO</div>
+          </div>
+        </a>
+        <div style={{ display: "flex", gap: 10 }}>
+          <a href="/auth/login" style={{ fontSize: 14, color: "#444", padding: "10px 16px" }}>Se connecter</a>
+          <a href="/auth/register" style={{ background: Y, color: "#1a1a1a", borderRadius: 24, padding: "10px 22px", fontSize: 13, fontWeight: 700 }}>{"S'inscrire"}</a>
+        </div>
+      </nav>
 
-      <div style={{ position: "relative", height: "clamp(440px, 60vh, 600px)", background: `linear-gradient(135deg, ${B}, #0a2a80)`, overflow: "hidden" }}>
-        <HeroSlider />
+      <div style={{ position: "relative", height: "clamp(440px, 60vh, 600px)", background: `linear-gradient(135deg, ${B}, #0a2a80)` }}>
+        <img src="https://images.unsplash.com/photo-1553522991-fd5deb8e3b50?w=1600&q=80" alt="Chefchaouen" style={{ width: "100%", height: "100%", objectFit: "cover", position: "absolute" }} />
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg, rgba(10,30,110,0.92), rgba(10,30,110,0.4))" }} />
         <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 clamp(20px, 5vw, 80px)", maxWidth: 720 }}>
           <div style={{ background: "rgba(244,197,66,0.15)", border: "1px solid rgba(244,197,66,0.4)", borderRadius: 24, padding: "6px 16px", marginBottom: 20, width: "fit-content" }}>
@@ -59,9 +68,20 @@ export default async function HomePage() {
         </div>
       </div>
 
-    <div style={{ maxWidth: 1020, margin: "-36px auto 0", padding: "0 16px", position: "relative", zIndex: 10 }}>
-      <SearchBar />
-    </div>
+      <div style={{ maxWidth: 1020, margin: "-36px auto 0", padding: "0 16px", position: "relative", zIndex: 10 }}>
+        <div style={{ background: "#fff", borderRadius: 22, padding: "20px 24px", boxShadow: "0 12px 48px rgba(0,0,0,0.16)" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 12, marginBottom: 12 }}>
+            {[["📍", "Où ?"], ["🗺️", "Type"], ["📅", "Date"], ["👤", "Pers."]].map(([icon, label]) => (
+              <a key={label} href="/search" style={{ border: "1.5px solid #ede8e0", borderRadius: 12, padding: "12px 14px" }}>
+                <div style={{ fontSize: 12, color: "#666", fontWeight: 600 }}>{icon} {label}</div>
+              </a>
+            ))}
+          </div>
+          <a href="/search" style={{ display: "block", background: B, color: "#fff", borderRadius: 14, padding: 14, fontSize: 14, fontWeight: 700, textAlign: "center" }}>
+            🔍 Rechercher un guide
+          </a>
+        </div>
+      </div>
 
       <div style={{ maxWidth: 1020, margin: "60px auto 0", padding: "0 16px" }}>
         <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 24 }}>Catégories populaires</h2>
@@ -131,10 +151,6 @@ export default async function HomePage() {
           ))}
         </div>
       </div>
-    <StatsSection />
-    <HowItWorks />
-    <Testimonials />
-    <Footer />
     </div>
   );
 }
