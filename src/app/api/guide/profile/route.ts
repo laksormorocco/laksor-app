@@ -17,7 +17,11 @@ export async function PATCH(req: Request) {
         fullDayPrice: parseFloat(updateData.fullDayPrice),
         languages: updateData.languages,
         specialties: updateData.specialties,
+        coveredCities: updateData.coveredCities || [],
+        certifications: updateData.certifications || [],
+        yearsExp: updateData.yearsExp || 0,
         avatar: updateData.avatar,
+        gallery: updateData.gallery || [],
       }
     });
     return NextResponse.json({ guide });

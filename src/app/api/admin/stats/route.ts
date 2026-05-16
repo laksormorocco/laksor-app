@@ -3,13 +3,14 @@ import { NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const [totalGuides, pendingGuides, approvedGuides, totalBookings, pendingBookings, confirmedBookings] = await Promise.all([
+  const [totalGuides, pendingGuides, approvedGuides, totalBookings, pendingBookings, confirmedBookings, totalUsers] = await Promise.all([
     prisma.guideProfile.count(),
     prisma.guideProfile.count({ where: { status: "PENDING" } }),
     prisma.guideProfile.count({ where: { status: "APPROVED" } }),
     prisma.booking.count(),
     prisma.booking.count({ where: { status: "PENDING" } }),
     prisma.booking.count({ where: { status: "CONFIRMED" } }),
+    prisma.user.count(),
   ]);
 
   const revenue = await prisma.booking.aggregate({
@@ -18,22 +19,49 @@ export async function GET() {
   });
 
   const recentBookings = await prisma.booking.findMany({
-    take: 10,
+    take: 5,
     orderBy: { createdAt: "desc" },
-    include: { guide: true, tourist: true }
+    include: {
+      guide: { select: { id:true, displayName:true, city:true, avatar:true, phone:true } },
+      tourist: { select: { id:true, name:true, email:true } }
+    }
   });
 
   const recentGuides = await prisma.guideProfile.findMany({
     take: 5,
     where: { status: "PENDING" },
-    orderBy: { createdAt: "desc" }
+    orderBy: { createdAt: "desc" },
+    include: { user: { select: { id:true, email:true } } }
   });
 
+  // Revenus par mois (6 derniers mois)
+  const sixMonthsAgo = new Date();
+  sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+  const bookingsByMonth = await prisma.booking.findMany({
+    where: { createdAt: { gte: sixMonthsAgo }, status: { in: ["CONFIRMED","COMPLETED"] } },
+    select: { totalPrice: true, createdAt: true }
+  });
+
+  const months = ["Jan","Fev","Mar","Avr","Mai","Juin","Juil","Aou","Sep","Oct","Nov","Dec"];
+  const monthlyMap: Record<string, number> = {};
+  bookingsByMonth.forEach((b: any) => {
+    const key = months[new Date(b.createdAt).getMonth()];
+    monthlyMap[key] = (monthlyMap[key] || 0) + Number(b.totalPrice);
+  });
+  const monthlyRevenue = Object.entries(monthlyMap).map(([month, revenue]) => ({ month, revenue }));
+
   return NextResponse.json({
-    totalGuides, pendingGuides, approvedGuides,
-    totalBookings, pendingBookings, confirmedBookings,
+    totalGuides,
+    pendingGuides,
+    approvedGuides,
+    totalBookings,
+    pendingBookings,
+    confirmedBookings,
+    totalUsers,
     totalRevenue: revenue._sum.totalPrice || 0,
     totalCommission: revenue._sum.commission || 0,
-    recentBookings, recentGuides
+    recentBookings,
+    recentGuides,
+    monthlyRevenue,
   });
 }

@@ -37,9 +37,10 @@ export default function Navbar() {
   }
 
   return (
+
     <nav style={{ background:"#fff", borderBottom:"1px solid #e8e0d8", padding:"0 clamp(16px,4vw,40px)", height:66, display:"flex", alignItems:"center", justifyContent:"space-between", position:"sticky", top:0, zIndex:200 }}>
       <a href="/" style={{ textDecoration:"none", display:"flex", alignItems:"center", gap:10 }}>
-        <img src="/Logo.png" alt="Laksor" style={{ height:60, width:"auto" }}/>
+    <img src="/logo2.png" alt="Laksor" style={{ height: 95, width: "auto", objectFit: "contain", display: "block" }}/>
       </a>
 
       <div style={{ display:"flex", alignItems:"center", gap:10 }}>

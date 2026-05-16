@@ -13,16 +13,31 @@ export async function GET(req: Request) {
       bookings: {
         orderBy: { createdAt: "desc" },
         take: 20,
-        include: { tourist: true, slots: true }
+        include: {
+          tourist: {
+            select: { id:true, name:true, email:true, avatar:true }
+          },
+          slots: true
+        }
       }
     }
   });
 
   if (!guide) return NextResponse.json({ error: "Guide non trouve" }, { status: 404 });
 
-  const totalRevenue = guide.bookings
-    .filter(b => b.status === "CONFIRMED" || b.status === "COMPLETED")
-    .reduce((sum, b) => sum + b.totalPrice, 0);
+  const formattedBookings = guide.bookings.map((b: any) => ({
+    ...b,
+    date: b.slots?.[0]?.date || b.createdAt,
+    persons: b.slots?.[0]?.persons || 1,
+    duration: b.slots?.[0]?.type || b.duration,
+  }));
 
-  return NextResponse.json({ guide, totalRevenue });
+  const totalRevenue = guide.bookings
+    .filter((b: any) => b.status === "CONFIRMED" || b.status === "COMPLETED")
+    .reduce((sum: number, b: any) => sum + Number(b.totalPrice), 0);
+
+  return NextResponse.json({ 
+    guide: { ...guide, bookings: formattedBookings }, 
+    totalRevenue 
+  });
 }

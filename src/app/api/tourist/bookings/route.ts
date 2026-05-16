@@ -13,10 +13,21 @@ export async function GET(req: Request) {
   const bookings = await prisma.booking.findMany({
     where: { touristId: user.id },
     orderBy: { createdAt: "desc" },
-    include: { guide: true }
+    include: {
+      guide: {
+        select: { id:true, displayName:true, city:true, avatar:true, phone:true, halfDayPrice:true, fullDayPrice:true }
+      },
+      slots: true
+    }
   });
 
-  return NextResponse.json({ bookings });
+  const formatted = bookings.map((b: any) => ({
+    ...b,
+    date: b.slots?.[0]?.date || b.createdAt,
+    persons: b.slots?.[0]?.persons || 1,
+  }));
+
+  return NextResponse.json({ bookings: formatted });
 }
 
 export async function PATCH(req: Request) {

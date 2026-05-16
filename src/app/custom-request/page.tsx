@@ -1,4 +1,5 @@
 "use client";
+import SimpleNav from "@/components/SimpleNav";
 import { useState, useEffect } from "react";
 import { createClient } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
@@ -13,7 +14,7 @@ const B="#123EAB",Y="#F4C542",S="#F8F5F0";
 export default function CustomRequestPage() {
   const router = useRouter();
   const [guides, setGuides] = useState<any[]>([]);
-  const [form, setForm] = useState({ guideId:"", startDate:"", days:1, persons:1, description:"" });
+  const [form, setForm] = useState({ guideId: typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("guideId") || "" : "", startDate:"", days:1, persons:1, description:"" });
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [user, setUser] = useState<any>(null);
@@ -43,6 +44,7 @@ export default function CustomRequestPage() {
 
   if (submitted) return (
     <div style={{minHeight:"100vh",background:S,display:"flex",alignItems:"center",justifyContent:"center",padding:20,fontFamily:"Georgia,serif"}}>
+      <SimpleNav />
       <div style={{background:"#fff",borderRadius:24,padding:40,maxWidth:400,textAlign:"center",boxShadow:"0 4px 40px rgba(0,0,0,0.08)"}}>
         <div style={{fontSize:64,marginBottom:16}}>🎉</div>
         <h1 style={{fontSize:22,fontWeight:900,color:B,marginBottom:8}}>Demande envoyee !</h1>

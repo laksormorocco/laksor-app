@@ -20,6 +20,8 @@ export async function POST(req: Request) {
     } else {
       await prisma.user.update({ where: { id: user.id }, data: { role: "GUIDE" } });
     }
+    const existing = await prisma.guideProfile.findUnique({ where: { userId: user.id } });
+    if (existing) return NextResponse.json({ error: "Vous avez deja un profil guide. Connectez-vous pour y acceder." }, { status: 400 });
     const guide = await prisma.guideProfile.create({
       data: {
         userId: user.id,

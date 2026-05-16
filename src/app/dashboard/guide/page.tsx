@@ -2,150 +2,275 @@
 import { useState, useEffect } from "react";
 import GuideStats from "@/components/GuideStats";
 import ProfileEditor from "@/components/ProfileEditor";
-const B="#123EAB",Y="#F4C542",G="#22c55e",R="#ef4444",S="#F8F5F0";
 
-const MENUS = [
-  { id:"dashboard", icon:"📊", label:"Tableau de bord" },
-  { id:"reservations", icon:"📋", label:"Reservations" },
-  { id:"stats", icon:"📊", label:"Statistiques" },
-  { id:"demandes", icon:"🎯", label:"Demandes sur mesure" },
-  { id:"profil", icon:"👤", label:"Mon Profil" },
+const TABS = [
+  { id:"home", icon:"🏠", label:"Accueil" },
+  { id:"reservations", icon:"📋", label:"Réservations" },
+  { id:"demandes", icon:"🎯", label:"Demandes" },
+  { id:"stats", icon:"📈", label:"Stats" },
+  { id:"profil", icon:"👤", label:"Profil" },
 ];
 
 export default function GuideDashboard() {
-  const [active, setActive] = useState("dashboard");
-  const [sidebar, setSidebar] = useState(false);
+  const [active, setActive] = useState("home");
   const [guide, setGuide] = useState<any>(null);
+  const [bookings, setBookings] = useState<any[]>([]);
   const [customRequests, setCustomRequests] = useState<any[]>([]);
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [loading, setLoading] = useState(true);
   const [guideId, setGuideId] = useState("");
 
   useEffect(() => {
-    const id = new URLSearchParams(window.location.search).get("id");
-    if (id) { setGuideId(id); fetchData(id); }
+    const id = new URLSearchParams(window.location.search).get("id") || "";
+    setGuideId(id);
+    if (id) fetchData(id);
     else setLoading(false);
   }, []);
 
   async function fetchData(id: string) {
     setLoading(true);
-    const res = await fetch("/api/guide/dashboard?guideId=" + id);
-    const data = await res.json();
-    if (data.guide) { setGuide(data.guide); setTotalRevenue(data.totalRevenue); }
-      const reqRes = await fetch("/api/custom-request?guideId=" + id);
+    try {
+      const [dashRes, reqRes] = await Promise.all([
+        fetch("/api/guide/dashboard?guideId=" + id),
+        fetch("/api/custom-request?guideId=" + id)
+      ]);
+      const dashData = await dashRes.json();
       const reqData = await reqRes.json();
+      if (dashData.guide) {
+        setGuide(dashData.guide);
+        setBookings(dashData.guide.bookings || []);
+        setTotalRevenue(dashData.totalRevenue || 0);
+      }
       setCustomRequests(reqData.requests || []);
+    } catch(e) { console.error(e); }
     setLoading(false);
   }
 
   async function updateBooking(bookingId: string, status: string) {
-    const res = await fetch("/api/guide/booking", {
+    await fetch("/api/guide/booking", {
       method: "PATCH",
       headers: {"Content-Type":"application/json"},
       body: JSON.stringify({ bookingId, status })
     });
-    const result = await res.json();
-    if (result.whatsappUrl) window.open(result.whatsappUrl, "_blank");
     if (guideId) fetchData(guideId);
   }
 
-  const pending = guide?.bookings?.filter((b:any) => b.status === "PENDING") || [];
-  const confirmed = guide?.bookings?.filter((b:any) => b.status === "CONFIRMED") || [];
+  async function updateRequest(requestId: string, status: string, proposedPrice?: number) {
+    await fetch("/api/custom-request", {
+      method: "PATCH",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({ requestId, status, proposedPrice })
+    });
+    if (guideId) fetchData(guideId);
+  }
+
+  const pending = bookings.filter(b => b.status === "PENDING");
+  const confirmed = bookings.filter(b => b.status === "CONFIRMED");
+  const pendingRequests = customRequests.filter(r => r.status === "PENDING");
+
+  if (loading) return (
+    <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:"#F7F7F7",fontFamily:"Inter,sans-serif"}}>
+      <div style={{textAlign:"center"}}>
+        <div style={{fontSize:40,marginBottom:12}}>⏳</div>
+        <div style={{color:"#94A3B8"}}>Chargement...</div>
+      </div>
+    </div>
+  );
+
+  if (!guideId) return (
+    <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:"#F7F7F7",fontFamily:"Inter,sans-serif",padding:16}}>
+      <div style={{background:"#fff",borderRadius:20,padding:32,textAlign:"center",maxWidth:360,width:"100%",border:"1px solid #EBEBEB"}}>
+        <div style={{fontSize:40,marginBottom:12}}>🔐</div>
+        <h2 style={{color:"#123EAB",marginBottom:8}}>Accès Dashboard</h2>
+        <p style={{color:"#94A3B8",fontSize:14,marginBottom:20}}>Connectez-vous pour accéder à votre espace</p>
+        <a href="/auth/login" style={{display:"block",background:"#0B132B",color:"#fff",borderRadius:30,padding:"14px 0",fontSize:15,fontWeight:600,textDecoration:"none"}}>Se connecter</a>
+      </div>
+    </div>
+  );
 
   return (
-    <div style={{display:"flex",minHeight:"100vh",background:S,fontFamily:"Georgia,serif"}}>
-      <div style={{position:"fixed",top:0,left:0,right:0,background:B,padding:"12px 16px",display:"flex",alignItems:"center",justifyContent:"space-between",zIndex:100}}>
-        <button onClick={()=>setSidebar(!sidebar)} style={{color:"#fff",fontSize:22,background:"none",border:"none",cursor:"pointer"}}>☰</button>
-        <span style={{color:"#fff",fontWeight:700}}>Dashboard Guide</span>
-        <a href="/" style={{color:"rgba(255,255,255,0.7)",fontSize:12,textDecoration:"none"}}>Voir site</a>
+    <div style={{background:"#F7F7F7",minHeight:"100vh",fontFamily:"Inter,-apple-system,sans-serif",paddingBottom:80}}>
+
+      {/* Header */}
+      <div style={{background:"#fff",padding:"16px",borderBottom:"1px solid #EBEBEB",position:"sticky",top:0,zIndex:100}}>
+        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+          <div style={{display:"flex",alignItems:"center",gap:12}}>
+            <div style={{position:"relative"}}>
+              <div style={{width:44,height:44,borderRadius:"50%",overflow:"hidden",background:"#E2E8F0",border:"2px solid #E2E8F0"}}>
+                {guide?.avatar && <img src={guide.avatar} style={{width:"100%",height:"100%",objectFit:"cover"}}/>}
+              </div>
+              <div style={{position:"absolute",bottom:0,right:0,width:12,height:12,background:"#22c55e",borderRadius:"50%",border:"2px solid #fff"}}/>
+            </div>
+            <div>
+              <div style={{fontSize:12,color:"#94A3B8"}}>Bonjour,</div>
+              <div style={{fontWeight:700,fontSize:16,color:"#222"}}>{guide?.displayName || "Guide"} 👋</div>
+            </div>
+          </div>
+          <div style={{display:"flex",gap:8}}>
+            <div style={{position:"relative",width:40,height:40,background:"#F7F7F7",borderRadius:12,border:"1px solid #EBEBEB",display:"flex",alignItems:"center",justifyContent:"center",fontSize:18}}>
+              🔔
+              {(pending.length + pendingRequests.length) > 0 && <div style={{position:"absolute",top:6,right:8,width:8,height:8,background:"#F4C542",borderRadius:"50%",border:"1.5px solid #fff"}}/>}
+            </div>
+            <a href="/" style={{width:40,height:40,background:"#F7F7F7",borderRadius:12,border:"1px solid #EBEBEB",display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,textDecoration:"none",color:"#666"}}>🏠</a>
+          </div>
+        </div>
       </div>
 
-      {sidebar && (
-        <div style={{position:"fixed",inset:0,zIndex:200,display:"flex"}}>
-          <div style={{width:260,background:B,display:"flex",flexDirection:"column",padding:"80px 0 20px"}}>
-            {guide && (
-              <div style={{padding:"0 20px 20px",borderBottom:"1px solid rgba(255,255,255,0.1)",marginBottom:12}}>
-                <div style={{color:"#fff",fontWeight:700,fontSize:15}}>{guide.displayName}</div>
-                <div style={{color:"rgba(255,255,255,0.6)",fontSize:12}}>📍 {guide.city}</div>
+      <div style={{padding:"16px"}}>
+
+        {/* HOME */}
+        {active === "home" && (
+          <>
+            {/* Revenue Banner */}
+            <div style={{background:"linear-gradient(135deg,#123EAB,#1a4fd6)",borderRadius:20,padding:20,marginBottom:16,position:"relative",overflow:"hidden"}}>
+              <div style={{position:"absolute",top:-20,right:-20,width:100,height:100,background:"rgba(255,255,255,0.06)",borderRadius:"50%"}}/>
+              <div style={{fontSize:12,color:"rgba(255,255,255,0.7)",marginBottom:4}}>Revenus total</div>
+              <div style={{fontSize:32,fontWeight:800,color:"#fff",marginBottom:4}}>{totalRevenue} <span style={{fontSize:16,fontWeight:500}}>MAD</span></div>
+              <div style={{display:"flex",gap:16,marginTop:8}}>
+                <div><div style={{fontSize:11,color:"rgba(255,255,255,0.6)"}}>En attente</div><div style={{fontSize:16,fontWeight:700,color:"#F4C542"}}>{pending.length}</div></div>
+                <div style={{width:1,background:"rgba(255,255,255,0.15)"}}/>
+                <div><div style={{fontSize:11,color:"rgba(255,255,255,0.6)"}}>Confirmées</div><div style={{fontSize:16,fontWeight:700,color:"#4ade80"}}>{confirmed.length}</div></div>
+                <div style={{width:1,background:"rgba(255,255,255,0.15)"}}/>
+                <div><div style={{fontSize:11,color:"rgba(255,255,255,0.6)"}}>Note</div><div style={{fontSize:16,fontWeight:700,color:"#fff"}}>{Number(guide?.avgRating||0).toFixed(1)} ⭐</div></div><div style={{width:1,background:"rgba(255,255,255,0.15)"}} /><div><div style={{fontSize:11,color:"rgba(255,255,255,0.6)"}}>Vues</div><div style={{fontSize:16,fontWeight:700,color:"#fff"}}>{guide?.views || 0} 👁️</div></div>
               </div>
-            )}
-            {MENUS.map(m=>(
-              <button key={m.id} onClick={()=>{setActive(m.id);setSidebar(false);}} style={{display:"flex",alignItems:"center",gap:12,padding:"13px 20px",background:active===m.id?"rgba(255,255,255,0.15)":"transparent",borderLeft:`3px solid ${active===m.id?Y:"transparent"}`,color:"#fff",fontSize:13,fontWeight:active===m.id?700:500,border:"none",cursor:"pointer",textAlign:"left",width:"100%"}}>
-                <span>{m.icon}</span>{m.label}
-              </button>
-            ))}
-          </div>
-          <div style={{flex:1,background:"rgba(0,0,0,0.5)"}} onClick={()=>setSidebar(false)}/>
-        </div>
-      )}
-
-      <div style={{flex:1,padding:"72px 16px 32px",overflow:"auto"}}>
-        {!guideId && !loading && (
-          <div style={{background:"#fff",borderRadius:20,padding:32,textAlign:"center",marginTop:20}}>
-            <div style={{fontSize:48,marginBottom:16}}>🔐</div>
-            <h2 style={{color:B,marginBottom:8}}>Acces Dashboard</h2>
-            <p style={{color:"#666",marginBottom:20}}>Entrez votre ID guide</p>
-            <input placeholder="ID du guide" onChange={e=>setGuideId(e.target.value)} style={{border:"2px solid #e8e0d6",borderRadius:12,padding:"12px 16px",fontSize:15,width:"100%",boxSizing:"border-box",marginBottom:12}}/>
-            <button onClick={()=>fetchData(guideId)} style={{background:B,color:"#fff",border:"none",borderRadius:12,padding:"12px 0",width:"100%",fontSize:15,fontWeight:700,cursor:"pointer"}}>Acceder</button>
-          </div>
-        )}
-
-        {loading && <div style={{textAlign:"center",padding:60,color:"#999"}}>Chargement...</div>}
-
-        {guide && active === "dashboard" && (
-          <div>
-            <h1 style={{fontSize:22,fontWeight:800,marginBottom:4}}>Bonjour, {guide.displayName} 👋</h1>
-            <p style={{color:"#777",fontSize:13,marginBottom:24}}>Voici votre activite</p>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:16,marginBottom:28}}>
-              {[
-                {icon:"📋",label:"En attente",val:String(pending.length),bg:"#fef3c7",color:"#d97706"},
-                {icon:"✅",label:"Confirmes",val:String(confirmed.length),bg:"#dcfce7",color:G},
-                {icon:"💰",label:"Revenus",val:totalRevenue+" MAD",bg:"#eef2ff",color:B},
-                {icon:"⭐",label:"Note",val:Number(guide.avgRating).toFixed(1)+"/5",bg:"#fffbeb",color:"#d97706"},
-              ].map(s=>(
-                <div key={s.label} style={{background:"#fff",borderRadius:20,padding:20,boxShadow:"0 2px 12px rgba(0,0,0,0.06)"}}>
-                  <div style={{width:44,height:44,borderRadius:12,background:s.bg,display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,marginBottom:14}}>{s.icon}</div>
-                  <div style={{fontSize:18,fontWeight:800,color:s.color,marginBottom:4}}>{s.val}</div>
-                  <div style={{fontSize:12,color:"#888"}}>{s.label}</div>
-                </div>
-              ))}
             </div>
 
+            {/* Pending bookings */}
             {pending.length > 0 && (
-              <div style={{background:"#fff",borderRadius:20,padding:24,boxShadow:"0 2px 12px rgba(0,0,0,0.06)"}}>
-                <h2 style={{fontSize:16,fontWeight:800,marginBottom:16,color:B}}>⏳ Demandes en attente ({pending.length})</h2>
-                {pending.map((b:any)=>(
-                  <div key={b.id} style={{background:S,borderRadius:14,padding:16,marginBottom:12}}>
-                    <div style={{fontWeight:700,fontSize:14,marginBottom:4}}>{b.tourist?.name || "Touriste"}</div>
-                    <div style={{fontSize:12,color:"#666",marginBottom:4}}>{new Date(b.date).toLocaleDateString("fr-FR")} · {b.duration === "HALF_DAY" ? "4h" : "8h"} · {b.persons} pers. · {b.totalPrice} MAD</div>
-                    <div style={{fontSize:12,color:"#666",marginBottom:12}}>📧 {b.tourist?.email || "Email non disponible"}</div>
-                    <div style={{display:"flex",gap:10}}>
-                      <button onClick={()=>updateBooking(b.id,"CONFIRMED")} style={{flex:1,background:G,color:"#fff",border:"none",borderRadius:10,padding:"10px 0",fontSize:13,fontWeight:700,cursor:"pointer"}}>✓ Accepter</button>
-                      <button onClick={()=>updateBooking(b.id,"CANCELLED")} style={{flex:1,background:R,color:"#fff",border:"none",borderRadius:10,padding:"10px 0",fontSize:13,fontWeight:700,cursor:"pointer"}}>✗ Refuser</button>
+              <div style={{background:"#fff",borderRadius:20,padding:18,marginBottom:16,border:"1px solid #EBEBEB"}}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+                  <h2 style={{fontSize:15,fontWeight:700,color:"#222"}}>Réservations en attente</h2>
+                  <span style={{background:"#FEF3C7",color:"#92400E",fontSize:11,fontWeight:700,padding:"4px 10px",borderRadius:20}}>{pending.length} nouvelles</span>
+                </div>
+                {pending.map((b:any) => (
+                  <div key={b.id} style={{border:"1px solid #F1F5F9",borderRadius:14,padding:14,marginBottom:10}}>
+                    <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:12}}>
+                      <div style={{width:38,height:38,borderRadius:"50%",background:"linear-gradient(135deg,#667eea,#764ba2)",display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontSize:15,fontWeight:700,flexShrink:0}}>{b.tourist?.name?.[0] || "T"}</div>
+                      <div style={{flex:1}}>
+                        <div style={{fontWeight:600,fontSize:14,color:"#222"}}>{b.tourist?.name || "Touriste"}</div>
+                        <div style={{fontSize:11,color:"#94A3B8"}}>📧 {b.tourist?.email || "—"}</div>
+                      </div>
+                      <div style={{textAlign:"right"}}>
+                        <div style={{fontWeight:800,fontSize:16,color:"#22c55e"}}>{b.totalPrice}</div>
+                        <div style={{fontSize:10,color:"#94A3B8"}}>MAD</div>
+                      </div>
+                    </div>
+                    <div style={{display:"flex",gap:8,marginBottom:12}}>
+                      {[["Date",new Date(b.date).toLocaleDateString("fr-FR")],["Durée",b.duration==="HALF_DAY"?"4h":"8h"],["Pers.",String(b.persons)]].map(([k,v]) => (
+                        <div key={k} style={{flex:1,background:"#F8FAFC",borderRadius:10,padding:8,textAlign:"center"}}>
+                          <div style={{fontSize:9,color:"#94A3B8",textTransform:"uppercase" as const,letterSpacing:"0.5px"}}>{k}</div>
+                          <div style={{fontSize:13,fontWeight:600,color:"#222",marginTop:2}}>{v}</div>
+                        </div>
+                      ))}
+                    </div>
+                    <div style={{display:"flex",gap:8}}>
+                      <button onClick={()=>updateBooking(b.id,"CONFIRMED")} style={{flex:1,background:"#22c55e",color:"#fff",border:"none",borderRadius:25,padding:11,fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"inherit"}}>✓ Accepter</button>
+                      <button onClick={()=>updateBooking(b.id,"CANCELLED")} style={{width:44,height:44,background:"#FFF1F2",color:"#ef4444",border:"none",borderRadius:"50%",fontSize:16,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>✕</button>
                     </div>
                   </div>
                 ))}
               </div>
             )}
+
+            {/* Confirmed */}
+            {confirmed.length > 0 && (
+              <div style={{background:"#fff",borderRadius:20,padding:18,border:"1px solid #EBEBEB"}}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+                  <h2 style={{fontSize:15,fontWeight:700,color:"#222"}}>Prochains tours</h2>
+                  <span style={{color:"#F59E0B",fontSize:12,fontWeight:600,cursor:"pointer"}} onClick={()=>setActive("reservations")}>Voir tout →</span>
+                </div>
+                {confirmed.slice(0,3).map((b:any,i:number) => (
+                  <div key={b.id} style={{display:"flex",gap:12,alignItems:"center",padding:"12px 0",borderBottom:i<Math.min(confirmed.length,3)-1?"1px solid #F7F7F7":"none"}}>
+                    <div style={{width:48,height:48,borderRadius:14,background:"#F0FDF4",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,flexShrink:0}}>👤</div>
+                    <div style={{flex:1}}>
+                      <div style={{fontWeight:600,fontSize:14,color:"#222"}}>{b.tourist?.name || "Touriste"}</div>
+                      <div style={{fontSize:12,color:"#94A3B8",marginTop:2}}>{new Date(b.date).toLocaleDateString("fr-FR")} · {b.duration==="HALF_DAY"?"4h":"8h"} · {b.persons} pers.</div>
+                      {b.tourist?.email && <div style={{fontSize:11,color:"#94A3B8"}}>📧 {b.tourist.email}</div>}
+                    </div>
+                    <div style={{textAlign:"right"}}>
+                      <div style={{fontWeight:700,fontSize:15,color:"#22c55e"}}>{b.totalPrice} MAD</div>
+                      <div style={{background:"#DCFCE7",color:"#166534",fontSize:9,fontWeight:700,padding:"2px 7px",borderRadius:10,marginTop:3,display:"inline-block"}}>✓ Confirmé</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {pending.length === 0 && confirmed.length === 0 && (
+              <div style={{background:"#fff",borderRadius:20,padding:48,textAlign:"center",border:"1px solid #EBEBEB"}}>
+                <div style={{fontSize:48,marginBottom:16}}>📋</div>
+                <div style={{fontWeight:700,color:"#0F172A",fontSize:16,marginBottom:8}}>Aucune réservation</div>
+                <div style={{color:"#94A3B8",fontSize:14}}>Les nouvelles réservations apparaîtront ici</div>
+              </div>
+            )}
+          </>
+        )}
+
+        {/* RESERVATIONS */}
+        {active === "reservations" && (
+          <div style={{background:"#fff",borderRadius:20,padding:18,border:"1px solid #EBEBEB"}}>
+            <h2 style={{fontSize:15,fontWeight:700,color:"#222",marginBottom:14}}>Toutes les réservations</h2>
+            {bookings.length === 0 ? <div style={{textAlign:"center",padding:40,color:"#94A3B8"}}>Aucune réservation</div> :
+            bookings.map((b:any,i:number) => (
+              <div key={b.id} style={{display:"flex",justifyContent:"space-between",padding:"14px 0",borderBottom:i<bookings.length-1?"1px solid #F1F5F9":"none",alignItems:"center"}}>
+                <div style={{display:"flex",gap:10,alignItems:"center"}}>
+                  <div style={{width:42,height:42,borderRadius:12,background:"#F8FAFC",display:"flex",alignItems:"center",justifyContent:"center",fontSize:18}}>👤</div>
+                  <div>
+                    <div style={{fontWeight:600,fontSize:14,color:"#222"}}>{b.tourist?.name || "Touriste"}</div>
+                    <div style={{fontSize:11,color:"#94A3B8"}}>{new Date(b.date).toLocaleDateString("fr-FR")} · {b.duration==="HALF_DAY"?"4h":"8h"} · {b.persons} pers.</div>
+                    {b.tourist?.email && <div style={{fontSize:11,color:"#94A3B8"}}>📧 {b.tourist.email}</div>}
+                  </div>
+                </div>
+                <div style={{textAlign:"right"}}>
+                  <div style={{fontWeight:700,fontSize:14,color:"#22c55e"}}>{b.totalPrice} MAD</div>
+                  <div style={{fontSize:9,fontWeight:700,padding:"2px 7px",borderRadius:10,marginTop:3,display:"inline-block",background:b.status==="CONFIRMED"?"#DCFCE7":b.status==="PENDING"?"#FEF3C7":"#FEE2E2",color:b.status==="CONFIRMED"?"#166534":b.status==="PENDING"?"#92400E":"#ef4444"}}>{b.status}</div>
+                  {b.status==="PENDING" && (
+                    <div style={{display:"flex",gap:4,marginTop:6,justifyContent:"flex-end"}}>
+                      <button onClick={()=>updateBooking(b.id,"CONFIRMED")} style={{background:"#22c55e",color:"#fff",border:"none",borderRadius:20,padding:"5px 10px",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"inherit"}}>✓</button>
+                      <button onClick={()=>updateBooking(b.id,"CANCELLED")} style={{background:"#FFF1F2",color:"#ef4444",border:"none",borderRadius:20,padding:"5px 10px",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"inherit"}}>✕</button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
         )}
 
-        {guide && active === "reservations" && (
-          <div style={{background:"#fff",borderRadius:20,padding:24}}>
-            <h2 style={{fontSize:16,fontWeight:800,marginBottom:16,color:B}}>Toutes les reservations</h2>
-            {guide.bookings?.length === 0 && <p style={{color:"#999",textAlign:"center",padding:20}}>Aucune reservation</p>}
-            {guide.bookings?.map((b:any)=>(
-              <div key={b.id} style={{display:"flex",alignItems:"center",gap:14,padding:14,background:S,borderRadius:14,marginBottom:12,flexWrap:"wrap"}}>
-                <div style={{flex:1,minWidth:150}}>
-                  <div style={{fontWeight:700,fontSize:14}}>{b.tourist?.name || "Touriste"}</div>
-                  <div style={{fontSize:11,color:"#888",marginTop:2}}>{new Date(b.date).toLocaleDateString("fr-FR")} · {b.duration === "HALF_DAY" ? "4h" : "8h"} · {b.persons} pers.</div>
+        {/* DEMANDES */}
+        {active === "demandes" && (
+          <div style={{display:"flex",flexDirection:"column",gap:16}}>
+            <h2 style={{fontSize:15,fontWeight:700,color:"#222"}}>🎯 Demandes sur mesure ({customRequests.length})</h2>
+            {customRequests.length === 0 ? (
+              <div style={{background:"#fff",borderRadius:20,padding:40,textAlign:"center",border:"1px solid #EBEBEB"}}>
+                <div style={{fontSize:40,marginBottom:12}}>🎯</div>
+                <div style={{color:"#94A3B8"}}>Aucune demande sur mesure</div>
+              </div>
+            ) : customRequests.map((r:any) => (
+              <div key={r.id} style={{background:"#fff",borderRadius:20,padding:20,border:"1px solid #EBEBEB"}}>
+                <div style={{display:"flex",justifyContent:"space-between",marginBottom:12,flexWrap:"wrap" as const,gap:8}}>
+                  <div>
+                    <div style={{fontWeight:700,fontSize:15,color:"#222"}}>{r.tourist?.name || "Touriste"}</div>
+                    <div style={{fontSize:12,color:"#94A3B8"}}>📧 {r.tourist?.email}</div>
+                  </div>
+                  <span style={{fontSize:11,fontWeight:700,padding:"4px 12px",borderRadius:20,background:r.status==="PENDING"?"#FEF3C7":r.status==="QUOTED"?"#EFF6FF":r.status==="ACCEPTED"?"#DCFCE7":"#FEE2E2",color:r.status==="PENDING"?"#92400E":r.status==="QUOTED"?"#123EAB":r.status==="ACCEPTED"?"#166534":"#ef4444"}}>{r.status}</span>
                 </div>
-                <div style={{fontSize:15,fontWeight:800,color:B}}>{b.totalPrice} MAD</div>
-                <div style={{fontSize:10,fontWeight:700,padding:"4px 10px",borderRadius:16,background:b.status==="CONFIRMED"?"#dcfce7":b.status==="PENDING"?"#fef3c7":"#fee2e2",color:b.status==="CONFIRMED"?G:b.status==="PENDING"?"#d97706":R}}>{b.status}</div>
-                {b.status === "PENDING" && (
-                  <div style={{display:"flex",gap:8}}>
-                    <button onClick={()=>updateBooking(b.id,"CONFIRMED")} style={{background:G,color:"#fff",border:"none",borderRadius:8,padding:"6px 12px",fontSize:12,fontWeight:700,cursor:"pointer"}}>✓</button>
-                    <button onClick={()=>updateBooking(b.id,"CANCELLED")} style={{background:R,color:"#fff",border:"none",borderRadius:8,padding:"6px 12px",fontSize:12,fontWeight:700,cursor:"pointer"}}>✗</button>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:12}}>
+                  {[["Date",new Date(r.startDate).toLocaleDateString("fr-FR")],["Jours",String(r.days)],["Pers.",String(r.persons)]].map(([k,v]) => (
+                    <div key={k} style={{background:"#F8FAFC",borderRadius:10,padding:8,textAlign:"center"}}>
+                      <div style={{fontSize:9,color:"#94A3B8",textTransform:"uppercase" as const}}>{k}</div>
+                      <div style={{fontSize:13,fontWeight:600,color:"#222",marginTop:2}}>{v}</div>
+                    </div>
+                  ))}
+                </div>
+                <p style={{fontSize:14,color:"#475569",lineHeight:1.6,marginBottom:12}}>{r.description}</p>
+                {r.status === "PENDING" && (
+                  <div style={{display:"flex",gap:8,alignItems:"center",flexWrap:"wrap" as const}}>
+                    <input type="number" placeholder="Prix (MAD)" id={"price-"+r.id} style={{border:"1.5px solid #E2E8F0",borderRadius:10,padding:"8px 12px",fontSize:14,width:140,fontFamily:"inherit",outline:"none"}}/>
+                    <button onClick={async()=>{
+                      const inp = document.getElementById("price-"+r.id) as HTMLInputElement;
+                      await updateRequest(r.id,"QUOTED",parseFloat(inp.value));
+                    }} style={{background:"#123EAB",color:"#fff",border:"none",borderRadius:20,padding:"10px 16px",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"inherit"}}>Proposer prix</button>
+                    <button onClick={()=>updateRequest(r.id,"REFUSED")} style={{background:"#FFF1F2",color:"#ef4444",border:"none",borderRadius:20,padding:"10px 16px",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"inherit"}}>Refuser</button>
                   </div>
                 )}
               </div>
@@ -153,12 +278,21 @@ export default function GuideDashboard() {
           </div>
         )}
 
-        {guide && active === "stats" && (
-          <GuideStats guideId={guideId} />
-        )}
-        {guide && active === "profil" && (
-          <ProfileEditor guide={guide} guideId={guideId} onSaved={()=>fetchData(guideId)} />
-        )}
+        {/* STATS */}
+        {active === "stats" && guideId && <GuideStats guideId={guideId} />}
+
+        {/* PROFIL */}
+        {active === "profil" && guide && <ProfileEditor guide={guide} guideId={guideId} onSaved={()=>fetchData(guideId)} />}
+      </div>
+
+      {/* Bottom Nav */}
+      <div style={{position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",width:"100%",maxWidth:480,background:"#fff",borderTop:"1px solid #EBEBEB",display:"grid",gridTemplateColumns:"repeat(5,1fr)",zIndex:100}}>
+        {TABS.map(t => (
+          <button key={t.id} onClick={()=>setActive(t.id)} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:3,background:"none",border:"none",borderTop:`2px solid ${active===t.id?"#123EAB":"transparent"}`,cursor:"pointer",padding:"10px 0",fontFamily:"inherit"}}>
+            <span style={{fontSize:20}}>{t.icon}</span>
+            <span style={{fontSize:10,color:active===t.id?"#123EAB":"#94A3B8",fontWeight:active===t.id?700:500}}>{t.label}</span>
+          </button>
+        ))}
       </div>
     </div>
   );

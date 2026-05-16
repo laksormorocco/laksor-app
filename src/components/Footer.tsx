@@ -1,76 +1,75 @@
 import Link from "next/link";
-const B="#123EAB",Y="#F4C542";
 
 export default function Footer() {
   return (
-    <footer style={{background:"#0f1f5c",padding:"48px 16px 24px",color:"#fff"}}>
-      <div style={{maxWidth:900,margin:"0 auto"}}>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(200px,1fr))",gap:32,marginBottom:40}}>
-          
-          <div>
-            <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:16}}>
-              <div style={{width:40,height:40,borderRadius:12,background:B,border:"2px solid rgba(255,255,255,0.2)",display:"flex",alignItems:"center",justifyContent:"center",color:Y,fontWeight:900,fontSize:20}}>L</div>
-              <div>
-                <div style={{fontWeight:900,fontSize:15,color:"#fff"}}>LAKSOR</div>
-                <div style={{fontSize:9,color:"rgba(255,255,255,0.5)",letterSpacing:2}}>TOUR GUIDE MOROCCO</div>
-              </div>
-            </div>
-            <p style={{fontSize:13,color:"rgba(255,255,255,0.6)",lineHeight:1.7,margin:"0 0 16px"}}>
-              La plateforme qui connecte les voyageurs avec les meilleurs guides locaux du Maroc.
-            </p>
-            <a href="https://instagram.com/laksor.morocco" target="_blank" style={{display:"inline-flex",alignItems:"center",gap:8,background:"linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045)",borderRadius:10,padding:"8px 14px",textDecoration:"none",fontSize:13,fontWeight:700,color:"#fff"}}>
-              📸 @laksor.morocco
-            </a>
-          </div>
+    <footer style={{ background: "#123EAB", color: "#fff", fontFamily: "Inter, -apple-system, sans-serif", padding: "40px 16px 32px" }}>
 
-          <div>
-            <div style={{fontWeight:700,fontSize:13,color:Y,letterSpacing:1,marginBottom:16}}>EXPLORER</div>
-            {[
-              {label:"Trouver un guide",href:"/search"},
-              {label:"Devenir guide",href:"/auth/register"},
-              {label:"Marrakech",href:"/search?city=Marrakech"},
-              {label:"Fes",href:"/search?city=Fes"},
-              {label:"Chefchaouen",href:"/search?city=Chefchaouen"},
-            ].map(l=>(
-              <Link key={l.label} href={l.href} style={{display:"block",color:"rgba(255,255,255,0.7)",textDecoration:"none",fontSize:13,marginBottom:10,lineHeight:1.5}}>
-                {l.label}
-              </Link>
-            ))}
-          </div>
-
-          <div>
-            <div style={{fontWeight:700,fontSize:13,color:Y,letterSpacing:1,marginBottom:16}}>INFORMATIONS</div>
-            {[
-              {label:"Comment ca marche",href:"/#how-it-works"},
-              {label:"Tarifs et commissions",href:"/#tarifs"},
-              {label:"Devenir guide",href:"/auth/register"},
-              {label:"Nous contacter",href:"mailto:laksor.morocco@gmail.com"},
-            ].map(l=>(
-              <a key={l.label} href={l.href} style={{display:"block",color:"rgba(255,255,255,0.7)",textDecoration:"none",fontSize:13,marginBottom:10}}>
-                {l.label}
-              </a>
-            ))}
-          </div>
-
-          <div>
-            <div style={{fontWeight:700,fontSize:13,color:Y,letterSpacing:1,marginBottom:16}}>CONTACT</div>
-            <div style={{fontSize:13,color:"rgba(255,255,255,0.7)",marginBottom:10}}>📧 laksor.morocco@gmail.com</div>
-            <div style={{fontSize:13,color:"rgba(255,255,255,0.7)",marginBottom:10}}>📍 Maroc</div>
-            <a href="https://wa.me/212657436342" target="_blank" style={{display:"inline-flex",alignItems:"center",gap:8,background:"#25D366",borderRadius:10,padding:"8px 14px",textDecoration:"none",fontSize:13,fontWeight:700,color:"#fff",marginTop:8}}>
-              💬 WhatsApp
-            </a>
-          </div>
-
+      {/* Logo */}
+      <div style={{ textAlign: "center", marginBottom: 32 }}>
+        <div style={{ display: "inline-flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+          <span style={{ fontWeight: 900, fontSize: 22, color: "#fff" }}>LAKSOR</span>
+          <span style={{ color: "#F4C542", fontSize: 12, fontWeight: 700, letterSpacing: "1px" }}>MOROCCO</span>
         </div>
+        <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 13, lineHeight: 1.6 }}>
+          Connecter les voyageurs aux meilleurs<br/>guides locaux du Maroc
+        </p>
+      </div>
 
-        <div style={{borderTop:"1px solid rgba(255,255,255,0.1)",paddingTop:24,display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:12}}>
-          <div style={{fontSize:12,color:"rgba(255,255,255,0.5)"}}>
-            © 2025 Laksor. Tous droits reserves.
+      {/* Links Grid */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginBottom: 32 }}>
+        <div>
+          <div style={{ fontSize: 11, fontWeight: 700, color: "#F4C542", letterSpacing: "1.5px", textTransform: "uppercase", marginBottom: 14 }}>Découvrir</div>
+          {[
+            ["Trouver un guide", "/search"],
+            ["Comment ça marche", "/#how"],
+            ["Guides certifiés", "/search"],
+            ["Villes du Maroc", "/search"],
+          ].map(([label, href]) => (
+            <Link key={label} href={href} style={{ display: "block", color: "rgba(255,255,255,0.65)", fontSize: 13, marginBottom: 10, textDecoration: "none" }}>{label}</Link>
+          ))}
+        </div>
+        <div>
+          <div style={{ fontSize: 11, fontWeight: 700, color: "#F4C542", letterSpacing: "1.5px", textTransform: "uppercase", marginBottom: 14 }}>Guides</div>
+          {[
+            ["Devenir guide", "/auth/register"],
+            ["Dashboard guide", "/dashboard/guide"],
+            ["FAQ", "/faq"],
+            ["A propos", "/about"],
+          ].map(([label, href]) => (
+            <Link key={label} href={href} style={{ display: "block", color: "rgba(255,255,255,0.65)", fontSize: 13, marginBottom: 10, textDecoration: "none" }}>{label}</Link>
+          ))}
+        </div>
+      </div>
+
+      {/* Stats */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginBottom: 32, background: "rgba(255,255,255,0.05)", borderRadius: 16, padding: 16 }}>
+        {[["150+", "Guides"], ["12", "Villes"], ["4.9★", "Note"]].map(([val, label]) => (
+          <div key={label} style={{ textAlign: "center" }}>
+            <div style={{ fontSize: 18, fontWeight: 800, color: "#F4C542" }}>{val}</div>
+            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", marginTop: 2 }}>{label}</div>
           </div>
-          <div style={{display:"flex",gap:20}}>
-            <a href="#" style={{fontSize:12,color:"rgba(255,255,255,0.5)",textDecoration:"none"}}>CGU</a>
-            <a href="#" style={{fontSize:12,color:"rgba(255,255,255,0.5)",textDecoration:"none"}}>Confidentialite</a>
-          </div>
+        ))}
+      </div>
+
+      {/* Contact */}
+      <div style={{ display: "flex", gap: 10, marginBottom: 28, justifyContent: "center" }}>
+        <a href="https://wa.me/212657436342" target="_blank" style={{ display: "flex", alignItems: "center", gap: 6, background: "#25D366", color: "#fff", borderRadius: 20, padding: "9px 16px", fontSize: 13, fontWeight: 600, textDecoration: "none" }}>
+          💬 WhatsApp
+        </a>
+        <a href="mailto:laksor.morocco@gmail.com" style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,0.1)", color: "#fff", borderRadius: 20, padding: "9px 16px", fontSize: 13, fontWeight: 600, textDecoration: "none" }}>
+          ✉️ Email
+        </a>
+      </div>
+
+      {/* Bottom */}
+      <div style={{ borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: 20, textAlign: "center" }}>
+        <p style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginBottom: 8 }}>
+          © 2026 Laksor Morocco · Tous droits réservés
+        </p>
+        <div style={{ display: "flex", gap: 16, justifyContent: "center" }}>
+          {[["CGU", "/cgu"], ["Confidentialité", "/privacy"], ["FAQ", "/faq"]].map(([label, href]) => (
+            <Link key={label} href={href} style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, textDecoration: "none" }}>{label}</Link>
+          ))}
         </div>
       </div>
     </footer>

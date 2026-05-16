@@ -9,24 +9,36 @@ const supabase = createClient(
 
 export default function CallbackPage() {
   useEffect(() => {
-    supabase.auth.onAuthStateChange((event, session) => {
-      if (session) {
-        window.location.href = "/dashboard";
-      }
-    });
-    setTimeout(() => {
-      supabase.auth.getSession().then(({ data: { session } }) => {
-        if (session) window.location.href = "/dashboard";
-        else window.location.href = "/auth/login";
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (!session) { window.location.href = "/auth/login"; return; }
+
+      // Créer ou mettre à jour le user en base
+      await fetch("/api/auth/sync", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          supabaseId: session.user.id,
+          email: session.user.email,
+          name: session.user.user_metadata?.full_name || session.user.email,
+          avatar: session.user.user_metadata?.avatar_url || null,
+        })
       });
-    }, 2000);
+
+      // Rediriger vers le bon dashboard
+      const res = await fetch("/api/auth/me?supabaseId=" + session.user.id);
+      const data = await res.json();
+      if (data.role === "ADMIN") window.location.href = "/dashboard/admin";
+      else if (data.role === "GUIDE") window.location.href = "/dashboard/guide?id=" + data.guideId;
+      else window.location.href = "/dashboard/tourist";
+    });
   }, []);
 
   return (
-    <div style={{ minHeight:"100vh", display:"flex", alignItems:"center", justifyContent:"center", background:"#F8F5F0" }}>
+    <div style={{ minHeight:"100vh", display:"flex", alignItems:"center", justifyContent:"center", background:"#F7F7F7", fontFamily:"Inter, sans-serif" }}>
       <div style={{ textAlign:"center" }}>
-        <div style={{ fontSize:48, marginBottom:16 }}>⏳</div>
-        <div style={{ fontSize:16, color:"#666" }}>Connexion en cours...</div>
+        <div style={{ width:60, height:60, border:"4px solid #123EAB", borderTop:"4px solid transparent", borderRadius:"50%", animation:"spin 1s linear infinite", margin:"0 auto 20px" }}/>
+        <div style={{ color:"#123EAB", fontWeight:600, fontSize:16 }}>Connexion en cours...</div>
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     </div>
   );
