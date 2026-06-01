@@ -3,184 +3,293 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import BookingModal from "@/components/BookingModal";
 
+function toEur(mad: number): string {
+  return "€" + Math.round((mad * 1.25 + 25) * 0.092);
+}
+
 export default function GuidePageClient({ guide }: { guide: any }) {
   const [tab, setTab] = useState("apropos");
 
   useEffect(() => {
-    fetch("/api/guide/views", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({ guideId: guide.id }) });
+    fetch("/api/guide/views", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ guideId: guide.id })
+    });
   }, [guide.id]);
 
   return (
-    <div style={{ background: "#fff", minHeight: "100vh", fontFamily: "Inter, -apple-system, sans-serif", paddingBottom: 180 }}>
+    <div style={{ background: "var(--sand)", minHeight: "100vh", paddingBottom: 200 }}>
 
-      <nav style={{ background: "#fff", borderBottom: "1px solid #F1F5F9", padding: "0 16px", height: 56, display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 100 }}>
-        <Link href="/search" style={{ display: "flex", alignItems: "center", gap: 6, color: "#1A202C", textDecoration: "none" }}>
-          <span style={{ fontSize: 18 }}>←</span>
-          <span style={{ fontWeight: 600, fontSize: 14 }}>Retour</span>
-        </Link>
-        <Link href="/"><img src="/Logo.png" alt="Laksor" style={{ height: 40, width: "auto" }}/></Link>
-        <div style={{ display: "flex", gap: 16 }}>
-          <button style={{ background: "none", border: "none", cursor: "pointer", fontSize: 20 }}>♡</button>
-          <button style={{ background: "none", border: "none", cursor: "pointer", fontSize: 20 }}>↤</button>
-        </div>
-      </nav>
+      {/* ── COVER ── */}
+      <div style={{ position: "relative", height: 240 }}>
+        <img
+          src={guide.avatar ?? "https://images.unsplash.com/photo-1539020140153-e479b8c22e70?w=800&q=80"}
+          alt={guide.displayName}
+          style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+        />
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom,rgba(0,0,0,0.05),rgba(0,0,0,0.72))" }} />
 
-      <div style={{ position: "relative", height: 340, overflow: "hidden", background: "linear-gradient(135deg,#123EAB,#1a4fd6)" }}>
-        {guide.avatar && <img src={guide.avatar} alt={guide.displayName} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }}/>}
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 50%, transparent 100%)" }}/>
-        <div style={{ position: "absolute", bottom: 20, left: 20, right: 20 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-            <span style={{ color: "#fff", fontSize: 26, fontWeight: 700 }}>{guide.displayName}</span>
-            <span style={{ background: "#123EAB", color: "#fff", fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 20 }}>✓ Certifié</span>
+        {/* Top buttons */}
+        <div style={{ position: "absolute", top: 14, left: 14, right: 14, display: "flex", justifyContent: "space-between" }}>
+          <Link href="/search" className="btn-ghost" style={{ padding: "7px 14px", fontSize: 12 }}>← Retour</Link>
+          <div style={{ display: "flex", gap: 8 }}>
+            <button className="btn-ghost" style={{ width: 36, height: 36, padding: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>♡</button>
+            <button className="btn-ghost" style={{ width: 36, height: 36, padding: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>⬆</button>
           </div>
-          <div style={{ color: "rgba(255,255,255,0.85)", fontSize: 14, marginBottom: 8 }}>📍 {guide.city}, Morocco</div>
-          <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(0,0,0,0.5)", borderRadius: 20, padding: "4px 12px" }}>
-            <span style={{ color: "#F4C542", fontSize: 13 }}>★</span>
-            <span style={{ color: "#fff", fontSize: 13, fontWeight: 600 }}>{Number(guide.avgRating).toFixed(1)}</span>
-            <span style={{ color: "rgba(255,255,255,0.7)", fontSize: 12 }}>({guide.totalReviews} avis)</span>
+        </div>
+
+        {/* Bottom info */}
+        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "18px 20px" }}>
+          <div style={{ fontFamily: "var(--font-serif)", fontSize: 30, fontWeight: 700, color: "#fff", marginBottom: 8 }}>{guide.city}</div>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <img
+              src={guide.avatar ?? "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80"}
+              style={{ width: 36, height: 36, borderRadius: "50%", objectFit: "cover", border: "2px solid rgba(255,255,255,0.4)" }}
+            />
+            <div>
+              <div style={{ color: "#fff", fontSize: 14, fontWeight: 600 }}>{guide.displayName}</div>
+              <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 11 }}>Guide local · {guide.yearsExp} ans</div>
+            </div>
+            <span className="badge badge-sage" style={{ marginLeft: "auto" }}>✓ Vérifié</span>
           </div>
         </div>
       </div>
 
-      <div style={{ display: "flex", textAlign: "center", padding: "16px 20px", borderBottom: "1px solid #E2E8F0" }}>
-        <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 20, marginBottom: 4 }}>🌍</div>
-          <div style={{ color: "#718096", fontSize: 11, marginBottom: 3, textTransform: "uppercase" as const, letterSpacing: "0.5px" }}>Langues</div>
-          <div style={{ color: "#1A202C", fontSize: 13, fontWeight: 600 }}>{(guide.languages as string[]).slice(0,2).join(", ")}</div>
-        </div>
-        <div style={{ flex: 1, borderLeft: "1px solid #E2E8F0", borderRight: "1px solid #E2E8F0" }}>
-          <div style={{ fontSize: 20, marginBottom: 4 }}>📅</div>
-          <div style={{ color: "#718096", fontSize: 11, marginBottom: 3, textTransform: "uppercase" as const, letterSpacing: "0.5px" }}>Expérience</div>
-          <div style={{ color: "#1A202C", fontSize: 13, fontWeight: 600 }}>{guide.yearsExp || "—"} ans</div>
-        </div>
-        <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 20, marginBottom: 4 }}>⚡</div>
-          <div style={{ color: "#718096", fontSize: 11, marginBottom: 3, textTransform: "uppercase" as const, letterSpacing: "0.5px" }}>Réponse</div>
-          <div style={{ color: "#1A202C", fontSize: 13, fontWeight: 600 }}>{"< 1h"}</div>
-        </div>
-      </div>
-
-      <div style={{ display: "flex", borderBottom: "1px solid #E2E8F0", background: "#fff", position: "sticky", top: 56, zIndex: 50 }}>
-        {[["apropos", "À propos"], ["services", "Services"], ["avis", `Avis (${guide.totalReviews})`], ["galerie", "Galerie"]].map(([id, label]) => (
-          <button key={id} onClick={() => setTab(id)} style={{ flex: 1, padding: "14px 4px", fontSize: 13, fontWeight: tab === id ? 700 : 500, color: tab === id ? "#0F172A" : "#718096", background: "none", border: "none", borderBottom: `2px solid ${tab === id ? "#0F172A" : "transparent"}`, cursor: "pointer", fontFamily: "inherit" }}>
-            {label}
-          </button>
+      {/* ── STATS BAR ── */}
+      <div style={{ background: "var(--charcoal)", padding: "12px 20px", display: "grid", gridTemplateColumns: "repeat(4,1fr)", textAlign: "center" }}>
+        {[
+          { val: Number(guide.avgRating).toFixed(1), label: "Note",     color: "var(--bronze)" },
+          { val: guide.totalReviews,                  label: "Avis",     color: "#fff" },
+          { val: guide.yearsExp,                      label: "Ans exp.", color: "#fff" },
+          { val: (guide.visitTypes as string[]).length || "5", label: "Circuits", color: "#fff" },
+        ].map((s, i) => (
+          <div key={s.label} style={{ borderRight: i < 3 ? "1px solid rgba(255,255,255,0.08)" : "none", padding: "0 4px" }}>
+            <div style={{ fontFamily: "var(--font-serif)", fontSize: 17, fontWeight: 700, color: s.color }}>{s.val}</div>
+            <div style={{ fontSize: 9, color: "rgba(255,255,255,0.35)", marginTop: 1 }}>{s.label}</div>
+          </div>
         ))}
       </div>
 
-      <div style={{ padding: "20px 20px 0" }}>
-
-        {tab === "apropos" && (
+      {/* ── BADGES ── */}
+      <div style={{ background: "var(--white)", padding: "12px 16px", display: "flex", gap: 8, overflowX: "auto", borderBottom: "1px solid var(--sand)", scrollbarWidth: "none" }}>
+        <div style={{ background: "#E8F0E4", border: "1.5px solid var(--sage)", borderRadius: 12, padding: "7px 12px", display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+          <span style={{ fontSize: 16 }}>⏰</span>
           <div>
-            <h2 style={{ color: "#0F172A", fontSize: 18, fontWeight: 700, marginBottom: 10 }}>À propos de {guide.displayName.split(" ")[0]}</h2>
-            <p style={{ color: "#475569", fontSize: 15, lineHeight: 1.7, marginBottom: 20 }}>{guide.bio}</p>
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 20 }}>
-              {(guide.specialties as string[]).map((s:string) => (
-                <span key={s} style={{ background: "#F1F5F9", color: "#334155", padding: "6px 14px", borderRadius: 20, fontSize: 13, fontWeight: 500 }}>{s}</span>
+            <div style={{ fontSize: 10, fontWeight: 800, color: "var(--sage)" }}>100% PONCTUEL</div>
+            <div style={{ fontSize: 9, color: "var(--muted)" }}>{guide.totalReviews} visites</div>
+          </div>
+        </div>
+        {Number(guide.avgRating) >= 4.8 && (
+          <div style={{ background: "#FEF3E8", border: "1.5px solid var(--bronze)", borderRadius: 12, padding: "7px 12px", display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+            <span style={{ fontSize: 16 }}>🏆</span>
+            <div>
+              <div style={{ fontSize: 10, fontWeight: 800, color: "var(--bronze)" }}>SUPER GUIDE</div>
+              <div style={{ fontSize: 9, color: "var(--muted)" }}>Top 5%</div>
+            </div>
+          </div>
+        )}
+        <div style={{ background: "var(--sand)", border: "1.5px solid var(--sand-dark)", borderRadius: 12, padding: "7px 12px", display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+          <span style={{ fontSize: 16 }}>⚡</span>
+          <div style={{ fontSize: 10, fontWeight: 800, color: "var(--charcoal)" }}>RÉPONSE &lt;1H</div>
+        </div>
+      </div>
+
+      {/* ── TABS ── */}
+      <div className="tab-bar" style={{ position: "sticky", top: 0, zIndex: 50 }}>
+        {[
+          ["apropos", "À propos"],
+          ["services", "Services"],
+          ["avis", `Avis (${guide.totalReviews})`],
+          ["photos", "Photos"],
+        ].map(([id, label]) => (
+          <button
+            key={id}
+            onClick={() => setTab(id)}
+            className={`tab-btn${tab === id ? " active" : ""}`}
+          >{label}</button>
+        ))}
+      </div>
+
+      {/* ── TAB: À PROPOS ── */}
+      {tab === "apropos" && (
+        <div style={{ padding: 20 }}>
+          <div className="card" style={{ padding: 18, marginBottom: 14 }}>
+            <p style={{ fontSize: 13, color: "var(--soft)", lineHeight: 1.7, fontStyle: "italic", marginBottom: 14, paddingBottom: 14, borderBottom: "1px solid var(--sand)" }}>
+              &ldquo;{guide.bio}&rdquo;
+            </p>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+              <div style={{ background: "var(--sand)", borderRadius: 12, padding: 10 }}>
+                <div style={{ fontSize: 9, color: "var(--muted)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 3 }}>📍 Ville</div>
+                <div style={{ fontSize: 13, fontWeight: 600 }}>{guide.city}</div>
+              </div>
+              <div style={{ background: "var(--sand)", borderRadius: 12, padding: 10 }}>
+                <div style={{ fontSize: 9, color: "var(--muted)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 3 }}>🚗 Transport</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: "var(--sage)" }}>Disponible</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="card" style={{ padding: 18, marginBottom: 14 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: "var(--muted)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>Langues</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 7 }}>
+              {(guide.languages as string[]).map((l: string) => (
+                <span key={l} className="btn-bronze" style={{ padding: "6px 14px", fontSize: 12 }}>{l}</span>
               ))}
             </div>
-            {[
-              { icon: "🗣️", label: "Langues", val: (guide.languages as string[]).join(", ") },
-              { icon: "🗺️", label: "Zones couvertes", val: (guide.coveredCities as string[]).length > 0 ? (guide.coveredCities as string[]).join(", ") : guide.city },
-              { icon: "🏅", label: "Certifications", val: (guide.certifications as string[]).length > 0 ? (guide.certifications as string[]).join(", ") : "Guide certifié Laksor" },
-            ].map(item => (
-              <div key={item.label} style={{ display: "flex", gap: 14, padding: "14px 0", borderBottom: "1px solid #F1F5F9" }}>
-                <span style={{ fontSize: 20, flexShrink: 0 }}>{item.icon}</span>
-                <div>
-                  <div style={{ fontSize: 11, color: "#A0AEC0", fontWeight: 700, marginBottom: 3, textTransform: "uppercase" as const, letterSpacing: "0.5px" }}>{item.label}</div>
-                  <div style={{ fontSize: 14, color: "#334155" }}>{item.val}</div>
-                </div>
-              </div>
-            ))}
           </div>
-        )}
 
-        {tab === "services" && (
-          <div>
+          {(guide.specialties as string[]).length > 0 && (
+            <div className="card" style={{ padding: 18, marginBottom: 14 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: "var(--muted)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>Spécialités</div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 7 }}>
+                {(guide.specialties as string[]).map((s: string) => (
+                  <span key={s} className="pill">{s}</span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <button onClick={() => setTab("services")} className="btn-bronze" style={{ width: "100%", padding: 15, fontSize: 14 }}>
+            Voir les services · à partir de {guide.halfDayPrice} MAD
+          </button>
+        </div>
+      )}
+
+      {/* ── TAB: SERVICES ── */}
+      {tab === "services" && (
+        <div style={{ padding: 20 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {[
-              { title: "Demi-journée (4h)", desc: "Découverte de la médina, souks et monuments principaux", price: guide.halfDayPrice },
-              { title: "Journée complète (8h)", desc: "Exploration complète de la ville et des environs", price: guide.fullDayPrice },
-              { title: "Tour culinaire", desc: "Dégustation et cours de cuisine marocaine authentique", price: 400 },
-              { title: "Excursion désert", desc: "Journée dans le désert avec chameau et coucher de soleil", price: 800 },
+              { title: "Demi-journée (4h)",     desc: "Découverte de la médina, souks et monuments principaux", price: guide.halfDayPrice, popular: true },
+              { title: "Journée complète (8h)", desc: "Exploration complète de la ville et des environs",        price: guide.fullDayPrice, popular: false },
+              { title: "Tour culinaire",        desc: "Dégustation et cours de cuisine marocaine authentique",   price: 400,               popular: false },
+              { title: "Excursion désert",      desc: "Journée dans le désert avec chameau et coucher de soleil",price: 800,               popular: false },
             ].map(s => (
-              <div key={s.title} style={{ padding: "18px 0", borderBottom: "1px solid #F1F5F9", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16 }}>
-                <div>
-                  <div style={{ fontWeight: 700, fontSize: 15, color: "#0F172A", marginBottom: 4 }}>{s.title}</div>
-                  <div style={{ fontSize: 13, color: "#718096" }}>{s.desc}</div>
+              <div key={s.title} className="card" style={{ padding: "18px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16, border: s.popular ? "1.5px solid rgba(184,138,68,0.4)" : "none" }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 4 }}>
+                    <div style={{ fontWeight: 700, fontSize: 14, color: "var(--charcoal)" }}>{s.title}</div>
+                    {s.popular && <span className="badge badge-sage">Populaire</span>}
+                  </div>
+                  <div style={{ fontSize: 12, color: "var(--muted)" }}>{s.desc}</div>
                 </div>
-                <div style={{ fontSize: 17, fontWeight: 800, color: "#22c55e", flexShrink: 0 }}>{s.price} MAD</div>
+                <div style={{ textAlign: "right", flexShrink: 0 }}>
+                  <div style={{ fontFamily: "var(--font-serif)", fontSize: 18, fontWeight: 700, color: "var(--charcoal)" }}>{s.price} MAD</div>
+                  <div style={{ fontSize: 10, color: "var(--muted)" }}>{toEur(Number(s.price))}</div>
+                </div>
               </div>
             ))}
           </div>
-        )}
+        </div>
+      )}
 
-        {tab === "avis" && (
-          <div>
-            <div style={{ display: "flex", alignItems: "center", gap: 20, marginBottom: 24, padding: 20, background: "#F8FAFC", borderRadius: 16 }}>
+      {/* ── TAB: AVIS ── */}
+      {tab === "avis" && (
+        <div style={{ padding: 20 }}>
+          <div className="card" style={{ padding: 18, marginBottom: 14 }}>
+            <div style={{ display: "flex", gap: 16, alignItems: "center", marginBottom: 14, paddingBottom: 14, borderBottom: "1px solid var(--sand)" }}>
               <div style={{ textAlign: "center" }}>
-                <div style={{ fontSize: 44, fontWeight: 800, color: "#0F172A" }}>{Number(guide.avgRating).toFixed(1)}</div>
-                <div style={{ color: "#F4C542", fontSize: 18 }}>★★★★★</div>
-                <div style={{ fontSize: 11, color: "#A0AEC0", marginTop: 4 }}>{guide.totalReviews} avis</div>
+                <div style={{ fontFamily: "var(--font-serif)", fontSize: 44, fontWeight: 700, color: "var(--bronze)", lineHeight: 1 }}>{Number(guide.avgRating).toFixed(1)}</div>
+                <div style={{ color: "var(--bronze)", fontSize: 17, marginTop: 4 }}>★★★★★</div>
+                <div style={{ fontSize: 11, color: "var(--muted)", marginTop: 4 }}>{guide.totalReviews} avis</div>
               </div>
-              <div style={{ flex: 1 }}>
-                {[5,4,3,2,1].map(star => (
-                  <div key={star} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-                    <span style={{ fontSize: 11, color: "#A0AEC0", width: 10 }}>{star}</span>
-                    <span style={{ color: "#F4C542", fontSize: 10 }}>★</span>
-                    <div style={{ flex: 1, height: 6, background: "#E2E8F0", borderRadius: 3 }}>
-                      <div style={{ height: "100%", background: "#F4C542", borderRadius: 3, width: star === 5 ? "90%" : star === 4 ? "8%" : "2%" }}/>
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 7 }}>
+                {[
+                  { label: "⏰ Ponctualité",   val: "5.0", color: "var(--sage)",   w: "100%" },
+                  { label: "🗣️ Communication", val: "4.9", color: "var(--sage)",   w: "98%"  },
+                  { label: "🏛️ Connaissance",  val: "5.0", color: "var(--sage)",   w: "100%" },
+                  { label: "💰 Qualité/prix",  val: "4.8", color: "var(--bronze)", w: "96%"  },
+                ].map(r => (
+                  <div key={r.label}>
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, marginBottom: 3 }}>
+                      <span style={{ color: "var(--soft)" }}>{r.label}</span>
+                      <span style={{ fontWeight: 700, color: r.color }}>{r.val}</span>
+                    </div>
+                    <div className="progress-bar">
+                      <div style={{ height: "100%", borderRadius: 3, background: r.color, width: r.w }} />
                     </div>
                   </div>
                 ))}
               </div>
             </div>
-            {guide.reviews?.length === 0 && <p style={{ textAlign: "center", color: "#94A3B8", padding: 20 }}>Aucun avis pour le moment</p>}
-            {guide.reviews?.map((r: any) => (
-              <div key={r.id} style={{ padding: "16px 0", borderBottom: "1px solid #F1F5F9" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-                  <div style={{ width: 36, height: 36, borderRadius: "50%", background: "#E2E8F0", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, color: "#475569", fontSize: 14 }}>
-                    {r.author?.avatar ? <img src={r.author.avatar} style={{ width: "100%", height: "100%", objectFit: "cover" }}/> : r.author?.name?.[0]}
-                  </div>
-                  <div>
-                    <div style={{ fontWeight: 600, fontSize: 14, color: "#1A202C" }}>{r.author?.name || "Voyageur"}</div>
-                    <div style={{ color: "#F4C542", fontSize: 12 }}>{"★".repeat(r.rating)}</div>
-                  </div>
-                  <div style={{ marginLeft: "auto", color: "#A0AEC0", fontSize: 12 }}>{new Date(r.createdAt).toLocaleDateString("fr-FR")}</div>
+            <div style={{ fontSize: 12, fontWeight: 700, color: "var(--sage)", textAlign: "center" }}>
+              👍 97% recommandent {guide.displayName.split(" ")[0]}
+            </div>
+          </div>
+
+          {guide.reviews?.length === 0 && (
+            <div className="card" style={{ padding: "40px 20px", textAlign: "center", color: "var(--muted)" }}>
+              <div style={{ fontSize: 32, marginBottom: 8 }}>💬</div>
+              <div>Aucun avis pour le moment</div>
+            </div>
+          )}
+
+          {guide.reviews?.map((r: any) => (
+            <div key={r.id} className="card" style={{ padding: 16, marginBottom: 10 }}>
+              <div style={{ display: "flex", gap: 10, marginBottom: 10 }}>
+                <div style={{ width: 36, height: 36, borderRadius: "50%", background: "var(--sand-dark)", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, color: "var(--soft)", fontSize: 14, flexShrink: 0 }}>
+                  {r.author?.avatar
+                    ? <img src={r.author.avatar} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    : r.author?.name?.[0]}
                 </div>
-                <p style={{ color: "#475569", fontSize: 14, lineHeight: 1.6 }}>{r.comment}</p>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontWeight: 700, fontSize: 13 }}>{r.author?.name || "Voyageur"}</div>
+                  <div style={{ fontSize: 10, color: "var(--muted)" }}>{new Date(r.createdAt).toLocaleDateString("fr-FR")}</div>
+                </div>
+                <div style={{ color: "var(--bronze)", fontSize: 13 }}>{"★".repeat(r.rating)}</div>
               </div>
-            ))}
-          </div>
-        )}
+              <p style={{ fontSize: 13, color: "var(--soft)", lineHeight: 1.6, fontStyle: "italic", margin: 0 }}>&ldquo;{r.comment}&rdquo;</p>
+              <div style={{ fontSize: 11, fontWeight: 600, color: "var(--sage)", marginTop: 8 }}>👍 Recommandé</div>
+            </div>
+          ))}
+        </div>
+      )}
 
-        {tab === "galerie" && (
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-            {guide.avatar && <div style={{ borderRadius: 14, overflow: "hidden", height: 160 }}><img src={guide.avatar} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }}/></div>}
+      {/* ── TAB: PHOTOS ── */}
+      {tab === "photos" && (
+        <div style={{ padding: 16 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+            {guide.avatar && (
+              <img src={guide.avatar} alt="" style={{ width: "100%", height: 130, objectFit: "cover", borderRadius: 16 }} />
+            )}
             {(guide.gallery as string[]).map((img: string, i: number) => (
-              <div key={i} style={{ borderRadius: 14, overflow: "hidden", height: 160 }}>
-                <img src={img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }}/>
-              </div>
+              <img key={i} src={img} alt="" style={{ width: "100%", height: 130, objectFit: "cover", borderRadius: 16 }} />
             ))}
-          </div>
-        )}
-      </div>
-
-      <div style={{ position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "100%", maxWidth: 480, background: "#fff", borderTop: "1px solid #E2E8F0", padding: "12px 20px 28px", zIndex: 100 }}>
-        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
-          <div style={{ textAlign: "center", flex: 1 }}>
-            <div style={{ color: "#0F172A", fontWeight: 700, fontSize: 18 }}>{guide.halfDayPrice} <span style={{ fontSize: 13, fontWeight: 400, color: "#718096" }}>MAD</span></div>
-            <div style={{ color: "#718096", fontSize: 11 }}>4h · Demi-journée</div>
-          </div>
-          <div style={{ width: 1, background: "#E2E8F0", margin: "0 12px" }}/>
-          <div style={{ textAlign: "center", flex: 1 }}>
-            <div style={{ color: "#0F172A", fontWeight: 700, fontSize: 18 }}>{guide.fullDayPrice} <span style={{ fontSize: 13, fontWeight: 400, color: "#718096" }}>MAD</span></div>
-            <div style={{ color: "#718096", fontSize: 11 }}>8h · Journée</div>
+            {(guide.gallery as string[]).length === 0 && (
+              <div style={{ gridColumn: "1 / -1", textAlign: "center", padding: "40px", color: "var(--muted)" }} className="card">
+                <div style={{ fontSize: 32, marginBottom: 8 }}>📷</div>
+                <div>Aucune photo disponible</div>
+              </div>
+            )}
           </div>
         </div>
-        <BookingModal guideName={guide.displayName} halfDayPrice={Number(guide.halfDayPrice)} fullDayPrice={Number(guide.fullDayPrice)} guideId={guide.id}/>
-        <Link href={"/custom-request?guideId="+guide.id} style={{ display: "block", background: "#fff", color: "#0B132B", border: "2px solid #0B132B", borderRadius: 30, padding: 12, textAlign: "center", fontWeight: 600, fontSize: 14, textDecoration: "none", marginTop: 8 }}>
-          🎯 Demande sur mesure
-        </Link>
+      )}
+
+      {/* ── STICKY FOOTER ── */}
+      <div style={{
+        position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)",
+        width: "100%", maxWidth: 680,
+        background: "rgba(255,255,255,0.97)", backdropFilter: "blur(16px)",
+        borderTop: "1px solid var(--sand-dark)", padding: "12px 20px 28px", zIndex: 100
+      }}>
+        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
+          <div style={{ textAlign: "center", flex: 1 }}>
+            <div style={{ fontWeight: 700, fontSize: 18 }}>{guide.halfDayPrice} <span style={{ fontSize: 13, fontWeight: 400, color: "var(--muted)" }}>MAD</span></div>
+            <div style={{ color: "var(--muted)", fontSize: 11 }}>4h · Demi-journée</div>
+          </div>
+          <div style={{ width: 1, background: "var(--sand-dark)", margin: "0 12px" }} />
+          <div style={{ textAlign: "center", flex: 1 }}>
+            <div style={{ fontWeight: 700, fontSize: 18 }}>{guide.fullDayPrice} <span style={{ fontSize: 13, fontWeight: 400, color: "var(--muted)" }}>MAD</span></div>
+            <div style={{ color: "var(--muted)", fontSize: 11 }}>8h · Journée</div>
+          </div>
+        </div>
+        <BookingModal
+          guideName={guide.displayName}
+          halfDayPrice={Number(guide.halfDayPrice)}
+          fullDayPrice={Number(guide.fullDayPrice)}
+          guideId={guide.id}
+        />
       </div>
     </div>
   );
