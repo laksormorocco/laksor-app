@@ -4,6 +4,10 @@ const prisma = new PrismaClient();
 async function main() {
   console.log("🌱 Seeding database...");
   
+  await prisma.tourBooking.deleteMany();
+  await prisma.guideTour.deleteMany();
+  await prisma.customTour.deleteMany();
+  await prisma.customRequest.deleteMany();
   await prisma.review.deleteMany();
   await prisma.booking.deleteMany();
   await prisma.availability.deleteMany();
