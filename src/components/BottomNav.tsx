@@ -32,12 +32,7 @@ export default function BottomNav() {
     checkSession();
   }, []);
 
-  async function handleLogout() {
-    await supabase.auth.signOut();
-    setLoggedIn(false);
-    setDashboardUrl(null);
-    window.location.href = "/";
-  }
+  function handleLogout() { window.location.href = "/logout"; }
 
   const items = [
     { href: "/",          Icon: House,           label: "Explorer",    action: null        },
