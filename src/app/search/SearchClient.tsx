@@ -87,8 +87,8 @@ function GuideCard({ g, idx }: { g: Guide; idx: number }) {
       </div>
 
       {/* Contenu */}
-      <div className="flex-1 p-4 flex flex-col justify-between">
-        <div>
+      <div className="flex-1 p-4 flex flex-col min-w-0">
+        <div className="flex-1">
           {/* Ville */}
           <div className="flex items-center gap-1 text-charcoal-400 text-[10px] font-bold uppercase tracking-wide mb-1">
             <MapPin size={10} weight="fill" className="text-bronze-500" />
@@ -155,7 +155,7 @@ function GuideCard({ g, idx }: { g: Guide; idx: number }) {
           </div>
           <button
             onClick={e => { e.stopPropagation(); window.location.href = `/guide/${g.id}`; }}
-            className="bg-bronze-500 text-white text-xs font-bold px-4 py-2 rounded-full hover:bg-bronze-600 transition-colors flex-shrink-0"
+            className="bg-sage-300 text-white text-xs font-bold px-4 py-2 rounded-full hover:bg-sage-400 transition-colors flex-shrink-0 ml-2"
           >
             Voir le profil →
           </button>
