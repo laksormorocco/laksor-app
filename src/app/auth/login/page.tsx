@@ -1,75 +1,85 @@
 import LoginButton from "@/components/LoginButton";
 import Link from "next/link";
+import { ArrowLeft, Lock, MapPin, ChatCircle, ShieldCheck } from "@phosphor-icons/react/dist/ssr";
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen bg-sand-200 flex flex-col">
+    <div className="min-h-screen bg-sand-200 flex flex-col max-w-lg mx-auto">
 
       {/* ── COVER ── */}
-      <div className="relative h-52 bg-charcoal-800 flex flex-col items-center justify-end pb-8 px-4">
-        <div className="absolute inset-0 opacity-20"
+      <div className="relative h-64 overflow-hidden flex-shrink-0">
+        <div className="absolute inset-0"
           style={{ backgroundImage: "url(https://images.unsplash.com/photo-1539020140153-e479b8c22e70?w=800&q=80)", backgroundSize: "cover", backgroundPosition: "center" }} />
-        <div className="absolute inset-0 bg-gradient-to-b from-charcoal-800/60 to-charcoal-800/90" />
-        <Link href="/" className="absolute top-4 left-4 w-9 h-9 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center text-white text-sm font-bold no-underline z-10">
-          ←
+        <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.55) 100%)" }} />
+        <Link href="/" className="absolute top-4 left-4 w-9 h-9 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center text-white no-underline z-10">
+          <ArrowLeft size={16} weight="bold" />
         </Link>
-        <div className="relative z-10 text-center">
-          <div className="w-14 h-14 rounded-2xl bg-bronze-500 flex items-center justify-center mx-auto mb-3 text-2xl">🧭</div>
-          <h1 className="font-display text-2xl font-semibold text-white mb-1">Bon retour !</h1>
-          <p className="text-sm text-white/70">Connectez-vous pour accéder à votre espace</p>
+        <div className="relative z-10 flex flex-col items-center justify-end h-full pb-8 px-6 text-center">
+          <div className="w-16 h-16 rounded-2xl bg-bronze-500 flex items-center justify-center mb-4 text-3xl" style={{ boxShadow: "0 8px 24px rgba(184,138,68,0.4)" }}>🧭</div>
+          <h1 className="font-display text-2xl font-semibold text-white mb-1 leading-tight">
+            Découvrez le Maroc<br/>avec ceux qui y vivent
+          </h1>
+          <p className="text-sm text-white/70">Guides locaux certifiés · Expériences authentiques</p>
         </div>
       </div>
 
       {/* ── CARD ── */}
-      <div className="flex-1 px-4 -mt-6 pb-10">
-        <div className="bg-white rounded-3xl p-6 shadow-sm border border-sand-300 max-w-sm mx-auto">
+      <div className="flex-1 px-4 -mt-5 pb-10">
+        <div className="bg-white rounded-3xl p-6 border border-sand-300" style={{ boxShadow: "0 2px 16px rgba(0,0,0,0.06)" }}>
 
-          {/* Google */}
-          <div className="text-center text-xs font-bold text-charcoal-400 uppercase tracking-wider mb-4">
-            Continuer avec
+          {/* Social proof */}
+          <div className="flex items-center justify-center gap-3 bg-sand-200 rounded-2xl px-4 py-3 mb-5">
+            <div className="flex">
+              {["M","J","S"].map((l,i) => (
+                <div key={i} className="w-7 h-7 rounded-full bg-sand-300 border-2 border-white flex items-center justify-center text-xs font-bold text-charcoal-500 -mr-2">{l}</div>
+              ))}
+            </div>
+            <span className="text-xs font-semibold text-charcoal-500 ml-3"><strong className="text-charcoal-800">1.2k+</strong> voyageurs nous font confiance</span>
           </div>
+
+          {/* Google button */}
           <LoginButton />
 
-          <div className="flex items-center gap-3 my-5">
+          {/* Divider */}
+          <div className="flex items-center gap-3 my-4">
             <div className="flex-1 h-px bg-sand-300" />
-            <span className="text-xs text-charcoal-300 font-medium">Connexion sécurisée</span>
+            <div className="flex items-center gap-1 text-[10px] text-charcoal-300">
+              <Lock size={10} weight="fill" />
+              <span>Connexion sécurisée par Google OAuth</span>
+            </div>
             <div className="flex-1 h-px bg-sand-300" />
           </div>
 
-          {/* Trust */}
-          <div className="bg-sage-50 border border-sage-300 rounded-2xl p-4 mb-5">
-            <div className="flex items-start gap-3">
-              <span className="text-lg">🔒</span>
-              <div>
-                <div className="text-sm font-bold text-sage-300 mb-0.5">Connexion 100% sécurisée</div>
-                <p className="text-xs text-charcoal-400 leading-relaxed">Google OAuth protège votre compte. Aucun mot de passe requis.</p>
-              </div>
+          {/* Mini cards */}
+          <div className="grid grid-cols-3 gap-2 mb-5">
+            <div className="bg-sand-200 border border-sand-300 rounded-2xl p-3 text-center">
+              <MapPin size={20} weight="duotone" className="text-bronze-500 mx-auto mb-1" />
+              <div className="text-[11px] font-bold text-charcoal-800 leading-tight">Guides vérifiés</div>
+              <div className="text-[9px] text-charcoal-400 mt-0.5">Certifiés Ministère</div>
+            </div>
+            <div className="bg-sand-200 border border-sand-300 rounded-2xl p-3 text-center">
+              <ChatCircle size={20} weight="duotone" className="text-bronze-500 mx-auto mb-1" />
+              <div className="text-[11px] font-bold text-charcoal-800 leading-tight">Chat direct</div>
+              <div className="text-[9px] text-charcoal-400 mt-0.5">WhatsApp inclus</div>
+            </div>
+            <div className="bg-sand-200 border border-sand-300 rounded-2xl p-3 text-center">
+              <ShieldCheck size={20} weight="duotone" className="text-bronze-500 mx-auto mb-1" />
+              <div className="text-[11px] font-bold text-charcoal-800 leading-tight">Résa protégée</div>
+              <div className="text-[9px] text-charcoal-400 mt-0.5">Annulation 72h</div>
             </div>
           </div>
 
-          {/* Features */}
-          <div className="flex flex-col gap-2 mb-5">
-            {[
-              { icon: "📍", text: "Réservez des guides locaux certifiés" },
-              { icon: "💬", text: "Messagerie directe avec votre guide" },
-              { icon: "🔄", text: "Annulation gratuite jusqu'à 72h avant" },
-            ].map(f => (
-              <div key={f.text} className="flex items-center gap-3 text-xs text-charcoal-500">
-                <span>{f.icon}</span>{f.text}
-              </div>
-            ))}
-          </div>
-
-          {/* Register */}
-          <div className="text-center pt-4 border-t border-sand-200">
-            <span className="text-sm text-charcoal-400">Pas encore de compte ? </span>
-            <Link href="/auth/register" className="text-bronze-500 font-bold text-sm no-underline">
+          {/* Devenir guide CTA */}
+          <div className="bg-charcoal-800 rounded-2xl p-4 mb-4 text-center">
+            <div className="text-xs text-charcoal-300 mb-2">Vous êtes guide ou chauffeur ?</div>
+            <Link href="/auth/register"
+              className="inline-flex items-center gap-2 bg-bronze-500 text-white text-sm font-bold px-5 py-2.5 rounded-full no-underline hover:bg-bronze-600 transition-colors">
               Devenir guide →
             </Link>
           </div>
 
-          <p className="text-center text-[10px] text-charcoal-300 mt-3">
-            En vous connectant, vous acceptez nos CGU
+          <p className="text-center text-[10px] text-charcoal-300">
+            En vous connectant, vous acceptez nos <span className="underline cursor-pointer">CGU</span>
           </p>
         </div>
       </div>
