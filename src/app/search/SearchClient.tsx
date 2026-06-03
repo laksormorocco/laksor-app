@@ -153,12 +153,11 @@ function GuideCard({ g, idx }: { g: Guide; idx: number }) {
             <div className="font-display text-xl font-bold text-charcoal-800 leading-none">€{eurPrice}</div>
             <div className="text-[9px] text-charcoal-400 mt-0.5">/ 2 pers. · 4h</div>
           </div>
-          {/* Vrai <a> pour Réserver — pas de <a> dans <a> */}
           <button
-            onClick={e => { e.stopPropagation(); window.location.href = `/booking?guide=${g.id}`; }}
-            className="bg-sage-300 text-white text-xs font-bold px-4 py-2 rounded-full hover:bg-sage-400 transition-colors"
+            onClick={e => { e.stopPropagation(); window.location.href = `/guide/${g.id}`; }}
+            className="bg-bronze-500 text-white text-xs font-bold px-4 py-2 rounded-full hover:bg-bronze-600 transition-colors flex-shrink-0"
           >
-            Réserver →
+            Voir le profil →
           </button>
         </div>
       </div>

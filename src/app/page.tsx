@@ -143,8 +143,8 @@ export default async function HomePage() {
                       </div>
                       <div className="text-[10px] text-charcoal-400">/ 2 pers.</div>
                     </div>
-                    <span className="text-[12px] font-bold text-white bg-sage-300 px-3 py-2 rounded-full">
-                      Réserver
+                    <span className="text-[11px] font-bold text-white bg-bronze-500 px-3 py-2 rounded-full">
+                      Voir le profil
                     </span>
                   </div>
                 </div>
