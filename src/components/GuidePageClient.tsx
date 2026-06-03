@@ -185,13 +185,6 @@ export default function GuidePageClient({ guide }: { guide: any }) {
         </div>
 
         {/* Bouton vert */}
-        <BookingModal
-          guideName={guide.displayName}
-          halfDayPrice={Number(guide.halfDayPrice)}
-          fullDayPrice={Number(guide.fullDayPrice)}
-          guideId={guide.id}
-        />
-
         {/* Trust mini */}
         <div className="flex items-center justify-center gap-4 mt-3">
           {[
