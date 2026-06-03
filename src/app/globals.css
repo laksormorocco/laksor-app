@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .bg-bronze-500 { background-color: #B88A44; }
+  .bg-bronze-600 { background-color: #A17635; }
+  .bg-bronze-50  { background-color: #FBF5E9; }
+  .text-bronze-500 { color: #B88A44; }
+  .border-bronze-500 { border-color: #B88A44; }
+  .bg-sand-100 { background-color: #FDFBF7; }
+  .bg-sand-200 { background-color: #F6F1E8; }
+  .bg-sand-300 { background-color: #EADCC8; }
+  .border-sand-200 { border-color: #F6F1E8; }
+  .border-sand-300 { border-color: #EADCC8; }
+  .text-charcoal-800 { color: #111111; }
+  .text-charcoal-700 { color: #222222; }
+  .text-charcoal-600 { color: #333333; }
+  .text-charcoal-500 { color: #444444; }
+  .text-charcoal-400 { color: #666666; }
+  .text-charcoal-300 { color: #999999; }
+  .bg-charcoal-800 { background-color: #111111; }
+  .bg-sage-300 { background-color: #7D8F69; }
+  .bg-sage-50  { background-color: #EEF2EB; }
+  .text-sage-300 { color: #7D8F69; }
+  .border-sage-300 { border-color: #7D8F69; }
+}
