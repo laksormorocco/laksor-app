@@ -1,8 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-
-const B = "#123EAB";
-const G = "#22c55e";
+import { CurrencyDollar, Trophy, Star, CalendarCheck } from "@phosphor-icons/react";
 
 export default function GuideStats({ guideId }: { guideId: string }) {
   const [stats, setStats] = useState<any>(null);
@@ -16,59 +14,53 @@ export default function GuideStats({ guideId }: { guideId: string }) {
   }, [guideId]);
 
   if (loading) return (
-    <div style={{ textAlign: "center", padding: 40, color: "#94A3B8" }}>
-      <div style={{ fontSize: 32, marginBottom: 12 }}>⏳</div>
-      Chargement des stats...
+    <div className="flex flex-col items-center justify-center py-16">
+      <div className="text-4xl mb-3 animate-pulse">⏳</div>
+      <div className="text-sm text-charcoal-400">Chargement des stats...</div>
     </div>
   );
 
   if (!stats) return (
-    <div style={{ textAlign: "center", padding: 40, background: "#fff", borderRadius: 20, border: "1px solid #EBEBEB" }}>
-      <div style={{ fontSize: 32, marginBottom: 12 }}>📊</div>
-      <div style={{ color: "#94A3B8" }}>Aucune statistique disponible</div>
+    <div className="bg-white rounded-2xl border border-sand-300 p-10 text-center">
+      <div className="text-4xl mb-3">📊</div>
+      <div className="text-sm text-charcoal-400">Aucune statistique disponible</div>
     </div>
   );
 
   const maxRevenue = Math.max(...(stats.monthlyRevenue || []).map((m: any) => m.revenue || 0), 1);
 
-  const CARDS = [
-    { icon: "💰", label: "Revenus total", val: (stats.totalRevenue || 0) + " MAD", bg: "#F0FDF4", color: G },
-    { icon: "🏆", label: "Tours realises", val: String(stats.completedTours || 0), bg: "#FDF4FF", color: "#9333ea" },
-    { icon: "⭐", label: "Note moyenne", val: Number(stats.avgRating || 0).toFixed(1) + "/5", bg: "#FFFBEB", color: "#d97706" },
-    { icon: "📋", label: "Reservations", val: String(stats.totalBookings || 0), bg: "#EFF6FF", color: B },
-  ];
-
-  const STATUS = [
-    { label: "En attente", val: stats.pendingBookings || 0, color: "#92400E", bg: "#FEF3C7" },
-    { label: "Confirmes", val: stats.confirmedBookings || 0, color: "#166534", bg: "#DCFCE7" },
-    { label: "Termines", val: stats.completedTours || 0, color: "#123EAB", bg: "#EFF6FF" },
-    { label: "Annules", val: stats.cancelledBookings || 0, color: "#ef4444", bg: "#FEE2E2" },
-  ];
-
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 16, fontFamily: "Inter, sans-serif" }}>
+    <div className="flex flex-col gap-3">
 
       {/* Stats Cards */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-        {CARDS.map(s => (
-          <div key={s.label} style={{ background: "#fff", borderRadius: 16, padding: 16, border: "1px solid #EBEBEB" }}>
-            <div style={{ width: 40, height: 40, borderRadius: 12, background: s.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, marginBottom: 10 }}>{s.icon}</div>
-            <div style={{ fontSize: 20, fontWeight: 800, color: s.color, marginBottom: 2 }}>{s.val}</div>
-            <div style={{ fontSize: 12, color: "#94A3B8" }}>{s.label}</div>
+      <div className="grid grid-cols-2 gap-3">
+        {[
+          { Icon: CurrencyDollar, label: "Revenus total",   val: (stats.totalRevenue||0)+" MAD",                       color: "text-sage-300",   bg: "bg-sage-50"   },
+          { Icon: Trophy,         label: "Tours réalisés",  val: String(stats.completedTours||0),                      color: "text-bronze-500", bg: "bg-bronze-50" },
+          { Icon: Star,           label: "Note moyenne",    val: Number(stats.avgRating||0).toFixed(1)+"/5",           color: "text-bronze-500", bg: "bg-bronze-50" },
+          { Icon: CalendarCheck,  label: "Réservations",    val: String(stats.totalBookings||0),                       color: "text-charcoal-800", bg: "bg-sand-200"  },
+        ].map(s => (
+          <div key={s.label} className="bg-white rounded-2xl border border-sand-300 p-4">
+            <div className={`w-10 h-10 rounded-xl ${s.bg} flex items-center justify-center mb-3`}>
+              <s.Icon size={20} className={s.color} weight="duotone" />
+            </div>
+            <div className={`font-display text-xl font-bold ${s.color}`}>{s.val}</div>
+            <div className="text-xs text-charcoal-400 mt-0.5">{s.label}</div>
           </div>
         ))}
       </div>
 
       {/* Graphique revenus */}
-      {stats.monthlyRevenue && stats.monthlyRevenue.length > 0 && (
-        <div style={{ background: "#fff", borderRadius: 16, padding: 18, border: "1px solid #EBEBEB" }}>
-          <h3 style={{ fontSize: 15, fontWeight: 700, color: "#222", marginBottom: 16 }}>Revenus par mois</h3>
-          <div style={{ display: "flex", alignItems: "flex-end", gap: 6, height: 100 }}>
+      {stats.monthlyRevenue?.length > 0 && (
+        <div className="bg-white rounded-2xl border border-sand-300 p-4">
+          <div className="text-sm font-bold text-charcoal-800 mb-4">Revenus par mois</div>
+          <div className="flex items-end gap-1.5 h-24">
             {stats.monthlyRevenue.map((m: any, i: number) => (
-              <div key={i} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-                <div style={{ fontSize: 9, color: "#94A3B8", fontWeight: 600 }}>{m.revenue}</div>
-                <div style={{ width: "100%", background: i === stats.monthlyRevenue.length - 1 ? B : B + "60", borderRadius: "4px 4px 0 0", height: Math.max((m.revenue / maxRevenue) * 80, 4) + "px" }}/>
-                <div style={{ fontSize: 9, color: "#94A3B8" }}>{m.month}</div>
+              <div key={i} className="flex-1 flex flex-col items-center gap-1">
+                <div className="text-[8px] text-charcoal-400">{m.revenue > 0 ? m.revenue : ""}</div>
+                <div className="w-full rounded-t-md transition-all"
+                  style={{ height: Math.max((m.revenue/maxRevenue)*72, 3)+"px", background: i===stats.monthlyRevenue.length-1 ? "#B88A44" : "rgba(184,138,68,0.3)" }} />
+                <div className="text-[8px] text-charcoal-400">{m.month}</div>
               </div>
             ))}
           </div>
@@ -76,28 +68,34 @@ export default function GuideStats({ guideId }: { guideId: string }) {
       )}
 
       {/* Statuts */}
-      <div style={{ background: "#fff", borderRadius: 16, padding: 18, border: "1px solid #EBEBEB" }}>
-        <h3 style={{ fontSize: 15, fontWeight: 700, color: "#222", marginBottom: 14 }}>Statut des reservations</h3>
-        {STATUS.map(s => (
-          <div key={s.label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderBottom: "1px solid #F1F5F9" }}>
-            <span style={{ fontSize: 13, color: "#475569" }}>{s.label}</span>
-            <span style={{ fontSize: 13, fontWeight: 700, padding: "3px 10px", borderRadius: 12, background: s.bg, color: s.color }}>{s.val}</span>
+      <div className="bg-white rounded-2xl border border-sand-300 p-4">
+        <div className="text-sm font-bold text-charcoal-800 mb-3">Statut des réservations</div>
+        {[
+          { label: "En attente",  val: stats.pendingBookings||0,   cls: "bg-bronze-50 text-bronze-500 border-bronze-500"  },
+          { label: "Confirmés",   val: stats.confirmedBookings||0,  cls: "bg-sage-50 text-sage-300 border-sage-300"        },
+          { label: "Terminés",    val: stats.completedTours||0,     cls: "bg-sand-200 text-charcoal-600 border-sand-300"   },
+          { label: "Annulés",     val: stats.cancelledBookings||0,  cls: "bg-red-50 text-red-400 border-red-200"           },
+        ].map(s => (
+          <div key={s.label} className="flex items-center justify-between py-2.5 border-b border-sand-200 last:border-0">
+            <span className="text-sm text-charcoal-600">{s.label}</span>
+            <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full border ${s.cls}`}>{s.val}</span>
           </div>
         ))}
       </div>
 
       {/* Types de visite */}
-      {stats.bookingTypes && stats.bookingTypes.length > 0 && (
-        <div style={{ background: "#fff", borderRadius: 16, padding: 18, border: "1px solid #EBEBEB" }}>
-          <h3 style={{ fontSize: 15, fontWeight: 700, color: "#222", marginBottom: 14 }}>Types de visite</h3>
+      {stats.bookingTypes?.length > 0 && (
+        <div className="bg-white rounded-2xl border border-sand-300 p-4">
+          <div className="text-sm font-bold text-charcoal-800 mb-3">Types de visite</div>
           {stats.bookingTypes.map((d: any, i: number) => (
-            <div key={i} style={{ marginBottom: 12 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                <span style={{ fontSize: 13, color: "#475569" }}>{d.type === "HALF_DAY" ? "Demi-journee" : "Journee"}</span>
-                <span style={{ fontSize: 13, fontWeight: 700, color: B }}>{d.count}</span>
+            <div key={i} className="mb-3 last:mb-0">
+              <div className="flex justify-between mb-1.5">
+                <span className="text-xs text-charcoal-600">{d.type === "HALF_DAY" ? "Demi-journée" : "Journée"}</span>
+                <span className="text-xs font-bold text-bronze-500">{d.count}</span>
               </div>
-              <div style={{ background: "#F1F5F9", borderRadius: 6, height: 8 }}>
-                <div style={{ background: B, borderRadius: 6, height: 8, width: stats.totalBookings > 0 ? (d.count / stats.totalBookings * 100) + "%" : "0%" }}/>
+              <div className="h-2 bg-sand-300 rounded-full overflow-hidden">
+                <div className="h-full bg-bronze-500 rounded-full transition-all"
+                  style={{ width: stats.totalBookings > 0 ? (d.count/stats.totalBookings*100)+"%" : "0%" }} />
               </div>
             </div>
           ))}
@@ -105,12 +103,11 @@ export default function GuideStats({ guideId }: { guideId: string }) {
       )}
 
       {/* Taux acceptation */}
-      <div style={{ background: "linear-gradient(135deg, #123EAB, #1a4fd6)", borderRadius: 16, padding: 18, textAlign: "center" }}>
-        <div style={{ fontSize: 11, color: "rgba(255,255,255,0.7)", marginBottom: 4, textTransform: "uppercase", letterSpacing: "1px" }}>Taux d acceptation</div>
-        <div style={{ fontSize: 36, fontWeight: 800, color: "#F4C542" }}>{stats.acceptanceRate || 0}%</div>
-        <div style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", marginTop: 4 }}>des demandes acceptees</div>
+      <div className="bg-charcoal-800 rounded-2xl p-5 text-center">
+        <div className="text-[10px] text-charcoal-400 uppercase tracking-wider mb-2">Taux d&apos;acceptation</div>
+        <div className="font-display text-4xl font-bold text-bronze-500">{stats.acceptanceRate||0}%</div>
+        <div className="text-xs text-charcoal-400 mt-1">des demandes acceptées</div>
       </div>
-
     </div>
   );
 }
