@@ -1,54 +1,56 @@
 import Link from "next/link";
+import { CheckCircle, MagnifyingGlass, WhatsappLogo } from "@phosphor-icons/react/dist/ssr";
 
-export default function SuccessPage() {
+export default function RegisterSuccessPage() {
   return (
-    <div style={{ minHeight: "100vh", background: "#F7F7F7", fontFamily: "Inter, -apple-system, sans-serif", display: "flex", flexDirection: "column" }}>
+    <div className="min-h-screen bg-sand-200 flex flex-col">
 
-      {/* Navbar */}
-      <nav style={{ background: "linear-gradient(135deg, #123EAB, #1a4fd6)", padding: "0 16px", height: 60, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <img src="https://igzqwsxbdfzskwqnvvth.supabase.co/storage/v1/object/public/avatars/logo.png" alt="Laksor" style={{ height: 36, width: "auto" }}/>
+      {/* Cover */}
+      <div className="relative h-48 overflow-hidden flex-shrink-0">
+        <div className="absolute inset-0"
+          style={{ backgroundImage: "url(https://images.unsplash.com/photo-1539020140153-e479b8c22e70?w=800&q=80)", backgroundSize: "cover", backgroundPosition: "center" }} />
+        <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.7))" }} />
+        <div className="relative z-10 flex flex-col items-center justify-end h-full pb-6 px-6 text-center">
+          <div className="w-16 h-16 bg-sage-300 rounded-full flex items-center justify-center mb-3 text-3xl shadow-lg">🎉</div>
+          <h1 className="font-display text-2xl font-semibold text-white">Candidature envoyée !</h1>
         </div>
-      </nav>
+      </div>
 
-      {/* Content */}
-      <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: "40px 16px" }}>
-        <div style={{ background: "#fff", borderRadius: 24, padding: 40, maxWidth: 420, width: "100%", textAlign: "center", border: "1px solid #EBEBEB", boxShadow: "0 4px 24px rgba(0,0,0,0.06)" }}>
+      {/* Card */}
+      <div className="flex-1 px-4 -mt-5 pb-10">
+        <div className="bg-white rounded-3xl p-6 border border-sand-300 max-w-sm mx-auto" style={{ boxShadow: "0 2px 16px rgba(0,0,0,0.06)" }}>
 
-          {/* Success Icon */}
-          <div style={{ width: 80, height: 80, background: "linear-gradient(135deg, #22c55e, #16a34a)", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 24px", fontSize: 36 }}>
-            🎉
-          </div>
-
-          <h1 style={{ fontSize: 24, fontWeight: 700, color: "#0F172A", marginBottom: 8 }}>
-            Candidature envoyée !
-          </h1>
-          <p style={{ color: "#718096", fontSize: 15, lineHeight: 1.6, marginBottom: 28 }}>
-            Nous avons bien reçu votre demande. Notre équipe va examiner votre profil et vous contacter sur <strong>WhatsApp</strong> sous 24h.
+          <p className="text-sm text-charcoal-500 text-center leading-relaxed mb-6">
+            Nous avons bien reçu votre demande. Notre équipe va examiner votre profil et vous contacter sur <strong className="text-charcoal-800">WhatsApp</strong> sous 24h.
           </p>
 
           {/* Steps */}
-          <div style={{ background: "#F8FAFC", borderRadius: 16, padding: 20, marginBottom: 28, textAlign: "left" }}>
+          <div className="flex flex-col gap-0 mb-6">
             {[
-              { icon: "✅", title: "Candidature soumise", desc: "Votre profil a été envoyé", done: true },
-              { icon: "🔍", title: "Vérification en cours", desc: "Notre équipe examine votre dossier", done: false },
-              { icon: "📱", title: "Contact WhatsApp", desc: "Réponse sous 24h", done: false },
+              { Icon: CheckCircle,    color: "text-sage-300",   bg: "bg-sage-50",   title: "Candidature soumise",   sub: "Votre profil a été envoyé",           done: true  },
+              { Icon: MagnifyingGlass, color: "text-charcoal-400", bg: "bg-sand-200", title: "Vérification en cours", sub: "Notre équipe examine votre dossier",   done: false },
+              { Icon: WhatsappLogo,   color: "text-charcoal-400", bg: "bg-sand-200", title: "Contact WhatsApp",      sub: "Réponse sous 24h",                    done: false },
             ].map((s, i) => (
-              <div key={i} style={{ display: "flex", gap: 12, alignItems: "flex-start", marginBottom: i < 2 ? 14 : 0 }}>
-                <div style={{ width: 32, height: 32, borderRadius: "50%", background: s.done ? "#DCFCE7" : "#F1F5F9", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, flexShrink: 0 }}>{s.icon}</div>
+              <div key={s.title} className="flex items-center gap-4 py-3 border-b border-sand-200 last:border-0">
+                <div className={`w-10 h-10 rounded-xl ${s.bg} flex items-center justify-center flex-shrink-0`}>
+                  <s.Icon size={20} className={s.color} weight={s.done ? "fill" : "regular"} />
+                </div>
                 <div>
-                  <div style={{ fontWeight: 600, fontSize: 14, color: s.done ? "#166534" : "#0F172A" }}>{s.title}</div>
-                  <div style={{ fontSize: 12, color: "#94A3B8", marginTop: 2 }}>{s.desc}</div>
+                  <div className={`text-sm font-bold ${s.done ? "text-sage-300" : "text-charcoal-800"}`}>{s.title}</div>
+                  <div className="text-xs text-charcoal-400">{s.sub}</div>
                 </div>
               </div>
             ))}
           </div>
 
-          <Link href="/" style={{ display: "block", background: "#0B132B", color: "#fff", borderRadius: 30, padding: "16px 32px", fontSize: 15, fontWeight: 600, textDecoration: "none", marginBottom: 12 }}>
-            Retour à l accueil
+          {/* CTA */}
+          <Link href="/"
+            className="block w-full py-4 bg-bronze-500 text-white rounded-2xl text-sm font-bold text-center no-underline hover:bg-bronze-600 transition-colors mb-3">
+            Retour à l&apos;accueil
           </Link>
-          <Link href="/search" style={{ display: "block", background: "#F7F7F7", color: "#123EAB", borderRadius: 30, padding: "14px 32px", fontSize: 14, fontWeight: 600, textDecoration: "none", border: "1px solid #EBEBEB" }}>
-            Explorer les guides
+          <Link href="/auth/login"
+            className="block w-full py-3.5 border border-sand-300 text-charcoal-600 rounded-2xl text-sm font-bold text-center no-underline hover:border-bronze-500 hover:text-bronze-500 transition-colors">
+            Accéder à mon espace guide
           </Link>
         </div>
       </div>
