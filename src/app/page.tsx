@@ -1,24 +1,38 @@
 export const dynamic = "force-dynamic";
 import { prisma } from "@/lib/prisma";
 import HomeHero from "./HomeHero";
+import {
+  MapPin, Star, Clock, ArrowRight,
+  ShieldCheck, ChatCircle, ArrowsClockwise, Car
+} from "@phosphor-icons/react/dist/ssr";
 
 function toEur(mad: number) {
   return "€" + Math.round((mad * 1.25 + 25) * 0.092);
 }
 
+const LANG_FLAGS: Record<string, string> = {
+  "Français": "🇫🇷", "French": "🇫🇷",
+  "Anglais":  "🇬🇧", "English": "🇬🇧",
+  "Espagnol": "🇪🇸", "Spanish": "🇪🇸",
+  "Allemand": "🇩🇪", "German": "🇩🇪",
+  "Italien":  "🇮🇹", "Italian": "🇮🇹",
+  "Arabe":    "🇲🇦", "Arabic": "🇲🇦",
+  "Portugais":"🇵🇹", "Portuguese": "🇵🇹",
+};
+
 const CITIES = [
-  { name: "Marrakech",   img: "https://images.unsplash.com/photo-1539020140153-e479b8c22e70?w=400&q=80" },
-  { name: "Fès",         img: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80" },
-  { name: "Essaouira",   img: "https://images.unsplash.com/photo-1509741102003-ca64bfe8696f?w=400&q=80" },
-  { name: "Agadir",      img: "https://images.unsplash.com/photo-1452421822248-d4c2b47f0c81?w=400&q=80" },
-  { name: "Chefchaouen", img: "https://images.unsplash.com/photo-1553522991-fd5deb8e3b50?w=400&q=80" },
+  { name: "Marrakech",   img: "https://images.unsplash.com/photo-1539020140153-e479b8c22e70?w=600&q=80" },
+  { name: "Fès",         img: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80" },
+  { name: "Essaouira",   img: "https://images.unsplash.com/photo-1509741102003-ca64bfe8696f?w=600&q=80" },
+  { name: "Agadir",      img: "https://images.unsplash.com/photo-1452421822248-d4c2b47f0c81?w=600&q=80" },
+  { name: "Chefchaouen", img: "https://images.unsplash.com/photo-1553522991-fd5deb8e3b50?w=600&q=80" },
 ];
 
 const TRUST = [
-  { icon: "🛡️", title: "Certified Guides",  desc: "Every guide verified by Laksor" },
-  { icon: "💬", title: "WhatsApp Updates",   desc: "Real-time notifications" },
-  { icon: "🔄", title: "72h Cancellation",  desc: "Free cancellation policy" },
-  { icon: "🚗", title: "Transport",          desc: "Book guide + ride together" },
+  { Icon: ShieldCheck,     title: "Guides certifiés",       desc: "Chaque guide vérifié par Laksor" },
+  { Icon: ChatCircle,      title: "WhatsApp temps réel",    desc: "Confirmations automatiques" },
+  { Icon: ArrowsClockwise, title: "Annulation 72h",         desc: "Annulation gratuite avant 72h" },
+  { Icon: Car,             title: "Transport inclus",       desc: "Guide + transfert ensemble" },
 ];
 
 export default async function HomePage() {
@@ -34,125 +48,163 @@ export default async function HomePage() {
   }
 
   return (
-    <div style={{ background: "var(--sand)", minHeight: "100vh", fontFamily: "var(--font-body)" }}>
+    <div className="bg-sand-200 min-h-screen pb-20">
 
       <HomeHero />
 
-      {/* TRUST BAR */}
-      <div style={{ maxWidth: 960, margin: "0 auto", padding: "0 clamp(16px,4vw,24px)" }}>
-        <div style={{ background: "var(--white)", borderRadius: 18, padding: "16px 20px", boxShadow: "var(--shadow)", display: "flex", justifyContent: "space-around", textAlign: "center", marginTop: -28, position: "relative", zIndex: 10 }}>
+      {/* STATS */}
+      <div className="px-4 mt-4 max-w-2xl mx-auto">
+        <div className="bg-white rounded-2xl shadow-md flex justify-around text-center py-4 px-2">
           {[
-            { n: "47+",   label: "Guides",   color: "var(--bronze)"   },
-            { n: "28+",   label: "Drivers",  color: "var(--sage)"     },
-            { n: "⭐4.9", label: "Rating",   color: "var(--charcoal)" },
-            { n: "1.2k+", label: "Bookings", color: "var(--charcoal)" },
+            { n: "47+",   label: "Guides",        cls: "text-bronze-500" },
+            { n: "28+",   label: "Chauffeurs",    cls: "text-sage-300"   },
+            { n: "4.9★",  label: "Note",          cls: "text-charcoal-800" },
+            { n: "1.2k+", label: "Réservations",  cls: "text-charcoal-800" },
           ].map((s, i) => (
-            <div key={s.label} style={{ display: "flex", alignItems: "center" }}>
-              <div style={{ textAlign: "center" }}>
-                <div style={{ fontFamily: "var(--font-serif)", fontSize: 20, fontWeight: 700, color: s.color }}>{s.n}</div>
-                <div style={{ fontSize: 9, color: "var(--muted)" }}>{s.label}</div>
+            <div key={s.label} className="flex items-center">
+              <div>
+                <div className={`font-display text-lg font-bold ${s.cls}`}>{s.n}</div>
+                <div className="text-[10px] text-charcoal-400 mt-0.5">{s.label}</div>
               </div>
-              {i < 3 && <div style={{ width: 1, background: "var(--sand-dark)", height: 28, margin: "0 16px" }} />}
+              {i < 3 && <div className="w-px h-7 bg-sand-300 mx-3" />}
             </div>
           ))}
         </div>
       </div>
 
-      {/* GUIDES */}
-      <div style={{ maxWidth: 960, margin: "52px auto 0", padding: "0 clamp(16px,4vw,24px)" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
-          <h2 style={{ fontFamily: "var(--font-serif)", fontSize: 22, fontWeight: 700 }}>Top Guides</h2>
-          <a href="/search" style={{ fontSize: 12, color: "var(--bronze)", fontWeight: 700, textDecoration: "none" }}>See all →</a>
+      {/* TOP GUIDES */}
+      <section className="mt-8 px-4 max-w-2xl mx-auto">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-display text-xl font-semibold text-charcoal-800">Top Guides</h2>
+          <a href="/search" className="flex items-center gap-1 text-xs font-bold text-bronze-500">
+            Voir tout <ArrowRight size={13} weight="bold" />
+          </a>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(220px,1fr))", gap: 16 }}>
+
+        <div className="grid grid-cols-2 gap-3 items-start">
           {guides.map((g) => (
-            <a key={g.id} href={`/guide/${g.id}`} style={{ textDecoration: "none", display: "block" }}>
-              <div style={{ background: "var(--white)", borderRadius: "var(--r-card)", overflow: "hidden", boxShadow: "var(--shadow)" }}>
-                <div style={{ position: "relative", height: 200 }}>
-                  <img src={g.avatar ?? "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80"} alt={g.displayName} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                  <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom,transparent 35%,rgba(0,0,0,0.78))" }} />
-                  <div style={{ position: "absolute", top: 10, right: 10, background: "rgba(0,0,0,0.45)", backdropFilter: "blur(8px)", borderRadius: 8, padding: "3px 8px", display: "flex", alignItems: "center", gap: 4 }}>
-                    <span style={{ color: "#FFD700", fontSize: 11 }}>★</span>
-                    <span style={{ color: "#fff", fontSize: 11, fontWeight: 700 }}>{g.avgRating.toFixed(1)}</span>
-                    <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 10 }}>({g.totalReviews})</span>
+            <a key={g.id} href={`/guide/${g.id}`} className="no-underline block">
+              <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-sand-300 hover:shadow-md transition-shadow flex flex-col">
+                <div className="relative h-44">
+                  <img
+                    src={g.avatar ?? "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80"}
+                    alt={g.displayName}
+                    loading="lazy"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent" />
+
+                  {/* Ville */}
+                  <div className="absolute bottom-2 left-2 flex items-center gap-1 bg-black/50 backdrop-blur-sm rounded-full px-2.5 py-1">
+                    <MapPin size={10} color="#fff" weight="fill" />
+                    <span className="text-white text-[11px] font-bold">{g.city}</span>
                   </div>
-                  <div style={{ position: "absolute", top: 10, left: 10 }}>
-                    <span style={{ background: "#E8F0E4", color: "var(--sage)", fontSize: 9, fontWeight: 700, padding: "3px 8px", borderRadius: "999px" }}>✓ Verified</span>
+
+                  {/* Note */}
+                  {g.avgRating > 0 && (
+                  <div className="absolute top-2 right-2 flex items-center gap-1 bg-white/90 backdrop-blur-sm rounded-full px-2.5 py-1">
+                    <Star size={10} color="#B88A44" weight="fill" />
+                    <span className="text-charcoal-800 text-[11px] font-bold">{g.avgRating.toFixed(1)}</span>
                   </div>
-                  <div style={{ position: "absolute", bottom: 12, left: 12, right: 12 }}>
-                    <div style={{ fontSize: 10, color: "rgba(255,255,255,0.75)", fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, marginBottom: 3 }}>📍 {g.city}</div>
-                    <div style={{ fontFamily: "var(--font-serif)", fontSize: 17, fontWeight: 700, color: "#fff" }}>{g.displayName}</div>
+                  )}
+
+                  {/* Certifié */}
+                  <div className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm rounded-full px-2.5 py-1 flex items-center gap-1">
+                    <span className="text-[10px] font-bold text-sage-300">✓ Certifié</span>
                   </div>
                 </div>
-                <div style={{ padding: "12px 14px" }}>
-                  {g.languages.length > 0 && (
-                    <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginBottom: 10 }}>
-                      {g.languages.slice(0, 3).map((l: string) => (
-                        <span key={l} style={{ background: "var(--sand)", border: "1px solid var(--sand-dark)", borderRadius: "999px", padding: "2px 9px", fontSize: 10, fontWeight: 600, color: "var(--soft)" }}>{l}</span>
+
+                <div className="p-3 flex flex-col flex-1">
+                  <div className="font-display text-sm font-semibold text-charcoal-800 mb-1 truncate">
+                    {g.displayName}
+                  </div>
+                  {g.yearsExp > 0 && (
+                  <div className="flex items-center gap-1 text-charcoal-400 text-xs mb-2">
+                    <Clock size={10} />
+                    <span>{g.yearsExp} an{g.yearsExp > 1 ? "s" : ""} d'expérience</span>
+                  </div>
+                  )}
+
+                  {g.languages?.length > 0 && (
+                    <div className="flex gap-0.5 mb-3">
+                      {g.languages.slice(0, 4).map((lang: string) => (
+                        <span key={lang} className="text-base leading-none" title={lang}>
+                          {LANG_FLAGS[lang] ?? "🏳️"}
+                        </span>
                       ))}
-                      <span style={{ fontSize: 10, color: "var(--muted)", display: "flex", alignItems: "center" }}>· {g.yearsExp} yrs</span>
                     </div>
                   )}
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+
+                  <div className="flex items-end justify-between mt-auto pt-2">
                     <div>
-                      <div style={{ fontSize: 9, color: "var(--muted)" }}>From</div>
-                      <div style={{ fontFamily: "var(--font-serif)", fontSize: 22, fontWeight: 700, color: "var(--charcoal)" }}>{toEur(g.halfDayPrice)}</div>
-                      <div style={{ fontSize: 9, color: "var(--muted)" }}>per person · 4h</div>
+                      <div className="text-[10px] text-charcoal-400">À partir de</div>
+                      <div className="font-display text-lg font-bold text-charcoal-800 leading-tight">
+                        {toEur(g.halfDayPrice)}
+                      </div>
+                      <div className="text-[10px] text-charcoal-400">/ 2 pers.</div>
                     </div>
-                    <a href={`/booking?guide=${g.id}`} style={{ background: "var(--bronze-g)", color: "#fff", borderRadius: "999px", padding: "9px 16px", fontSize: 12, fontWeight: 700, textDecoration: "none" }}>Book →</a>
+                    <span className="text-[12px] font-bold text-white bg-sage-300 px-3 py-2 rounded-full">
+                      Réserver
+                    </span>
                   </div>
                 </div>
               </div>
             </a>
           ))}
         </div>
-        <div style={{ textAlign: "center", marginTop: 20 }}>
-          <a href="/search" style={{ display: "inline-block", border: "1.5px solid var(--sand-dark)", borderRadius: "999px", padding: "13px 32px", fontSize: 13, fontWeight: 600, color: "var(--soft)", textDecoration: "none" }}>View all guides →</a>
-        </div>
-      </div>
 
-      {/* CITIES */}
-      <div style={{ maxWidth: 960, margin: "52px auto 0", padding: "0 clamp(16px,4vw,24px)" }}>
-        <h2 style={{ fontFamily: "var(--font-serif)", fontSize: 22, fontWeight: 700, marginBottom: 18 }}>Explore by City</h2>
-        <div style={{ display: "flex", gap: 12, overflowX: "auto", paddingBottom: 6 }}>
+        <div className="mt-4 text-center">
+          <a href="/search"
+            className="inline-flex items-center gap-2 border border-sand-300 text-charcoal-600 text-sm font-semibold px-6 py-3 rounded-full hover:border-bronze-500 transition-colors">
+            Voir tous les guides <ArrowRight size={13} weight="bold" />
+          </a>
+        </div>
+      </section>
+
+      {/* VILLES */}
+      <section className="mt-10 max-w-2xl mx-auto">
+        <h2 className="font-display text-xl font-semibold text-charcoal-800 mb-4 px-4">Explorer par ville</h2>
+        <div className="flex gap-3 px-4 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }}>
           {CITIES.map((c) => (
-            <a key={c.name} href={`/search?city=${encodeURIComponent(c.name)}`} style={{ position: "relative", width: 110, height: 135, borderRadius: 18, overflow: "hidden", flexShrink: 0, textDecoration: "none" }}>
-              <img src={c.img} alt={c.name} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-              <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.32)" }} />
-              <div style={{ position: "absolute", bottom: 10, left: 10 }}>
-                <div style={{ color: "#fff", fontWeight: 700, fontSize: 12 }}>{c.name}</div>
+            <a key={c.name} href={`/search?city=${encodeURIComponent(c.name)}`}
+              className="relative flex-shrink-0 w-24 h-28 rounded-2xl overflow-hidden no-underline">
+              <img src={c.img} alt={c.name} className="w-full h-full object-cover" loading="lazy" />
+              <div className="absolute inset-0 bg-black/35" />
+              <div className="absolute bottom-2 left-0 right-0 text-center">
+                <span className="text-white text-xs font-bold">{c.name}</span>
               </div>
             </a>
           ))}
         </div>
-      </div>
+      </section>
 
-      {/* WHY */}
-      <div style={{ maxWidth: 960, margin: "52px auto 0", padding: "48px clamp(16px,4vw,24px) 0", borderTop: "1px solid var(--sand-dark)" }}>
-        <h2 style={{ fontFamily: "var(--font-serif)", fontSize: 22, fontWeight: 700, marginBottom: 24, textAlign: "center" }}>Why Laksor?</h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(200px,1fr))", gap: 20 }}>
+      {/* POURQUOI */}
+      <section className="mt-10 px-4 max-w-2xl mx-auto border-t border-sand-300 pt-8">
+        <h2 className="font-display text-xl font-semibold text-charcoal-800 mb-5">Pourquoi Laksor ?</h2>
+        <div className="grid grid-cols-2 gap-3">
           {TRUST.map((t) => (
-            <div key={t.title} style={{ display: "flex", gap: 14, alignItems: "flex-start" }}>
-              <div style={{ width: 48, height: 48, borderRadius: 14, background: "var(--white)", boxShadow: "var(--shadow-sm)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, flexShrink: 0 }}>{t.icon}</div>
-              <div>
-                <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 3 }}>{t.title}</div>
-                <div style={{ fontSize: 12, color: "var(--soft)", lineHeight: 1.55 }}>{t.desc}</div>
-              </div>
+            <div key={t.title} className="bg-white rounded-2xl p-4 border border-sand-300 shadow-sm">
+              <t.Icon size={26} weight="duotone" className="text-bronze-500 mb-2" />
+              <div className="text-sm font-bold text-charcoal-800 mb-1">{t.title}</div>
+              <div className="text-xs text-charcoal-400 leading-relaxed">{t.desc}</div>
             </div>
           ))}
         </div>
-      </div>
+      </section>
 
       {/* JOIN */}
-      <div style={{ maxWidth: 960, margin: "52px auto 72px", padding: "0 clamp(16px,4vw,24px)" }}>
-        <div style={{ background: "var(--charcoal)", borderRadius: "var(--r-card)", padding: "36px 28px", textAlign: "center" }}>
-          <div style={{ fontFamily: "var(--font-serif)", fontSize: 24, fontWeight: 700, color: "#fff", marginBottom: 8 }}>Join Laksor</div>
-          <div style={{ fontSize: 13, color: "rgba(255,255,255,0.45)", marginBottom: 22, maxWidth: 380, margin: "0 auto 22px", lineHeight: 1.65 }}>
-            Guide or Transport provider? Share your expertise with travelers worldwide.
-          </div>
-          <a href="/auth/register" style={{ background: "var(--bronze-g)", color: "#fff", borderRadius: "999px", padding: "14px 32px", fontSize: 14, fontWeight: 700, textDecoration: "none" }}>Apply Now ✦</a>
+      <section className="mt-8 px-4 max-w-2xl mx-auto">
+        <div className="bg-charcoal-800 rounded-3xl p-6 text-center">
+          <div className="font-display text-xl font-semibold text-white mb-2">Rejoignez Laksor</div>
+          <p className="text-sm text-charcoal-300 mb-5 leading-relaxed">
+            Guide ou chauffeur ? Partagez votre expertise avec des voyageurs du monde entier.
+          </p>
+          <a href="/auth/register"
+            className="inline-flex items-center gap-2 bg-bronze-500 hover:bg-bronze-600 text-white text-sm font-bold px-6 py-3 rounded-full no-underline transition-colors">
+            Candidater <ArrowRight size={14} weight="bold" />
+          </a>
         </div>
-      </div>
+      </section>
 
     </div>
   );
