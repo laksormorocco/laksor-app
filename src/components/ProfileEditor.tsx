@@ -1,33 +1,58 @@
 "use client";
 import { useState } from "react";
 import { createClient } from "@supabase/supabase-js";
+import {
+  Camera, Phone, MapPin, BookOpen, Translate,
+  Star, Money, Images, CheckCircle, Clock
+} from "@phosphor-icons/react";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || "",
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ""
 );
 
-const B="#123EAB",G="#22c55e";
-const CITIES = ["Marrakech","Fes","Casablanca","Rabat","Chefchaouen","Essaouira","Agadir","Tanger","Meknes","Ouarzazate"];
+const CITIES = ["Marrakech","Fès","Casablanca","Rabat","Chefchaouen","Essaouira","Agadir","Tanger","Meknès","Ouarzazate","Merzouga"];
+const inputCls = "w-full border border-sand-300 rounded-xl px-4 py-3 text-sm text-charcoal-800 bg-sand-100 outline-none focus:border-bronze-500 transition-colors";
+
+function Section({ title, icon, children }: { title: string; icon: React.ReactNode; children: React.ReactNode }) {
+  return (
+    <div className="bg-white rounded-2xl border border-sand-300 p-4">
+      <div className="flex items-center gap-2 mb-4">
+        <span className="text-bronze-500">{icon}</span>
+        <span className="text-[10px] font-bold text-bronze-500 uppercase tracking-wider">{title}</span>
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="mb-4 last:mb-0">
+      <label className="text-xs font-bold text-charcoal-600 uppercase tracking-wider block mb-1.5">{label}</label>
+      {children}
+    </div>
+  );
+}
 
 export default function ProfileEditor({ guide, guideId, onSaved }: { guide: any; guideId: string; onSaved: () => void }) {
   const [form, setForm] = useState({
-    displayName: guide.displayName || "",
-    city: guide.city || "",
-    phone: guide.phone || "",
-    bio: guide.bio || "",
-    halfDayPrice: guide.halfDayPrice || 600,
-    fullDayPrice: guide.fullDayPrice || 1100,
-    languages: (guide.languages || []).join(", "),
-    specialties: (guide.specialties || []).join(", "),
+    displayName:   guide.displayName || "",
+    city:          guide.city || "",
+    phone:         guide.phone || "",
+    bio:           guide.bio || "",
+    halfDayPrice:  guide.halfDayPrice || 500,
+    fullDayPrice:  guide.fullDayPrice || 950,
+    languages:     (guide.languages || []).join(", "),
+    specialties:   (guide.specialties || []).join(", "),
     coveredCities: (guide.coveredCities || []).join(", "),
-    certifications: (guide.certifications || []).join(", "),
-    yearsExp: guide.yearsExp || 0,
-    avatar: guide.avatar || "",
-    gallery: (guide.gallery || []).join("|"),
+    certifications:(guide.certifications || []).join(", "),
+    yearsExp:      guide.yearsExp || 0,
+    avatar:        guide.avatar || "",
+    gallery:       (guide.gallery || []).join("|"),
   });
-  const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
+  const [saving,    setSaving]    = useState(false);
+  const [saved,     setSaved]     = useState(false);
   const [uploading, setUploading] = useState(false);
 
   function update(key: string, val: any) { setForm(f => ({...f, [key]: val})); }
@@ -51,7 +76,7 @@ export default function ProfileEditor({ guide, guideId, onSaved }: { guide: any;
     setUploading(true);
     const urls: string[] = [];
     for (const file of files) {
-      const filename = guideId + "-gal-" + Date.now() + "." + file.name.split(".").pop();
+      const filename = guideId + "-gal-" + Date.now() + "-" + Math.random().toString(36).slice(2) + "." + file.name.split(".").pop();
       const { error } = await supabase.storage.from("avatars").upload(filename, file, { upsert: true });
       if (!error) {
         const { data } = supabase.storage.from("avatars").getPublicUrl(filename);
@@ -70,101 +95,154 @@ export default function ProfileEditor({ guide, guideId, onSaved }: { guide: any;
       headers: {"Content-Type":"application/json"},
       body: JSON.stringify({
         guideId,
-        displayName: form.displayName,
-        city: form.city,
-        phone: form.phone,
-        bio: form.bio,
-        halfDayPrice: parseFloat(String(form.halfDayPrice)),
-        fullDayPrice: parseFloat(String(form.fullDayPrice)),
-        languages: form.languages.split(",").map((l:string)=>l.trim()).filter(Boolean),
-        specialties: form.specialties.split(",").map((s:string)=>s.trim()).filter(Boolean),
+        displayName:   form.displayName,
+        city:          form.city,
+        phone:         form.phone,
+        bio:           form.bio,
+        halfDayPrice:  parseFloat(String(form.halfDayPrice)),
+        fullDayPrice:  parseFloat(String(form.fullDayPrice)),
+        languages:     form.languages.split(",").map((l:string)=>l.trim()).filter(Boolean),
+        specialties:   form.specialties.split(",").map((s:string)=>s.trim()).filter(Boolean),
         coveredCities: form.coveredCities.split(",").map((c:string)=>c.trim()).filter(Boolean),
-        certifications: form.certifications.split(",").map((c:string)=>c.trim()).filter(Boolean),
-        yearsExp: parseInt(String(form.yearsExp)) || 0,
-        avatar: form.avatar,
-        gallery: form.gallery.split("|").map((u:string)=>u.trim()).filter(Boolean),
+        certifications:form.certifications.split(",").map((c:string)=>c.trim()).filter(Boolean),
+        yearsExp:      parseInt(String(form.yearsExp)) || 0,
+        avatar:        form.avatar,
+        gallery:       form.gallery.split("|").map((u:string)=>u.trim()).filter(Boolean),
       })
     });
     if (res.ok) { setSaved(true); onSaved(); setTimeout(()=>setSaved(false), 3000); }
     setSaving(false);
   }
 
-  const inp = { width:"100%", border:"1.5px solid #E2E8F0", borderRadius:12, padding:"12px 14px", fontSize:14, color:"#0F172A", background:"#F8FAFC", fontFamily:"inherit", outline:"none" } as any;
-  const lbl = { fontSize:13, fontWeight:600 as const, color:"#374151", display:"block" as const, marginBottom:6 };
-  const sec = { fontSize:11, fontWeight:700 as const, color:B, letterSpacing:"1.5px", textTransform:"uppercase" as const, marginBottom:16 };
-
   return (
-    <div style={{ display:"flex", flexDirection:"column", gap:16, fontFamily:"Inter, -apple-system, sans-serif" }}>
-      <div style={{ background:"#fff", borderRadius:16, padding:20, border:"1px solid #EBEBEB" }}>
-        <div style={sec}>Photo de profil</div>
-        <div style={{ textAlign:"center", marginBottom:16 }}>
-          <div style={{ width:90, height:90, borderRadius:"50%", overflow:"hidden", background:"#E2E8F0", margin:"0 auto 12px" }}>
-            {form.avatar && <img src={form.avatar} alt="" style={{ width:"100%", height:"100%", objectFit:"cover" }}/>}
-          </div>
-          <label style={{ display:"inline-flex", alignItems:"center", gap:8, background:B, color:"#fff", borderRadius:20, padding:"10px 20px", fontSize:13, fontWeight:700, cursor:"pointer" }}>
-            {uploading ? "Upload..." : "Changer la photo"}
-            <input type="file" accept="image/*" onChange={handleAvatarUpload} style={{ display:"none" }} disabled={uploading}/>
-          </label>
+    <div className="flex flex-col gap-3">
+
+      {/* Banner validation */}
+      <div className="bg-bronze-50 border border-bronze-500 rounded-2xl p-3 flex items-start gap-3">
+        <Clock size={16} className="text-bronze-500 flex-shrink-0 mt-0.5" weight="duotone" />
+        <div>
+          <div className="text-xs font-bold text-bronze-500 mb-0.5">Modifications validées par l&apos;admin</div>
+          <p className="text-[11px] text-charcoal-400 leading-relaxed">Vos modifications seront visibles après validation par notre équipe (sous 24h).</p>
         </div>
-        <label style={lbl}>Ou URL directe</label>
-        <input value={form.avatar} onChange={e=>update("avatar",e.target.value)} placeholder="https://..." style={inp}/>
       </div>
 
-      <div style={{ background:"#fff", borderRadius:16, padding:20, border:"1px solid #EBEBEB" }}>
-        <div style={sec}>Informations personnelles</div>
-        <div style={{ marginBottom:14 }}><label style={lbl}>Nom complet</label><input value={form.displayName} onChange={e=>update("displayName",e.target.value)} style={inp}/></div>
-        <div style={{ marginBottom:14 }}><label style={lbl}>WhatsApp</label><input value={form.phone} onChange={e=>update("phone",e.target.value)} placeholder="+212 6XX XXX XXX" style={inp}/></div>
-        <div style={{ marginBottom:14 }}>
-          <label style={lbl}>Ville principale</label>
-          <select value={form.city} onChange={e=>update("city",e.target.value)} style={inp}>
+      {/* Photo de profil */}
+      <Section title="Photo de profil" icon={<Camera size={14} weight="duotone" />}>
+        <div className="flex items-center gap-4 mb-4">
+          <div className="w-20 h-20 rounded-2xl overflow-hidden bg-sand-300 flex-shrink-0">
+            {form.avatar
+              ? <img src={form.avatar} alt="" className="w-full h-full object-cover" />
+              : <div className="w-full h-full flex items-center justify-center text-2xl text-charcoal-400">👤</div>}
+          </div>
+          <div className="flex-1">
+            <label className="flex items-center gap-2 bg-bronze-500 text-white rounded-full px-4 py-2.5 text-xs font-bold cursor-pointer hover:bg-bronze-600 transition-colors w-fit">
+              <Camera size={14} />
+              {uploading ? "Upload..." : "Changer la photo"}
+              <input type="file" accept="image/*" onChange={handleAvatarUpload} className="hidden" disabled={uploading} />
+            </label>
+            <p className="text-[10px] text-charcoal-400 mt-1.5">JPG, PNG · Max 5MB</p>
+          </div>
+        </div>
+        <Field label="Ou URL directe">
+          <input value={form.avatar} onChange={e=>update("avatar",e.target.value)} placeholder="https://..." className={inputCls} />
+        </Field>
+      </Section>
+
+      {/* Infos perso */}
+      <Section title="Informations personnelles" icon={<MapPin size={14} weight="duotone" />}>
+        <Field label="Nom complet">
+          <input value={form.displayName} onChange={e=>update("displayName",e.target.value)} className={inputCls} />
+        </Field>
+        <Field label="WhatsApp">
+          <input value={form.phone} onChange={e=>update("phone",e.target.value)} placeholder="+212 6XX XXX XXX" className={inputCls} />
+        </Field>
+        <Field label="Ville principale">
+          <select value={form.city} onChange={e=>update("city",e.target.value)} className={inputCls}>
             <option value="">Choisir</option>
             {CITIES.map(c=><option key={c}>{c}</option>)}
           </select>
+        </Field>
+        <Field label="Villes couvertes">
+          <input value={form.coveredCities} onChange={e=>update("coveredCities",e.target.value)} placeholder="Marrakech, Essaouira" className={inputCls} />
+          <div className="text-[10px] text-charcoal-300 mt-1">Séparées par virgule</div>
+        </Field>
+        <Field label="Années d&apos;expérience">
+          <input type="number" min={0} value={form.yearsExp} onChange={e=>update("yearsExp",e.target.value)} className={inputCls} />
+        </Field>
+      </Section>
+
+      {/* Expertise */}
+      <Section title="Expertise" icon={<BookOpen size={14} weight="duotone" />}>
+        <Field label="Bio">
+          <textarea value={form.bio} onChange={e=>update("bio",e.target.value)} rows={4}
+            placeholder="Décrivez votre expérience et votre passion..."
+            className={inputCls + " resize-none"} />
+        </Field>
+        <Field label="Langues parlées">
+          <input value={form.languages} onChange={e=>update("languages",e.target.value)} placeholder="Français, Anglais, Arabe" className={inputCls} />
+          <div className="text-[10px] text-charcoal-300 mt-1">Séparées par virgule</div>
+        </Field>
+        <Field label="Spécialités">
+          <input value={form.specialties} onChange={e=>update("specialties",e.target.value)} placeholder="Histoire, Gastronomie, Architecture" className={inputCls} />
+          <div className="text-[10px] text-charcoal-300 mt-1">Séparées par virgule</div>
+        </Field>
+        <Field label="Certifications">
+          <input value={form.certifications} onChange={e=>update("certifications",e.target.value)} placeholder="Guide agréé Ministère du Tourisme" className={inputCls} />
+        </Field>
+      </Section>
+
+      {/* Tarifs */}
+      <Section title="Tarifs" icon={<Money size={14} weight="duotone" />}>
+        <div className="bg-bronze-50 border border-bronze-500 rounded-xl p-3 mb-4 text-xs text-bronze-500 font-medium">
+          💡 Conseillés : Demi-journée 500 MAD · Journée 950 MAD
         </div>
-        <div style={{ marginBottom:14 }}><label style={lbl}>Villes couvertes (virgule)</label><input value={form.coveredCities} onChange={e=>update("coveredCities",e.target.value)} placeholder="Marrakech, Essaouira" style={inp}/></div>
-        <div><label style={lbl}>Années d experience</label><input type="number" value={form.yearsExp} onChange={e=>update("yearsExp",e.target.value)} min={0} style={inp}/></div>
-      </div>
-
-      <div style={{ background:"#fff", borderRadius:16, padding:20, border:"1px solid #EBEBEB" }}>
-        <div style={sec}>Expertise</div>
-        <div style={{ marginBottom:14 }}><label style={lbl}>Bio</label><textarea value={form.bio} onChange={e=>update("bio",e.target.value)} rows={4} style={{...inp,resize:"vertical" as const}}/></div>
-        <div style={{ marginBottom:14 }}><label style={lbl}>Langues (virgule)</label><input value={form.languages} onChange={e=>update("languages",e.target.value)} placeholder="Français, Anglais" style={inp}/></div>
-        <div style={{ marginBottom:14 }}><label style={lbl}>Specialites (virgule)</label><input value={form.specialties} onChange={e=>update("specialties",e.target.value)} placeholder="Histoire, Gastronomie" style={inp}/></div>
-        <div><label style={lbl}>Certifications (virgule)</label><input value={form.certifications} onChange={e=>update("certifications",e.target.value)} placeholder="Guide agree ministere" style={inp}/></div>
-      </div>
-
-      <div style={{ background:"#fff", borderRadius:16, padding:20, border:"1px solid #EBEBEB" }}>
-        <div style={sec}>Tarifs</div>
-        <div style={{ background:"#EFF6FF", borderRadius:10, padding:"10px 14px", marginBottom:14, fontSize:12, color:B }}>Conseilles : 600 MAD / 4h · 1100 MAD / 8h</div>
-        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
-          <div><label style={lbl}>Demi-journee (MAD)</label><input type="number" value={form.halfDayPrice} onChange={e=>update("halfDayPrice",e.target.value)} style={{...inp,fontWeight:700,fontSize:16}}/></div>
-          <div><label style={lbl}>Journee (MAD)</label><input type="number" value={form.fullDayPrice} onChange={e=>update("fullDayPrice",e.target.value)} style={{...inp,fontWeight:700,fontSize:16}}/></div>
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="½ Journée (MAD)">
+            <input type="number" value={form.halfDayPrice} onChange={e=>update("halfDayPrice",e.target.value)}
+              className={inputCls + " font-bold text-base"} />
+          </Field>
+          <Field label="Journée (MAD)">
+            <input type="number" value={form.fullDayPrice} onChange={e=>update("fullDayPrice",e.target.value)}
+              className={inputCls + " font-bold text-base"} />
+          </Field>
         </div>
-      </div>
+      </Section>
 
-      <div style={{ background:"#fff", borderRadius:16, padding:20, border:"1px solid #EBEBEB" }}>
-        <div style={sec}>Galerie photos</div>
-        <label style={{ display:"inline-flex", alignItems:"center", gap:8, background:B, color:"#fff", borderRadius:20, padding:"10px 20px", fontSize:13, fontWeight:700, cursor:"pointer", marginBottom:14 }}>
+      {/* Galerie */}
+      <Section title="Galerie photos" icon={<Images size={14} weight="duotone" />}>
+        <label className="flex items-center gap-2 bg-bronze-500 text-white rounded-full px-4 py-2.5 text-xs font-bold cursor-pointer hover:bg-bronze-600 transition-colors w-fit mb-4">
+          <Images size={14} />
           {uploading ? "Upload..." : "Ajouter photos"}
-          <input type="file" accept="image/*" multiple onChange={handleGalleryUpload} style={{ display:"none" }} disabled={uploading}/>
+          <input type="file" accept="image/*" multiple onChange={handleGalleryUpload} className="hidden" disabled={uploading} />
         </label>
-        <label style={lbl}>Ou URLs (separees par |)</label>
-        <input value={form.gallery} onChange={e=>update("gallery",e.target.value)} placeholder="https://photo1.jpg|https://photo2.jpg" style={inp}/>
+        <Field label="Ou URLs séparées par |">
+          <input value={form.gallery} onChange={e=>update("gallery",e.target.value)}
+            placeholder="https://photo1.jpg|https://photo2.jpg" className={inputCls} />
+        </Field>
         {form.gallery && (
-          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8, marginTop:12 }}>
-            {form.gallery.split("|").filter(Boolean).slice(0,4).map((url:string,i:number) => (
-              <div key={i} style={{ borderRadius:10, overflow:"hidden", height:80, background:"#E2E8F0" }}>
-                <img src={url.trim()} alt="" style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
+          <div className="grid grid-cols-3 gap-2 mt-3">
+            {form.gallery.split("|").filter(Boolean).slice(0,6).map((url:string,i:number) => (
+              <div key={i} className="aspect-square rounded-xl overflow-hidden bg-sand-300">
+                <img src={url.trim()} alt="" className="w-full h-full object-cover" />
               </div>
             ))}
           </div>
         )}
-      </div>
+      </Section>
 
-      <button onClick={handleSave} disabled={saving} style={{ width:"100%", background:"#0B132B", color:"#fff", border:"none", borderRadius:30, padding:18, fontSize:15, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>
-        {saving ? "Sauvegarde..." : "Sauvegarder"}
+      {/* Submit */}
+      <button onClick={handleSave} disabled={saving}
+        className={`w-full py-4 rounded-2xl text-sm font-bold text-white transition-all
+          ${saving ? "bg-sand-300 cursor-not-allowed" : "bg-bronze-500 hover:bg-bronze-600 shadow-md"}`}>
+        {saving ? "Sauvegarde en cours..." : "Soumettre les modifications →"}
       </button>
-      {saved && <div style={{ textAlign:"center", color:G, fontWeight:700 }}>Modifications sauvegardees !</div>}
+
+      {saved && (
+        <div className="flex items-center justify-center gap-2 text-sage-300 font-bold text-sm">
+          <CheckCircle size={16} weight="fill" />
+          Modifications soumises — en attente de validation
+        </div>
+      )}
     </div>
   );
 }
