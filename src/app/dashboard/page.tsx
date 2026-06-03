@@ -42,10 +42,11 @@ export default function DashboardRedirect() {
   }, []);
 
   return (
-    <div style={{ minHeight:"100vh", display:"flex", alignItems:"center", justifyContent:"center", background:"#F8F5F0", fontFamily:"Georgia,serif" }}>
-      <div style={{ textAlign:"center" }}>
-        <div style={{ fontSize:48, marginBottom:16 }}>⏳</div>
-        <div style={{ fontSize:16, color:"#666" }}>Chargement de votre espace...</div>
+    <div className="min-h-screen flex items-center justify-center bg-sand-200">
+      <div className="text-center">
+        <div className="w-16 h-16 bg-bronze-500 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl animate-pulse">🧭</div>
+        <div className="font-display text-lg font-semibold text-charcoal-800 mb-1">Chargement...</div>
+        <div className="text-sm text-charcoal-400">Préparation de votre espace</div>
       </div>
     </div>
   );
