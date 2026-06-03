@@ -141,9 +141,8 @@ export default async function HomePage() {
                       <div className="font-display text-lg font-bold text-charcoal-800 leading-tight">
                         {toEur(g.halfDayPrice)}
                       </div>
-                      <div className="text-[10px] text-charcoal-400">/ 2 pers.</div>
                     </div>
-                    <span className="text-[12px] font-bold text-white bg-sage-300 px-3 py-2 rounded-full">
+                    <span className="text-[11px] font-bold text-bronze-500 bg-bronze-50 px-2 py-1 rounded-lg">
                       Réserver
                     </span>
                   </div>
