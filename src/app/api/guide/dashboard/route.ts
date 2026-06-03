@@ -5,7 +5,6 @@ export const dynamic = "force-dynamic";
 export async function GET(req: Request) {
   const url = new URL(req.url);
   const guideId = url.searchParams.get("guideId");
-  if (!guideId) return NextResponse.json({ error: "guideId requis" }, { status: 400 });
 
   const guide = await prisma.guideProfile.findUnique({
     where: { id: guideId },
@@ -14,16 +13,16 @@ export async function GET(req: Request) {
         orderBy: { createdAt: "desc" },
         take: 20,
         include: {
-          tourist: {
-            select: { id:true, name:true, email:true, avatar:true }
-          },
-          slots: true
-        }
-      }
-    }
+          tourist: { select: { id: true, name: true, email: true, avatar: true } },
+          slots: true,
+        },
+      },
+      tours: {
+        include: { template: true },
+      },
+    },
   });
 
-  if (!guide) return NextResponse.json({ error: "Guide non trouve" }, { status: 404 });
 
   const formattedBookings = guide.bookings.map((b: any) => ({
     ...b,
@@ -36,8 +35,8 @@ export async function GET(req: Request) {
     .filter((b: any) => b.status === "CONFIRMED" || b.status === "COMPLETED")
     .reduce((sum: number, b: any) => sum + Number(b.totalPrice), 0);
 
-  return NextResponse.json({ 
-    guide: { ...guide, bookings: formattedBookings }, 
-    totalRevenue 
+  return NextResponse.json({
+    guide: { ...guide, bookings: formattedBookings },
+    totalRevenue,
   });
 }
