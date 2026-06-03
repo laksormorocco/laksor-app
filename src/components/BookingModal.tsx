@@ -85,7 +85,7 @@ export default function BookingModal({ guideName, halfDayPrice, fullDayPrice, gu
 
   if (!open) return (
     <button onClick={handleOpen} className="btn-bronze" style={{ width: "100%", padding: 16, fontSize: 15, justifyContent: "center" }}>
-      Réserver ce guide
+      Vérifier les disponibilités →
     </button>
   );
 

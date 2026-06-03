@@ -2,13 +2,24 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import BookingModal from "@/components/BookingModal";
+import {
+  ArrowLeft, Heart, ShareNetwork, MapPin, Star,
+  Clock, ChatCircle, Shield, Translate, Camera,
+  CheckCircle, ThumbsUp
+} from "@phosphor-icons/react";
 
 function toEur(mad: number): string {
   return "€" + Math.round((mad * 1.25 + 25) * 0.092);
 }
 
+const LANG_FLAGS: Record<string, string> = {
+  "Français": "🇫🇷", "Anglais": "🇬🇧", "Espagnol": "🇪🇸",
+  "Allemand": "🇩🇪", "Italien": "🇮🇹", "Arabe": "🇲🇦",
+};
+
 export default function GuidePageClient({ guide }: { guide: any }) {
-  const [tab, setTab] = useState("apropos");
+  const [tab,   setTab]   = useState("apropos");
+  const [liked, setLiked] = useState(false);
 
   useEffect(() => {
     fetch("/api/guide/views", {
@@ -19,138 +30,188 @@ export default function GuidePageClient({ guide }: { guide: any }) {
   }, [guide.id]);
 
   return (
-    <div style={{ background: "var(--sand)", minHeight: "100vh", paddingBottom: 200 }}>
+    <div className="bg-sand-200 min-h-screen pb-40">
 
       {/* ── COVER ── */}
-      <div style={{ position: "relative", height: 240 }}>
+      <div className="relative h-64">
         <img
           src={guide.avatar ?? "https://images.unsplash.com/photo-1539020140153-e479b8c22e70?w=800&q=80"}
           alt={guide.displayName}
-          style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+          className="w-full h-full object-cover"
         />
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom,rgba(0,0,0,0.05),rgba(0,0,0,0.72))" }} />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/75" />
 
-        {/* Top buttons */}
-        <div style={{ position: "absolute", top: 14, left: 14, right: 14, display: "flex", justifyContent: "space-between" }}>
-          <Link href="/search" className="btn-ghost" style={{ padding: "7px 14px", fontSize: 12 }}>← Retour</Link>
-          <div style={{ display: "flex", gap: 8 }}>
-            <button className="btn-ghost" style={{ width: 36, height: 36, padding: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>♡</button>
-            <button className="btn-ghost" style={{ width: 36, height: 36, padding: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>⬆</button>
+        {/* Top actions */}
+        <div className="absolute top-4 left-4 right-4 flex justify-between items-center">
+          <Link href="/search"
+            className="w-9 h-9 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center">
+            <ArrowLeft size={16} color="#fff" weight="bold" />
+          </Link>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setLiked(!liked)}
+              className="w-9 h-9 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center"
+            >
+              <Heart size={16} color="#fff" weight={liked ? "fill" : "regular"} className={liked ? "text-red-400" : ""} />
+            </button>
+            <button className="w-9 h-9 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center">
+              <ShareNetwork size={16} color="#fff" weight="bold" />
+            </button>
           </div>
         </div>
 
         {/* Bottom info */}
-        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "18px 20px" }}>
-          <div style={{ fontFamily: "var(--font-serif)", fontSize: 30, fontWeight: 700, color: "#fff", marginBottom: 8 }}>{guide.city}</div>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <img
-              src={guide.avatar ?? "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80"}
-              style={{ width: 36, height: 36, borderRadius: "50%", objectFit: "cover", border: "2px solid rgba(255,255,255,0.4)" }}
-            />
-            <div>
-              <div style={{ color: "#fff", fontSize: 14, fontWeight: 600 }}>{guide.displayName}</div>
-              <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 11 }}>Guide local · {guide.yearsExp} ans</div>
-            </div>
-            <span className="badge badge-sage" style={{ marginLeft: "auto" }}>✓ Vérifié</span>
+        <div className="absolute bottom-0 left-0 right-0 px-4 pb-4">
+          <div className="flex items-center gap-1 mb-1">
+            <MapPin size={13} color="rgba(255,255,255,0.7)" weight="fill" />
+            <span className="text-white/70 text-xs font-medium">{guide.city}</span>
+          </div>
+          <div className="font-display text-2xl font-semibold text-white mb-2 leading-tight">
+            {guide.displayName}
+          </div>
+          <div className="flex items-center gap-3">
+            {guide.avgRating > 0 && (
+              <div className="flex items-center gap-1 bg-white/15 backdrop-blur-sm rounded-full px-2.5 py-1">
+                <Star size={11} color="#F4C542" weight="fill" />
+                <span className="text-white text-xs font-bold">{Number(guide.avgRating).toFixed(1)}</span>
+                <span className="text-white/60 text-xs">({guide.totalReviews})</span>
+              </div>
+            )}
+            {guide.yearsExp > 0 && (
+              <div className="flex items-center gap-1 bg-white/15 backdrop-blur-sm rounded-full px-2.5 py-1">
+                <Clock size={11} color="rgba(255,255,255,0.8)" />
+                <span className="text-white text-xs font-medium">{guide.yearsExp} ans d'exp.</span>
+              </div>
+            )}
+            <span className="bg-sage-300/90 text-white text-[10px] font-bold px-2.5 py-1 rounded-full ml-auto">
+              ✓ Certifié
+            </span>
           </div>
         </div>
       </div>
 
       {/* ── STATS BAR ── */}
-      <div style={{ background: "var(--charcoal)", padding: "12px 20px", display: "grid", gridTemplateColumns: "repeat(4,1fr)", textAlign: "center" }}>
+      <div className="bg-charcoal-800 grid grid-cols-4 text-center py-3 px-2">
         {[
-          { val: Number(guide.avgRating).toFixed(1), label: "Note",     color: "var(--bronze)" },
-          { val: guide.totalReviews,                  label: "Avis",     color: "#fff" },
-          { val: guide.yearsExp,                      label: "Ans exp.", color: "#fff" },
-          { val: (guide.visitTypes as string[]).length || "5", label: "Circuits", color: "#fff" },
+          { val: Number(guide.avgRating).toFixed(1), label: "Note",      cls: "text-bronze-500" },
+          { val: guide.totalReviews,                  label: "Avis",      cls: "text-white" },
+          { val: guide.yearsExp || "—",               label: "Ans exp.",  cls: "text-white" },
+          { val: (guide.visitTypes as string[]).length || "5", label: "Circuits", cls: "text-white" },
         ].map((s, i) => (
-          <div key={s.label} style={{ borderRight: i < 3 ? "1px solid rgba(255,255,255,0.08)" : "none", padding: "0 4px" }}>
-            <div style={{ fontFamily: "var(--font-serif)", fontSize: 17, fontWeight: 700, color: s.color }}>{s.val}</div>
-            <div style={{ fontSize: 9, color: "rgba(255,255,255,0.35)", marginTop: 1 }}>{s.label}</div>
+          <div key={s.label} className={`${i < 3 ? "border-r border-white/10" : ""} px-1`}>
+            <div className={`font-display text-base font-bold ${s.cls}`}>{s.val}</div>
+            <div className="text-[9px] text-white/35 mt-0.5">{s.label}</div>
           </div>
         ))}
       </div>
 
       {/* ── BADGES ── */}
-      <div style={{ background: "var(--white)", padding: "12px 16px", display: "flex", gap: 8, overflowX: "auto", borderBottom: "1px solid var(--sand)", scrollbarWidth: "none" }}>
-        <div style={{ background: "#E8F0E4", border: "1.5px solid var(--sage)", borderRadius: 12, padding: "7px 12px", display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
-          <span style={{ fontSize: 16 }}>⏰</span>
+      <div className="bg-white border-b border-sand-300 flex gap-2 px-4 py-3 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
+        <div className="flex items-center gap-2 bg-sage-50 border border-sage-300 rounded-xl px-3 py-2 flex-shrink-0">
+          <span className="text-base">⏰</span>
           <div>
-            <div style={{ fontSize: 10, fontWeight: 800, color: "var(--sage)" }}>100% PONCTUEL</div>
-            <div style={{ fontSize: 9, color: "var(--muted)" }}>{guide.totalReviews} visites</div>
+            <div className="text-[10px] font-bold text-sage-300">100% PONCTUEL</div>
+            <div className="text-[9px] text-charcoal-400">{guide.totalReviews} visites</div>
           </div>
         </div>
         {Number(guide.avgRating) >= 4.8 && (
-          <div style={{ background: "#FEF3E8", border: "1.5px solid var(--bronze)", borderRadius: 12, padding: "7px 12px", display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
-            <span style={{ fontSize: 16 }}>🏆</span>
+          <div className="flex items-center gap-2 bg-bronze-50 border border-bronze-500 rounded-xl px-3 py-2 flex-shrink-0">
+            <span className="text-base">🏆</span>
             <div>
-              <div style={{ fontSize: 10, fontWeight: 800, color: "var(--bronze)" }}>SUPER GUIDE</div>
-              <div style={{ fontSize: 9, color: "var(--muted)" }}>Top 5%</div>
+              <div className="text-[10px] font-bold text-bronze-500">SUPER GUIDE</div>
+              <div className="text-[9px] text-charcoal-400">Top 5%</div>
             </div>
           </div>
         )}
-        <div style={{ background: "var(--sand)", border: "1.5px solid var(--sand-dark)", borderRadius: 12, padding: "7px 12px", display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
-          <span style={{ fontSize: 16 }}>⚡</span>
-          <div style={{ fontSize: 10, fontWeight: 800, color: "var(--charcoal)" }}>RÉPONSE &lt;1H</div>
+        <div className="flex items-center gap-2 bg-sand-200 border border-sand-300 rounded-xl px-3 py-2 flex-shrink-0">
+          <span className="text-base">⚡</span>
+          <div className="text-[10px] font-bold text-charcoal-700">RÉPONSE &lt;1H</div>
         </div>
       </div>
 
       {/* ── TABS ── */}
-      <div className="tab-bar" style={{ position: "sticky", top: 0, zIndex: 50 }}>
+      <div className="sticky top-0 z-30 bg-white border-b border-sand-300 flex overflow-x-auto" style={{ scrollbarWidth: "none" }}>
         {[
-          ["apropos", "À propos"],
+          ["apropos",  "À propos"],
           ["services", "Services"],
-          ["avis", `Avis (${guide.totalReviews})`],
-          ["photos", "Photos"],
+          ["avis",     `Avis (${guide.totalReviews})`],
+          ["photos",   "Photos"],
         ].map(([id, label]) => (
           <button
             key={id}
             onClick={() => setTab(id)}
-            className={`tab-btn${tab === id ? " active" : ""}`}
-          >{label}</button>
+            className={`px-5 py-3.5 text-xs font-bold flex-shrink-0 border-b-2 transition-colors
+              ${tab === id
+                ? "text-bronze-500 border-bronze-500"
+                : "text-charcoal-400 border-transparent"}`}
+          >
+            {label}
+          </button>
         ))}
       </div>
 
       {/* ── TAB: À PROPOS ── */}
       {tab === "apropos" && (
-        <div style={{ padding: 20 }}>
-          <div className="card" style={{ padding: 18, marginBottom: 14 }}>
-            <p style={{ fontSize: 13, color: "var(--soft)", lineHeight: 1.7, fontStyle: "italic", marginBottom: 14, paddingBottom: 14, borderBottom: "1px solid var(--sand)" }}>
+        <div className="px-4 pt-4 flex flex-col gap-3">
+
+          {/* Bio */}
+          <div className="bg-white rounded-2xl p-4 border border-sand-300">
+            <p className="text-sm text-charcoal-500 leading-relaxed italic mb-4 pb-4 border-b border-sand-200">
               &ldquo;{guide.bio}&rdquo;
             </p>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-              <div style={{ background: "var(--sand)", borderRadius: 12, padding: 10 }}>
-                <div style={{ fontSize: 9, color: "var(--muted)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 3 }}>📍 Ville</div>
-                <div style={{ fontSize: 13, fontWeight: 600 }}>{guide.city}</div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="bg-sand-200 rounded-xl p-3">
+                <div className="flex items-center gap-1.5 text-charcoal-400 text-[10px] font-bold uppercase tracking-wide mb-1">
+                  <MapPin size={10} className="text-bronze-500" weight="fill" /> Ville
+                </div>
+                <div className="text-sm font-semibold text-charcoal-800">{guide.city}</div>
               </div>
-              <div style={{ background: "var(--sand)", borderRadius: 12, padding: 10 }}>
-                <div style={{ fontSize: 9, color: "var(--muted)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 3 }}>🚗 Transport</div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: "var(--sage)" }}>Disponible</div>
+              <div className="bg-sand-200 rounded-xl p-3">
+                <div className="flex items-center gap-1.5 text-charcoal-400 text-[10px] font-bold uppercase tracking-wide mb-1">
+                  <CheckCircle size={10} className="text-sage-300" weight="fill" /> Transport
+                </div>
+                <div className="text-sm font-semibold text-sage-300">Disponible</div>
               </div>
             </div>
           </div>
 
-          <div className="card" style={{ padding: 18, marginBottom: 14 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: "var(--muted)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>Langues</div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 7 }}>
+          {/* Langues */}
+          <div className="bg-white rounded-2xl p-4 border border-sand-300">
+            <div className="flex items-center gap-2 mb-3">
+              <Translate size={16} className="text-bronze-500" weight="duotone" />
+              <span className="text-xs font-bold text-charcoal-400 uppercase tracking-wider">Langues</span>
+            </div>
+            <div className="flex flex-wrap gap-2">
               {(guide.languages as string[]).map((l: string) => (
-                <span key={l} className="btn-bronze" style={{ padding: "6px 14px", fontSize: 12 }}>{l}</span>
+                <span key={l}
+                  className="flex items-center gap-1.5 bg-bronze-50 border border-bronze-500 text-bronze-500 text-xs font-bold px-3 py-1.5 rounded-full">
+                  <span>{LANG_FLAGS[l] ?? "🏳️"}</span> {l}
+                </span>
               ))}
             </div>
           </div>
 
+          {/* Spécialités */}
           {(guide.specialties as string[]).length > 0 && (
-            <div className="card" style={{ padding: 18, marginBottom: 14 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: "var(--muted)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>Spécialités</div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 7 }}>
+            <div className="bg-white rounded-2xl p-4 border border-sand-300">
+              <div className="flex items-center gap-2 mb-3">
+                <Shield size={16} className="text-bronze-500" weight="duotone" />
+                <span className="text-xs font-bold text-charcoal-400 uppercase tracking-wider">Spécialités</span>
+              </div>
+              <div className="flex flex-wrap gap-2">
                 {(guide.specialties as string[]).map((s: string) => (
-                  <span key={s} className="pill">{s}</span>
+                  <span key={s} className="bg-sand-200 border border-sand-300 text-charcoal-600 text-xs font-semibold px-3 py-1.5 rounded-full">
+                    {s}
+                  </span>
                 ))}
               </div>
             </div>
           )}
 
-          <button onClick={() => setTab("services")} className="btn-bronze" style={{ width: "100%", padding: 15, fontSize: 14 }}>
+          <button
+            onClick={() => setTab("services")}
+            className="w-full py-4 bg-bronze-500 hover:bg-bronze-600 text-white font-bold text-sm rounded-2xl transition-colors"
+          >
             Voir les services · à partir de {guide.halfDayPrice} MAD
           </button>
         </div>
@@ -158,130 +219,143 @@ export default function GuidePageClient({ guide }: { guide: any }) {
 
       {/* ── TAB: SERVICES ── */}
       {tab === "services" && (
-        <div style={{ padding: 20 }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            {[
-              { title: "Demi-journée (4h)",     desc: "Découverte de la médina, souks et monuments principaux", price: guide.halfDayPrice, popular: true },
-              { title: "Journée complète (8h)", desc: "Exploration complète de la ville et des environs",        price: guide.fullDayPrice, popular: false },
-              { title: "Tour culinaire",        desc: "Dégustation et cours de cuisine marocaine authentique",   price: 400,               popular: false },
-              { title: "Excursion désert",      desc: "Journée dans le désert avec chameau et coucher de soleil",price: 800,               popular: false },
-            ].map(s => (
-              <div key={s.title} className="card" style={{ padding: "18px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16, border: s.popular ? "1.5px solid rgba(184,138,68,0.4)" : "none" }}>
-                <div style={{ flex: 1 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 4 }}>
-                    <div style={{ fontWeight: 700, fontSize: 14, color: "var(--charcoal)" }}>{s.title}</div>
-                    {s.popular && <span className="badge badge-sage">Populaire</span>}
-                  </div>
-                  <div style={{ fontSize: 12, color: "var(--muted)" }}>{s.desc}</div>
+        <div className="px-4 pt-4 flex flex-col gap-3">
+          {[
+            { title: "Demi-journée (4h)",     desc: "Découverte de la médina, souks et monuments principaux", price: guide.halfDayPrice, popular: true },
+            { title: "Journée complète (8h)", desc: "Exploration complète de la ville et des environs",        price: guide.fullDayPrice, popular: false },
+            { title: "Tour culinaire",        desc: "Dégustation et cours de cuisine marocaine authentique",   price: 400,               popular: false },
+            { title: "Excursion désert",      desc: "Journée dans le désert avec chameau et coucher de soleil",price: 800,               popular: false },
+          ].map(s => (
+            <div key={s.title}
+              className={`bg-white rounded-2xl p-4 border flex items-center justify-between gap-3 transition-all
+                ${s.popular ? "border-bronze-500" : "border-sand-300"}`}>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-sm font-bold text-charcoal-800">{s.title}</span>
+                  {s.popular && (
+                    <span className="bg-sage-50 text-sage-300 text-[10px] font-bold px-2 py-0.5 rounded-full border border-sage-300">
+                      Populaire
+                    </span>
+                  )}
                 </div>
-                <div style={{ textAlign: "right", flexShrink: 0 }}>
-                  <div style={{ fontFamily: "var(--font-serif)", fontSize: 18, fontWeight: 700, color: "var(--charcoal)" }}>{s.price} MAD</div>
-                  <div style={{ fontSize: 10, color: "var(--muted)" }}>{toEur(Number(s.price))}</div>
-                </div>
+                <p className="text-xs text-charcoal-400 leading-relaxed">{s.desc}</p>
               </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* ── TAB: AVIS ── */}
-      {tab === "avis" && (
-        <div style={{ padding: 20 }}>
-          <div className="card" style={{ padding: 18, marginBottom: 14 }}>
-            <div style={{ display: "flex", gap: 16, alignItems: "center", marginBottom: 14, paddingBottom: 14, borderBottom: "1px solid var(--sand)" }}>
-              <div style={{ textAlign: "center" }}>
-                <div style={{ fontFamily: "var(--font-serif)", fontSize: 44, fontWeight: 700, color: "var(--bronze)", lineHeight: 1 }}>{Number(guide.avgRating).toFixed(1)}</div>
-                <div style={{ color: "var(--bronze)", fontSize: 17, marginTop: 4 }}>★★★★★</div>
-                <div style={{ fontSize: 11, color: "var(--muted)", marginTop: 4 }}>{guide.totalReviews} avis</div>
+              <div className="text-right flex-shrink-0">
+                <div className="font-display text-lg font-bold text-charcoal-800">{s.price} MAD</div>
+                <div className="text-[10px] text-charcoal-400">{toEur(Number(s.price))}</div>
               </div>
-              <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 7 }}>
-                {[
-                  { label: "⏰ Ponctualité",   val: "5.0", color: "var(--sage)",   w: "100%" },
-                  { label: "🗣️ Communication", val: "4.9", color: "var(--sage)",   w: "98%"  },
-                  { label: "🏛️ Connaissance",  val: "5.0", color: "var(--sage)",   w: "100%" },
-                  { label: "💰 Qualité/prix",  val: "4.8", color: "var(--bronze)", w: "96%"  },
-                ].map(r => (
-                  <div key={r.label}>
-                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, marginBottom: 3 }}>
-                      <span style={{ color: "var(--soft)" }}>{r.label}</span>
-                      <span style={{ fontWeight: 700, color: r.color }}>{r.val}</span>
-                    </div>
-                    <div className="progress-bar">
-                      <div style={{ height: "100%", borderRadius: 3, background: r.color, width: r.w }} />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div style={{ fontSize: 12, fontWeight: 700, color: "var(--sage)", textAlign: "center" }}>
-              👍 97% recommandent {guide.displayName.split(" ")[0]}
-            </div>
-          </div>
-
-          {guide.reviews?.length === 0 && (
-            <div className="card" style={{ padding: "40px 20px", textAlign: "center", color: "var(--muted)" }}>
-              <div style={{ fontSize: 32, marginBottom: 8 }}>💬</div>
-              <div>Aucun avis pour le moment</div>
-            </div>
-          )}
-
-          {guide.reviews?.map((r: any) => (
-            <div key={r.id} className="card" style={{ padding: 16, marginBottom: 10 }}>
-              <div style={{ display: "flex", gap: 10, marginBottom: 10 }}>
-                <div style={{ width: 36, height: 36, borderRadius: "50%", background: "var(--sand-dark)", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, color: "var(--soft)", fontSize: 14, flexShrink: 0 }}>
-                  {r.author?.avatar
-                    ? <img src={r.author.avatar} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                    : r.author?.name?.[0]}
-                </div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 700, fontSize: 13 }}>{r.author?.name || "Voyageur"}</div>
-                  <div style={{ fontSize: 10, color: "var(--muted)" }}>{new Date(r.createdAt).toLocaleDateString("fr-FR")}</div>
-                </div>
-                <div style={{ color: "var(--bronze)", fontSize: 13 }}>{"★".repeat(r.rating)}</div>
-              </div>
-              <p style={{ fontSize: 13, color: "var(--soft)", lineHeight: 1.6, fontStyle: "italic", margin: 0 }}>&ldquo;{r.comment}&rdquo;</p>
-              <div style={{ fontSize: 11, fontWeight: 600, color: "var(--sage)", marginTop: 8 }}>👍 Recommandé</div>
             </div>
           ))}
         </div>
       )}
 
+      {/* ── TAB: AVIS ── */}
+      {tab === "avis" && (
+        <div className="px-4 pt-4 flex flex-col gap-3">
+
+          {/* Résumé notes */}
+          <div className="bg-white rounded-2xl p-4 border border-sand-300">
+            <div className="flex gap-4 items-center mb-4 pb-4 border-b border-sand-200">
+              <div className="text-center">
+                <div className="font-display text-5xl font-bold text-bronze-500 leading-none">
+                  {Number(guide.avgRating).toFixed(1)}
+                </div>
+                <div className="text-bronze-500 text-lg mt-1">★★★★★</div>
+                <div className="text-xs text-charcoal-400 mt-1">{guide.totalReviews} avis</div>
+              </div>
+              <div className="flex-1 flex flex-col gap-2">
+                {[
+                  { label: "⏰ Ponctualité",   val: "5.0", w: "100%" },
+                  { label: "🗣️ Communication", val: "4.9", w: "98%"  },
+                  { label: "🏛️ Connaissance",  val: "5.0", w: "100%" },
+                  { label: "💰 Qualité/prix",  val: "4.8", w: "96%"  },
+                ].map(r => (
+                  <div key={r.label}>
+                    <div className="flex justify-between text-[11px] mb-1">
+                      <span className="text-charcoal-500">{r.label}</span>
+                      <span className="font-bold text-sage-300">{r.val}</span>
+                    </div>
+                    <div className="h-1.5 bg-sand-300 rounded-full overflow-hidden">
+                      <div className="h-full bg-sage-300 rounded-full" style={{ width: r.w }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="flex items-center justify-center gap-2 text-sage-300">
+              <ThumbsUp size={14} weight="fill" />
+              <span className="text-xs font-bold">97% recommandent {guide.displayName.split(" ")[0]}</span>
+            </div>
+          </div>
+
+          {/* Liste avis */}
+          {guide.reviews?.length === 0 ? (
+            <div className="bg-white rounded-2xl p-10 text-center border border-sand-300">
+              <ChatCircle size={32} className="text-charcoal-300 mx-auto mb-3" weight="duotone" />
+              <div className="text-sm text-charcoal-400">Aucun avis pour le moment</div>
+            </div>
+          ) : (
+            guide.reviews?.map((r: any) => (
+              <div key={r.id} className="bg-white rounded-2xl p-4 border border-sand-300">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-9 h-9 rounded-full bg-sand-300 overflow-hidden flex items-center justify-center font-bold text-charcoal-600 flex-shrink-0">
+                    {r.author?.avatar
+                      ? <img src={r.author.avatar} className="w-full h-full object-cover" />
+                      : r.author?.name?.[0]}
+                  </div>
+                  <div className="flex-1">
+                    <div className="text-sm font-bold text-charcoal-800">{r.author?.name || "Voyageur"}</div>
+                    <div className="text-[10px] text-charcoal-400">{new Date(r.createdAt).toLocaleDateString("fr-FR")}</div>
+                  </div>
+                  <div className="text-bronze-500 text-sm">{"★".repeat(r.rating)}</div>
+                </div>
+                <p className="text-sm text-charcoal-500 leading-relaxed italic">&ldquo;{r.comment}&rdquo;</p>
+                <div className="flex items-center gap-1 mt-2">
+                  <ThumbsUp size={11} className="text-sage-300" weight="fill" />
+                  <span className="text-[11px] font-bold text-sage-300">Recommandé</span>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      )}
+
       {/* ── TAB: PHOTOS ── */}
       {tab === "photos" && (
-        <div style={{ padding: 16 }}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-            {guide.avatar && (
-              <img src={guide.avatar} alt="" style={{ width: "100%", height: 130, objectFit: "cover", borderRadius: 16 }} />
-            )}
-            {(guide.gallery as string[]).map((img: string, i: number) => (
-              <img key={i} src={img} alt="" style={{ width: "100%", height: 130, objectFit: "cover", borderRadius: 16 }} />
-            ))}
-            {(guide.gallery as string[]).length === 0 && (
-              <div style={{ gridColumn: "1 / -1", textAlign: "center", padding: "40px", color: "var(--muted)" }} className="card">
-                <div style={{ fontSize: 32, marginBottom: 8 }}>📷</div>
-                <div>Aucune photo disponible</div>
-              </div>
-            )}
-          </div>
+        <div className="px-4 pt-4">
+          {(guide.gallery as string[]).length === 0 && !guide.avatar ? (
+            <div className="bg-white rounded-2xl p-10 text-center border border-sand-300">
+              <Camera size={32} className="text-charcoal-300 mx-auto mb-3" weight="duotone" />
+              <div className="text-sm text-charcoal-400">Aucune photo disponible</div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-2">
+              {guide.avatar && (
+                <img src={guide.avatar} alt="" className="w-full h-36 object-cover rounded-2xl" />
+              )}
+              {(guide.gallery as string[]).map((img: string, i: number) => (
+                <img key={i} src={img} alt="" className="w-full h-36 object-cover rounded-2xl" />
+              ))}
+            </div>
+          )}
         </div>
       )}
 
       {/* ── STICKY FOOTER ── */}
-      <div style={{
-        position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)",
-        width: "100%", maxWidth: 680,
-        background: "rgba(255,255,255,0.97)", backdropFilter: "blur(16px)",
-        borderTop: "1px solid var(--sand-dark)", padding: "12px 20px 28px", zIndex: 100
-      }}>
-        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
-          <div style={{ textAlign: "center", flex: 1 }}>
-            <div style={{ fontWeight: 700, fontSize: 18 }}>{guide.halfDayPrice} <span style={{ fontSize: 13, fontWeight: 400, color: "var(--muted)" }}>MAD</span></div>
-            <div style={{ color: "var(--muted)", fontSize: 11 }}>4h · Demi-journée</div>
+      <div className="fixed bottom-0 left-0 right-0 bg-white/97 backdrop-blur-lg border-t border-sand-300 px-4 pt-3 pb-6 z-50">
+        <div className="flex items-center justify-between mb-3">
+          <div className="text-center flex-1">
+            <div className="font-display text-lg font-bold text-charcoal-800">
+              {guide.halfDayPrice} <span className="text-sm font-normal text-charcoal-400">MAD</span>
+            </div>
+            <div className="text-[10px] text-charcoal-400">4h · Demi-journée</div>
           </div>
-          <div style={{ width: 1, background: "var(--sand-dark)", margin: "0 12px" }} />
-          <div style={{ textAlign: "center", flex: 1 }}>
-            <div style={{ fontWeight: 700, fontSize: 18 }}>{guide.fullDayPrice} <span style={{ fontSize: 13, fontWeight: 400, color: "var(--muted)" }}>MAD</span></div>
-            <div style={{ color: "var(--muted)", fontSize: 11 }}>8h · Journée</div>
+          <div className="w-px h-8 bg-sand-300" />
+          <div className="text-center flex-1">
+            <div className="font-display text-lg font-bold text-charcoal-800">
+              {guide.fullDayPrice} <span className="text-sm font-normal text-charcoal-400">MAD</span>
+            </div>
+            <div className="text-[10px] text-charcoal-400">8h · Journée</div>
           </div>
         </div>
         <BookingModal
