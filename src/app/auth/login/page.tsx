@@ -3,61 +3,72 @@ import Link from "next/link";
 
 export default function LoginPage() {
   return (
-    <div style={{ minHeight: "100vh", background: "#F7F7F7", fontFamily: "Inter, -apple-system, sans-serif", display: "flex", flexDirection: "column" }}>
+    <div className="min-h-screen bg-sand-200 flex flex-col">
 
-      {/* Navbar */}
-      <nav style={{ background: "linear-gradient(135deg, #123EAB, #1a4fd6)", padding: "0 16px", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <Link href="/" style={{ display: "flex", alignItems: "center", gap: 6, color: "#fff", textDecoration: "none" }}>
-          <span style={{ fontSize: 18 }}>←</span>
-          <span style={{ fontWeight: 500, fontSize: 14 }}>Retour</span>
+      {/* ── COVER ── */}
+      <div className="relative h-52 bg-charcoal-800 flex flex-col items-center justify-end pb-8 px-4">
+        <div className="absolute inset-0 opacity-20"
+          style={{ backgroundImage: "url(https://images.unsplash.com/photo-1539020140153-e479b8c22e70?w=800&q=80)", backgroundSize: "cover", backgroundPosition: "center" }} />
+        <div className="absolute inset-0 bg-gradient-to-b from-charcoal-800/60 to-charcoal-800/90" />
+        <Link href="/" className="absolute top-4 left-4 w-9 h-9 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center text-white text-sm font-bold no-underline z-10">
+          ←
         </Link>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <img src="https://igzqwsxbdfzskwqnvvth.supabase.co/storage/v1/object/public/avatars/logo.png" alt="Laksor" style={{ height: 36, width: "auto" }}/>
+        <div className="relative z-10 text-center">
+          <div className="w-14 h-14 rounded-2xl bg-bronze-500 flex items-center justify-center mx-auto mb-3 text-2xl">🧭</div>
+          <h1 className="font-display text-2xl font-semibold text-white mb-1">Bon retour !</h1>
+          <p className="text-sm text-white/70">Connectez-vous pour accéder à votre espace</p>
         </div>
-        <div style={{ width: 60 }}/>
-      </nav>
-
-      {/* Hero */}
-      <div style={{ background: "linear-gradient(135deg, #123EAB, #1a4fd6)", padding: "32px 16px 48px", textAlign: "center" }}>
-        <div style={{ width: 64, height: 64, background: "rgba(255,255,255,0.15)", borderRadius: 20, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px", fontSize: 32 }}>🧭</div>
-        <h1 style={{ color: "#fff", fontSize: 22, fontWeight: 700, marginBottom: 6 }}>Bon retour !</h1>
-        <p style={{ color: "rgba(255,255,255,0.75)", fontSize: 13 }}>Connectez-vous pour accéder à votre espace</p>
       </div>
 
-      {/* Card */}
-      <div style={{ flex: 1, display: "flex", alignItems: "flex-start", justifyContent: "center", padding: "0 16px", marginTop: -24 }}>
-        <div style={{ background: "#fff", borderRadius: 24, padding: 28, width: "100%", maxWidth: 420, border: "1px solid #EBEBEB", boxShadow: "0 4px 24px rgba(0,0,0,0.08)" }}>
+      {/* ── CARD ── */}
+      <div className="flex-1 px-4 -mt-6 pb-10">
+        <div className="bg-white rounded-3xl p-6 shadow-sm border border-sand-300 max-w-sm mx-auto">
 
-          {/* Google Button */}
-          <div style={{ marginBottom: 24 }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: "#374151", marginBottom: 12, textAlign: "center" }}>Continuer avec Google</div>
-            <LoginButton />
+          {/* Google */}
+          <div className="text-center text-xs font-bold text-charcoal-400 uppercase tracking-wider mb-4">
+            Continuer avec
+          </div>
+          <LoginButton />
+
+          <div className="flex items-center gap-3 my-5">
+            <div className="flex-1 h-px bg-sand-300" />
+            <span className="text-xs text-charcoal-300 font-medium">Connexion sécurisée</span>
+            <div className="flex-1 h-px bg-sand-300" />
           </div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
-            <div style={{ flex: 1, height: 1, background: "#EBEBEB" }}/>
-            <span style={{ fontSize: 12, color: "#94A3B8" }}>Connexion sécurisée</span>
-            <div style={{ flex: 1, height: 1, background: "#EBEBEB" }}/>
-          </div>
-
-          {/* Info Box */}
-          <div style={{ background: "#F0FDF4", borderRadius: 14, padding: 16, marginBottom: 24, border: "1px solid #BBF7D0" }}>
-            <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
-              <span style={{ fontSize: 20 }}>🔒</span>
+          {/* Trust */}
+          <div className="bg-sage-50 border border-sage-300 rounded-2xl p-4 mb-5">
+            <div className="flex items-start gap-3">
+              <span className="text-lg">🔒</span>
               <div>
-                <div style={{ fontWeight: 600, fontSize: 13, color: "#166534", marginBottom: 3 }}>Connexion 100% sécurisée</div>
-                <div style={{ fontSize: 12, color: "#166534", opacity: 0.8, lineHeight: 1.5 }}>Nous utilisons Google OAuth pour protéger votre compte. Aucun mot de passe requis.</div>
+                <div className="text-sm font-bold text-sage-300 mb-0.5">Connexion 100% sécurisée</div>
+                <p className="text-xs text-charcoal-400 leading-relaxed">Google OAuth protège votre compte. Aucun mot de passe requis.</p>
               </div>
             </div>
           </div>
 
-          {/* Register Link */}
-          <div style={{ textAlign: "center" }}>
-            <span style={{ fontSize: 14, color: "#718096" }}>Pas encore de compte ? </span>
-            <Link href="/auth/register" style={{ color: "#123EAB", fontWeight: 700, fontSize: 14, textDecoration: "none" }}>Devenir guide →</Link>
+          {/* Features */}
+          <div className="flex flex-col gap-2 mb-5">
+            {[
+              { icon: "📍", text: "Réservez des guides locaux certifiés" },
+              { icon: "💬", text: "Messagerie directe avec votre guide" },
+              { icon: "🔄", text: "Annulation gratuite jusqu'à 72h avant" },
+            ].map(f => (
+              <div key={f.text} className="flex items-center gap-3 text-xs text-charcoal-500">
+                <span>{f.icon}</span>{f.text}
+              </div>
+            ))}
           </div>
 
-          <p style={{ textAlign: "center", fontSize: 11, color: "#94A3B8", marginTop: 16 }}>
+          {/* Register */}
+          <div className="text-center pt-4 border-t border-sand-200">
+            <span className="text-sm text-charcoal-400">Pas encore de compte ? </span>
+            <Link href="/auth/register" className="text-bronze-500 font-bold text-sm no-underline">
+              Devenir guide →
+            </Link>
+          </div>
+
+          <p className="text-center text-[10px] text-charcoal-300 mt-3">
             En vous connectant, vous acceptez nos CGU
           </p>
         </div>

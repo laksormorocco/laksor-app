@@ -172,16 +172,9 @@ export default function GuidePageClient({ guide }: { guide: any }) {
             </div>
             <div className="text-xs text-charcoal-400">/ 2 personnes</div>
           </div>
-          {guide.avgRating > 0 && (
-            <div className="text-right">
-              <div className="flex items-center gap-1 justify-end">
-                <Star size={13} weight="fill" className="text-bronze-500" />
-                <span className="font-bold text-charcoal-800 text-sm">{Number(guide.avgRating).toFixed(1)}</span>
-              </div>
-              <div className="text-xs text-charcoal-400">{guide.totalReviews} avis</div>
+<div className="text-right">
               <div className="text-xs text-charcoal-400 mt-0.5">Prochain dispo : Samedi</div>
             </div>
-          )}
         </div>
 
         {/* Bouton vert */}
