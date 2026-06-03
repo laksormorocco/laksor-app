@@ -12,6 +12,17 @@ const supabase = createClient(
 
 const CITIES = ["Marrakech","Fès","Casablanca","Rabat","Chefchaouen","Essaouira","Agadir","Tanger","Meknès","Ouarzazate"];
 
+function Field({ label, icon, children }: { label: string; icon: React.ReactNode; children: React.ReactNode }) {
+  return (
+    <div className="mb-4">
+      <label className="flex items-center gap-1.5 text-xs font-bold text-charcoal-600 uppercase tracking-wider mb-2">
+        {icon}{label}
+      </label>
+      {children}
+    </div>
+  );
+}
+
 export default function RegisterGuidePage() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
@@ -58,14 +69,7 @@ export default function RegisterGuidePage() {
     setSubmitting(false);
   }
 
-  const Field = ({ label, icon, children }: { label: string; icon: React.ReactNode; children: React.ReactNode }) => (
-    <div className="mb-4">
-      <label className="flex items-center gap-1.5 text-xs font-bold text-charcoal-600 uppercase tracking-wider mb-2">
-        {icon}{label}
-      </label>
-      {children}
-    </div>
-  );
+
 
   const inputCls = "w-full border border-sand-300 rounded-xl px-4 py-3 text-sm text-charcoal-800 bg-sand-100 outline-none focus:border-bronze-500 transition-colors";
 
