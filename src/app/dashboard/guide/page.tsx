@@ -4,8 +4,14 @@ import GuideStats from "@/components/GuideStats";
 import ProfileEditor from "@/components/ProfileEditor";
 import {
   House, CalendarCheck, Target, ChartBar, User,
-  Bell, ArrowRight, Check, X, Clock, Users
+  Bell, ArrowRight, Check, X, Clock, Users, SignOut
 } from "@phosphor-icons/react";
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL || "",
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ""
+);
 
 const TABS = [
   { id:"home",         Icon: House,         label:"Accueil"      },

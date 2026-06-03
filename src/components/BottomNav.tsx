@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { createClient } from "@supabase/supabase-js";
-import { House, MagnifyingGlass, Heart, User, Gauge } from "@phosphor-icons/react";
+import { House, MagnifyingGlass, Heart, User, Gauge, SignOut } from "@phosphor-icons/react";
 import { usePathname } from "next/navigation";
 
 const supabase = createClient(
@@ -35,8 +35,8 @@ export default function BottomNav() {
     { href: "/search",  Icon: MagnifyingGlass,  label: "Rechercher" },
     { href: "/favorites", Icon: Heart,          label: "Favoris"    },
     dashboardUrl
-      ? { href: dashboardUrl, Icon: Gauge,      label: "Dashboard"  }
-      : { href: "/auth/login", Icon: User,      label: "Connexion"  },
+      ? { href: dashboardUrl, Icon: Gauge,      label: "Dashboard", action: null  }
+      : { href: "/auth/login", Icon: User,      label: "Connexion", action: null  },
   ];
 
   return (

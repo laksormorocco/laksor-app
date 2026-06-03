@@ -1,33 +1,509 @@
 "use client";
 import { useState, useEffect } from "react";
-const TABS = [{id:"overview",icon:"📊",label:"Overview"},{id:"guides",icon:"🧭",label:"Guides"},{id:"bookings",icon:"📋",label:"Reservations"},{id:"email",icon:"📧",label:"Email"}];
+import {
+  ChartBar, Compass, CalendarCheck, EnvelopeSimple, MapTrifold,
+  Check, X, Trash, WhatsappLogo, PaperPlaneTilt, Plus, PencilSimple,
+  ToggleLeft, ToggleRight, SignOut
+} from "@phosphor-icons/react";
+
 const PASSWORD = "laksor2024";
+
+const TABS = [
+  { id:"overview", Icon: ChartBar,       label:"Overview"  },
+  { id:"guides",   Icon: Compass,        label:"Guides"    },
+  { id:"bookings", Icon: CalendarCheck,  label:"Réserv."   },
+  { id:"tours",    Icon: MapTrifold,     label:"Tours"     },
+  { id:"email",    Icon: EnvelopeSimple, label:"Email"     },
+];
+
+const TOUR_TYPES = [
+  { type:"MEDINA_SECRETS",     emoji:"🕌", title:"Médina & Secrets",       desc:"Ruelles cachées, artisans, histoire" },
+  { type:"GASTRONOMIE",        emoji:"🍽️", title:"Gastronomie & Cuisine",   desc:"Épices, tajine, cuisine locale"      },
+  { type:"HISTOIRE_MONUMENTS", emoji:"🏛️", title:"Histoire & Monuments",    desc:"Sites UNESCO, palais, médersas"      },
+  { type:"DESERT_NATURE",      emoji:"🏜️", title:"Désert & Nature",         desc:"Sahara, bivouac, chameaux"           },
+  { type:"SHOPPING_ARTISANAT", emoji:"🛍️", title:"Shopping & Artisanat",    desc:"Souks, cuir, poterie, tapis"         },
+  { type:"COUCHER_SOLEIL",     emoji:"🌅", title:"Coucher de soleil",       desc:"Rooftops, dunes, panoramas"          },
+  { type:"PHOTO_INSTAGRAM",    emoji:"📸", title:"Tour Photo / Instagram",  desc:"Lieux instagrammables, shooting"     },
+];
+
+const inputCls = "w-full border border-sand-300 rounded-xl px-4 py-3 text-sm text-charcoal-800 bg-sand-100 outline-none focus:border-bronze-500 transition-colors";
+
+function statusBadge(status: string) {
+  const map: Record<string,string> = {
+    APPROVED: "bg-sage-50 text-sage-300 border-sage-300",
+    PENDING:  "bg-bronze-50 text-bronze-500 border-bronze-500",
+    REJECTED: "bg-red-50 text-red-400 border-red-200",
+    SUSPENDED:"bg-sand-200 text-charcoal-400 border-sand-300",
+  };
+  const labels: Record<string,string> = { APPROVED:"Approuvé", PENDING:"En attente", REJECTED:"Refusé", SUSPENDED:"Suspendu" };
+  return { cls: `inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${map[status]||"bg-sand-200 text-charcoal-400 border-sand-300"}`, label: labels[status]||status };
+}
+
 export default function AdminDashboard() {
-  const [auth,setAuth]=useState(false);const [pwd,setPwd]=useState("");const [active,setActive]=useState("overview");const [stats,setStats]=useState<any>(null);const [guides,setGuides]=useState<any[]>([]);const [bookings,setBookings]=useState<any[]>([]);const [guideTab,setGuideTab]=useState("pending");const [search,setSearch]=useState("");const [emailForm,setEmailForm]=useState({to:"",subject:"",message:""});const [emailSending,setEmailSending]=useState(false);const [emailSent,setEmailSent]=useState(false);
-  useEffect(()=>{if(auth){fetchAll();}},[auth]);
-  useEffect(()=>{if(auth&&active==="guides")fetchGuides();},[guideTab,active,auth]);
-  async function fetchAll(){const[sRes,bRes]=await Promise.all([fetch("/api/admin/stats"),fetch("/api/admin/bookings")]);const sData=await sRes.json();const bData=await bRes.json();setStats(sData);setBookings(bData.bookings||[]);fetchGuides();}
-  async function fetchGuides(){const res=await fetch("/api/admin/guides?status="+guideTab.toUpperCase());const data=await res.json();setGuides(data.guides||[]);}
-  async function updateGuide(id:string,status:string){await fetch("/api/admin/guides",{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({id,status})});fetchGuides();fetchAll();}
-  async function deleteGuide(id:string){if(!confirm("Supprimer ?"))return;await fetch("/api/admin/guides/"+id,{method:"DELETE"});fetchGuides();}
-  async function sendEmail(){if(!emailForm.to||!emailForm.subject||!emailForm.message)return alert("Remplissez tout");setEmailSending(true);const res=await fetch("/api/email",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({to:emailForm.to,subject:emailForm.subject,html:"<div style='font-family:sans-serif;padding:24px'><h2 style='color:#123EAB'>LAKSOR MOROCCO</h2><hr/>"+emailForm.message.split("\n").join("<br/>")+"</div>"})});if(res.ok){setEmailSent(true);setEmailForm({to:"",subject:"",message:""});setTimeout(()=>setEmailSent(false),3000);}else alert("Erreur");setEmailSending(false);}
-  const filtered=guides.filter(g=>!search||g.displayName?.toLowerCase().includes(search.toLowerCase())||g.city?.toLowerCase().includes(search.toLowerCase()));
-  const BARS=stats?.monthlyRevenue||[];const maxBar=Math.max(...BARS.map((b:any)=>b.revenue||0),1);
-  if(!auth)return(<div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:"#F7F7F7",fontFamily:"Inter,sans-serif",padding:16}}><div style={{background:"#fff",borderRadius:24,padding:32,maxWidth:360,width:"100%",textAlign:"center",border:"1px solid #EBEBEB"}}><div style={{width:64,height:64,background:"linear-gradient(135deg,#123EAB,#1a4fd6)",borderRadius:20,display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 20px",fontSize:28}}>🔐</div><h1 style={{fontSize:22,fontWeight:700,color:"#0F172A",marginBottom:6}}>Dashboard Admin</h1><p style={{color:"#94A3B8",fontSize:14,marginBottom:24}}>Acces reserve</p><input type="password" value={pwd} onChange={e=>setPwd(e.target.value)} onKeyDown={e=>e.key==="Enter"&&pwd===PASSWORD&&setAuth(true)} placeholder="Mot de passe" style={{width:"100%",border:"1.5px solid #E2E8F0",borderRadius:12,padding:"12px 14px",fontSize:15,fontFamily:"inherit",outline:"none",marginBottom:12,boxSizing:"border-box" as const}}/><button onClick={()=>pwd===PASSWORD?setAuth(true):alert("Incorrect")} style={{width:"100%",background:"#0B132B",color:"#fff",border:"none",borderRadius:30,padding:"14px 0",fontSize:15,fontWeight:600,cursor:"pointer",fontFamily:"inherit"}}>Connexion</button></div></div>);
-  return(<div style={{background:"#F7F7F7",minHeight:"100vh",fontFamily:"Inter,sans-serif",paddingBottom:80}}>
-    <div style={{background:"#fff",padding:"16px",borderBottom:"1px solid #EBEBEB",position:"sticky",top:0,zIndex:100}}><div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}><div><div style={{fontSize:12,color:"#94A3B8"}}>Admin</div><div style={{fontWeight:700,fontSize:16,color:"#222"}}>Laksor Dashboard</div></div><div style={{display:"flex",gap:8}}><button onClick={fetchAll} style={{width:40,height:40,background:"#F7F7F7",borderRadius:12,border:"1px solid #EBEBEB",cursor:"pointer",fontSize:16}}>🔄</button><a href="/" style={{width:40,height:40,background:"#F7F7F7",borderRadius:12,border:"1px solid #EBEBEB",display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,textDecoration:"none"}}>🏠</a><button onClick={()=>setAuth(false)} style={{width:40,height:40,background:"#FFF1F2",borderRadius:12,border:"1px solid #FECDD3",cursor:"pointer",fontSize:16}}>🚪</button></div></div></div>
-    <div style={{padding:"16px"}}>
-      {active==="overview"&&(<div>
-        <div style={{background:"linear-gradient(135deg,#123EAB,#1a4fd6)",borderRadius:20,padding:20,marginBottom:16}}><div style={{fontSize:12,color:"rgba(255,255,255,0.7)",marginBottom:4}}>Revenus total</div><div style={{fontSize:32,fontWeight:800,color:"#fff",marginBottom:4}}>{stats?.totalRevenue||0} MAD</div><div style={{marginBottom:8}}><span style={{background:"rgba(74,222,128,0.2)",color:"#4ade80",fontSize:11,fontWeight:700,padding:"3px 8px",borderRadius:20}}>Commission 24% : {stats?.totalCommission||0} MAD</span></div><div style={{display:"flex",gap:16}}><div><div style={{fontSize:11,color:"rgba(255,255,255,0.6)"}}>Guides actifs</div><div style={{fontSize:16,fontWeight:700,color:"#4ade80"}}>{stats?.approvedGuides||0}</div></div><div style={{width:1,background:"rgba(255,255,255,0.15)"}}/><div><div style={{fontSize:11,color:"rgba(255,255,255,0.6)"}}>En attente</div><div style={{fontSize:16,fontWeight:700,color:"#F4C542"}}>{stats?.pendingGuides||0}</div></div><div style={{width:1,background:"rgba(255,255,255,0.15)"}}/><div><div style={{fontSize:11,color:"rgba(255,255,255,0.6)"}}>Reservations</div><div style={{fontSize:16,fontWeight:700,color:"#fff"}}>{stats?.totalBookings||0}</div></div><div style={{width:1,background:"rgba(255,255,255,0.15)"}}/><div><div style={{fontSize:11,color:"rgba(255,255,255,0.6)"}}>Utilisateurs</div><div style={{fontSize:16,fontWeight:700,color:"#fff"}}>{stats?.totalUsers||0}</div></div></div></div>
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:16}}>{[{icon:"🧭",label:"Guides approuves",val:stats?.approvedGuides||0,bg:"#EFF6FF",color:"#123EAB"},{icon:"⏳",label:"En attente",val:stats?.pendingGuides||0,bg:"#FEF3C7",color:"#92400E"},{icon:"📋",label:"Reservations",val:stats?.totalBookings||0,bg:"#F0FDF4",color:"#22c55e"},{icon:"💰",label:"Commission",val:Math.round((stats?.totalRevenue||0)*0.24)+" MAD",bg:"#FDF4FF",color:"#9333ea"}].map(s=>(<div key={s.label} style={{background:"#fff",borderRadius:16,padding:16,border:"1px solid #EBEBEB"}}><div style={{width:36,height:36,borderRadius:10,background:s.bg,display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,marginBottom:8}}>{s.icon}</div><div style={{fontSize:22,fontWeight:800,color:s.color}}>{s.val}</div><div style={{fontSize:11,color:"#94A3B8",marginTop:2}}>{s.label}</div></div>))}</div>
-        {BARS.length>0&&(<div style={{background:"#fff",borderRadius:16,padding:18,marginBottom:16,border:"1px solid #EBEBEB"}}><h2 style={{fontSize:15,fontWeight:700,color:"#222",marginBottom:12}}>Revenus par mois</h2><div style={{display:"flex",alignItems:"flex-end",gap:4,height:80}}>{BARS.map((b:any,i:number)=>(<div key={i} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:2}}><div style={{fontSize:8,color:"#94A3B8"}}>{b.revenue>0?b.revenue:""}</div><div style={{width:"100%",background:i===BARS.length-1?"#123EAB":"#123EAB40",borderRadius:"3px 3px 0 0",height:Math.max((b.revenue/maxBar)*70,2)+"px"}}/><div style={{fontSize:8,color:"#94A3B8"}}>{b.month}</div></div>))}</div></div>)}
-        <div style={{background:"#fff",borderRadius:16,padding:18,marginBottom:16,border:"1px solid #EBEBEB"}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}><h2 style={{fontSize:15,fontWeight:700,color:"#222"}}>Dernières réservations</h2><button onClick={()=>setActive("bookings")} style={{color:"#F59E0B",fontSize:12,fontWeight:600,background:"none",border:"none",cursor:"pointer"}}>Voir tout →</button></div>{(stats?.recentBookings||[]).slice(0,3).map((b:any,i:number)=>(<div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 0",borderBottom:i<2?"1px solid #F7F7F7":"none"}}><div style={{display:"flex",gap:8,alignItems:"center"}}><div style={{width:38,height:38,borderRadius:10,background:"#F8FAFC",overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center",fontSize:16}}>{b.guide?.avatar?<img src={b.guide.avatar} style={{width:"100%",height:"100%",objectFit:"cover"}}/>:"👤"}</div><div><div style={{fontWeight:600,fontSize:13,color:"#222"}}>{b.guide?.displayName}</div><div style={{fontSize:10,color:"#94A3B8"}}>{b.tourist?.name||"—"} · {new Date(b.date).toLocaleDateString("fr-FR")} · {b.duration==="HALF_DAY"?"4h":"8h"}</div><div style={{fontSize:10,color:"#123EAB"}}>{b.tourist?.email||""}</div></div></div><div style={{textAlign:"right"}}><div style={{fontWeight:700,fontSize:13,color:"#22c55e"}}>{b.totalPrice} MAD</div><div style={{fontSize:9,fontWeight:700,padding:"2px 6px",borderRadius:10,background:b.status==="CONFIRMED"?"#DCFCE7":"#FEF3C7",color:b.status==="CONFIRMED"?"#166534":"#92400E"}}>{b.status}</div></div></div>))}</div>
-  {stats?.recentGuides?.length>0&&(<div style={{background:"#fff",borderRadius:16,padding:18,border:"1px solid #EBEBEB"}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}><h2 style={{fontSize:15,fontWeight:700,color:"#222"}}>Guides en attente</h2><span style={{background:"#FEF3C7",color:"#92400E",fontSize:11,fontWeight:700,padding:"4px 10px",borderRadius:20}}>{stats.pendingGuides}</span></div>{stats.recentGuides.map((g:any)=>(<div key={g.id} style={{border:"1px solid #F1F5F9",borderRadius:14,padding:14,marginBottom:10}}><div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}><div style={{width:38,height:38,borderRadius:"50%",background:"linear-gradient(135deg,#667eea,#764ba2)",display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontSize:15,fontWeight:700,flexShrink:0,overflow:"hidden"}}>{g.avatar?<img src={g.avatar} style={{width:"100%",height:"100%",objectFit:"cover"}}/>:g.displayName?.[0]}</div><div style={{flex:1}}><div style={{fontWeight:600,fontSize:14,color:"#222"}}>{g.displayName}</div><div style={{fontSize:11,color:"#94A3B8"}}>📍 {g.city}</div></div></div><div style={{display:"flex",gap:8}}><button onClick={()=>updateGuide(g.id,"APPROVED")} style={{flex:1,background:"#22c55e",color:"#fff",border:"none",borderRadius:25,padding:10,fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"inherit"}}>✓ Approuver</button><button onClick={()=>updateGuide(g.id,"REJECTED")} style={{width:44,height:44,background:"#FFF1F2",color:"#ef4444",border:"none",borderRadius:"50%",fontSize:16,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>✕</button></div></div>))}</div>)}
-      </div>)}
-      {active==="guides"&&(<div><input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Rechercher..." style={{width:"100%",border:"1.5px solid #E2E8F0",borderRadius:12,padding:"12px 14px",fontSize:14,fontFamily:"inherit",outline:"none",marginBottom:14,boxSizing:"border-box" as const}}/><div style={{display:"flex",gap:8,marginBottom:16,overflowX:"auto"}}>{["pending","approved","rejected"].map(t=>(<button key={t} onClick={()=>setGuideTab(t)} style={{padding:"8px 16px",borderRadius:20,border:"1.5px solid "+(guideTab===t?"#123EAB":"#E2E8F0"),background:guideTab===t?"#123EAB":"#fff",color:guideTab===t?"#fff":"#475569",fontWeight:700,fontSize:12,cursor:"pointer",fontFamily:"inherit",whiteSpace:"nowrap" as const}}>{t==="pending"?"En attente":t==="approved"?"Approuves":"Refuses"}</button>))}</div>{filtered.map((g:any)=>(<div key={g.id} style={{background:"#fff",borderRadius:16,padding:16,marginBottom:12,border:"1px solid #EBEBEB"}}><div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}><div style={{width:44,height:44,borderRadius:"50%",overflow:"hidden",background:"linear-gradient(135deg,#667eea,#764ba2)",display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontSize:18,fontWeight:700,flexShrink:0}}>{g.avatar?<img src={g.avatar} style={{width:"100%",height:"100%",objectFit:"cover"}}/>:g.displayName?.[0]}</div><div style={{flex:1}}><div style={{fontWeight:700,fontSize:15,color:"#222"}}>{g.displayName}</div><div style={{fontSize:12,color:"#94A3B8"}}>📍 {g.city} · {g.halfDayPrice}/{g.fullDayPrice} MAD</div>{g.user?.email&&<div style={{fontSize:11,color:"#123EAB"}}>{g.user.email}</div>}</div></div><div style={{display:"flex",gap:8,flexWrap:"wrap" as const}}>{g.phone&&<a href={"https://wa.me/"+g.phone.replace(/[^0-9]/g,"")} target="_blank" style={{background:"#25D366",color:"#fff",borderRadius:20,padding:"7px 14px",fontSize:12,fontWeight:700,textDecoration:"none"}}>💬</a>}{g.user?.email&&<button onClick={()=>{setEmailForm({to:g.user.email,subject:"Message Laksor",message:""});setActive("email");}} style={{background:"#EFF6FF",color:"#123EAB",border:"none",borderRadius:20,padding:"7px 14px",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit"}}>📧</button>}{guideTab==="pending"&&<button onClick={()=>updateGuide(g.id,"APPROVED")} style={{background:"#22c55e",color:"#fff",border:"none",borderRadius:20,padding:"7px 14px",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit"}}>✓</button>}{guideTab==="pending"&&<button onClick={()=>updateGuide(g.id,"REJECTED")} style={{background:"#FFF1F2",color:"#ef4444",border:"none",borderRadius:20,padding:"7px 14px",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit"}}>✕</button>}{guideTab==="approved"&&<button onClick={()=>updateGuide(g.id,"SUSPENDED")} style={{background:"#FEF3C7",color:"#92400E",border:"none",borderRadius:20,padding:"7px 14px",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit"}}>Suspendre</button>}<button onClick={()=>deleteGuide(g.id)} style={{background:"#FFF1F2",color:"#ef4444",border:"none",borderRadius:20,padding:"7px 14px",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit"}}>🗑️</button></div></div>))}</div>)}
-      {active==="bookings"&&(<div><h2 style={{fontSize:15,fontWeight:700,color:"#222",marginBottom:14}}>Reservations ({bookings.length})</h2>{bookings.length===0?<div style={{textAlign:"center",padding:40,color:"#94A3B8",background:"#fff",borderRadius:16,border:"1px solid #EBEBEB"}}>Aucune</div>:bookings.map((b:any,i:number)=>(<div key={i} style={{background:"#fff",borderRadius:16,padding:16,marginBottom:12,border:"1px solid #EBEBEB"}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}><div style={{fontWeight:700,fontSize:14,color:"#0F172A"}}>{b.guide?.displayName}</div><div style={{fontSize:9,fontWeight:700,padding:"4px 10px",borderRadius:20,background:b.status==="CONFIRMED"?"#DCFCE7":b.status==="PENDING"?"#FEF3C7":"#FEE2E2",color:b.status==="CONFIRMED"?"#166534":b.status==="PENDING"?"#92400E":"#ef4444"}}>{b.status}</div></div><div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:6,marginBottom:10}}>{[["Date",new Date(b.date).toLocaleDateString("fr-FR")],["Duree",b.duration==="HALF_DAY"?"4h":"8h"],["Pers.",String(b.persons||1)]].map(([k,v])=>(<div key={k} style={{background:"#F8FAFC",borderRadius:8,padding:"6px 8px",textAlign:"center"}}><div style={{fontSize:9,color:"#94A3B8",textTransform:"uppercase" as const}}>{k}</div><div style={{fontSize:12,fontWeight:600,color:"#222",marginTop:1}}>{v}</div></div>))}</div><div style={{background:"#F8FAFC",borderRadius:10,padding:10,marginBottom:10}}><div style={{fontSize:11,color:"#94A3B8",marginBottom:3}}>Touriste</div><div style={{fontWeight:600,fontSize:13,color:"#222"}}>{b.tourist?.name||"—"}</div><div style={{fontSize:11,color:"#123EAB"}}>{b.tourist?.email||"—"}</div></div><div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}><div><span style={{fontWeight:800,fontSize:16,color:"#22c55e"}}>{b.totalPrice} MAD</span><span style={{fontSize:11,color:"#9333ea",marginLeft:8}}>+{b.commission} comm.</span></div><div style={{display:"flex",gap:6}}>{b.tourist?.email&&<button onClick={()=>{setEmailForm({to:b.tourist.email,subject:"Votre reservation",message:""});setActive("email");}} style={{background:"#EFF6FF",color:"#123EAB",border:"none",borderRadius:20,padding:"6px 12px",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"inherit"}}>📧</button>}{b.guide?.phone&&<a href={"https://wa.me/"+b.guide.phone.replace(/[^0-9]/g,"")} target="_blank" style={{background:"#25D366",color:"#fff",borderRadius:20,padding:"6px 12px",fontSize:11,fontWeight:700,textDecoration:"none"}}>💬</a>}</div></div></div>))}</div>)}
-      {active==="email"&&(<div style={{background:"#fff",borderRadius:16,padding:20,border:"1px solid #EBEBEB"}}><h2 style={{fontSize:15,fontWeight:700,color:"#222",marginBottom:16}}>Envoyer un email</h2><div style={{marginBottom:14}}><label style={{fontSize:13,fontWeight:600,color:"#374151",display:"block",marginBottom:6}}>Destinataire</label><input value={emailForm.to} onChange={e=>setEmailForm({...emailForm,to:e.target.value})} placeholder="email@exemple.com" style={{width:"100%",border:"1.5px solid #E2E8F0",borderRadius:12,padding:"12px 14px",fontSize:14,fontFamily:"inherit",outline:"none",boxSizing:"border-box" as const}}/></div><div style={{marginBottom:14}}><label style={{fontSize:13,fontWeight:600,color:"#374151",display:"block",marginBottom:6}}>Sujet</label><input value={emailForm.subject} onChange={e=>setEmailForm({...emailForm,subject:e.target.value})} placeholder="Sujet" style={{width:"100%",border:"1.5px solid #E2E8F0",borderRadius:12,padding:"12px 14px",fontSize:14,fontFamily:"inherit",outline:"none",boxSizing:"border-box" as const}}/></div><div style={{marginBottom:20}}><label style={{fontSize:13,fontWeight:600,color:"#374151",display:"block",marginBottom:6}}>Message</label><textarea value={emailForm.message} onChange={e=>setEmailForm({...emailForm,message:e.target.value})} rows={6} style={{width:"100%",border:"1.5px solid #E2E8F0",borderRadius:12,padding:"12px 14px",fontSize:14,fontFamily:"inherit",outline:"none",resize:"vertical" as const,boxSizing:"border-box" as const}}/></div><button onClick={sendEmail} disabled={emailSending} style={{width:"100%",background:"#0B132B",color:"#fff",border:"none",borderRadius:30,padding:16,fontSize:15,fontWeight:600,cursor:"pointer",fontFamily:"inherit"}}>{emailSending?"Envoi...":emailSent?"✓ Envoye !":"Envoyer"}</button></div>)}
+  const [auth,     setAuth]     = useState(false);
+  const [pwd,      setPwd]      = useState("");
+  const [active,   setActive]   = useState("overview");
+  const [stats,    setStats]    = useState<any>(null);
+  const [guides,   setGuides]   = useState<any[]>([]);
+  const [bookings, setBookings] = useState<any[]>([]);
+  const [guideTab, setGuideTab] = useState("pending");
+  const [search,   setSearch]   = useState("");
+  const [emailForm,setEmailForm]= useState({to:"",subject:"",message:""});
+  const [emailSending, setEmailSending] = useState(false);
+  const [emailSent,    setEmailSent]    = useState(false);
+  const [templates,    setTemplates]    = useState<any[]>([]);
+  const [tourForm,     setTourForm]     = useState<any>(null);
+  const [tourSaving,   setTourSaving]   = useState(false);
+
+  useEffect(() => { if (auth) { fetchAll(); fetchTemplates(); } }, [auth]);
+  useEffect(() => { if (auth && active === "guides") fetchGuides(); }, [guideTab, active, auth]);
+
+  async function fetchAll() {
+    const [sRes, bRes] = await Promise.all([fetch("/api/admin/stats"), fetch("/api/admin/bookings")]);
+    setStats(await sRes.json());
+    setBookings((await bRes.json()).bookings || []);
+    fetchGuides();
+  }
+
+  async function fetchGuides() {
+    const res = await fetch("/api/admin/guides?status=" + guideTab.toUpperCase());
+    setGuides((await res.json()).guides || []);
+  }
+
+  async function fetchTemplates() {
+    const res = await fetch("/api/admin/tours");
+    if (res.ok) setTemplates((await res.json()).templates || []);
+  }
+
+  async function updateGuide(id: string, status: string) {
+    await fetch("/api/admin/guides", { method:"PATCH", headers:{"Content-Type":"application/json"}, body:JSON.stringify({id,status}) });
+    fetchGuides(); fetchAll();
+  }
+
+  async function deleteGuide(id: string) {
+    if (!confirm("Supprimer ce guide ?")) return;
+    await fetch("/api/admin/guides/"+id, { method:"DELETE" });
+    fetchGuides();
+  }
+
+  async function sendEmail() {
+    if (!emailForm.to || !emailForm.subject || !emailForm.message) return alert("Remplissez tout");
+    setEmailSending(true);
+    const res = await fetch("/api/email", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ to:emailForm.to, subject:emailForm.subject, html:"<div style=\'font-family:sans-serif;padding:24px\'><h2>LAKSOR MOROCCO</h2><hr/>"+emailForm.message.split("\n").join("<br/>")+"</div>" }) });
+    if (res.ok) { setEmailSent(true); setEmailForm({to:"",subject:"",message:""}); setTimeout(()=>setEmailSent(false),3000); }
+    else alert("Erreur");
+    setEmailSending(false);
+  }
+
+  async function saveTour() {
+    if (!tourForm) return;
+    setTourSaving(true);
+    const method = tourForm.id ? "PATCH" : "POST";
+    const res = await fetch("/api/admin/tours", { method, headers:{"Content-Type":"application/json"}, body:JSON.stringify(tourForm) });
+    if (res.ok) { await fetchTemplates(); setTourForm(null); }
+    else alert("Erreur sauvegarde");
+    setTourSaving(false);
+  }
+
+  async function toggleTemplate(id: string, isActive: boolean) {
+    await fetch("/api/admin/tours", { method:"PATCH", headers:{"Content-Type":"application/json"}, body:JSON.stringify({id, isActive:!isActive}) });
+    fetchTemplates();
+  }
+
+  const filtered = guides.filter(g => !search || g.displayName?.toLowerCase().includes(search.toLowerCase()) || g.city?.toLowerCase().includes(search.toLowerCase()));
+  const BARS = stats?.revenueByMonth || [];
+  const maxBar = Math.max(...BARS.map((b:any) => b.revenue), 1);
+
+  if (!auth) return (
+    <div className="min-h-screen flex items-center justify-center bg-sand-200 px-4">
+      <div className="bg-white rounded-3xl p-8 text-center max-w-sm w-full border border-sand-300">
+        <div className="text-4xl mb-4">🔐</div>
+        <h2 className="font-display text-lg font-semibold text-charcoal-800 mb-2">Accès Admin</h2>
+        <p className="text-sm text-charcoal-400 mb-6">Laksor Back-office</p>
+        <input type="password" value={pwd} onChange={e=>setPwd(e.target.value)}
+          onKeyDown={e=>e.key==="Enter"&&setPwd(p=>{if(p===PASSWORD){setAuth(true);return p;}alert("Mot de passe incorrect");return p;})}
+          placeholder="Mot de passe" className={inputCls + " mb-4"} />
+        <button onClick={() => { if (pwd === PASSWORD) setAuth(true); else alert("Mot de passe incorrect"); }}
+          className="w-full bg-bronze-500 text-white rounded-full py-3.5 text-sm font-bold hover:bg-bronze-600 transition-colors">
+          Accéder
+        </button>
+      </div>
     </div>
-    <div style={{position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",width:"100%",maxWidth:480,background:"#fff",borderTop:"1px solid #EBEBEB",display:"grid",gridTemplateColumns:"repeat(4,1fr)",zIndex:100}}>{TABS.map(t=>(<button key={t.id} onClick={()=>setActive(t.id)} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:3,background:"none",border:"none",borderTop:"2px solid "+(active===t.id?"#123EAB":"transparent"),cursor:"pointer",padding:"10px 0",fontFamily:"inherit"}}><span style={{fontSize:20}}>{t.icon}</span><span style={{fontSize:10,color:active===t.id?"#123EAB":"#94A3B8",fontWeight:active===t.id?700:500}}>{t.label}</span></button>))}</div>
-  </div>);
+  );
+
+  return (
+    <div className="bg-sand-200 min-h-screen pb-24">
+
+      {/* ── HEADER ── */}
+      <div className="sticky top-0 z-30 bg-white border-b border-sand-300 px-4 h-14 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 bg-bronze-500 rounded-xl flex items-center justify-center text-white text-sm font-bold">L</div>
+          <span className="font-display text-base font-semibold text-charcoal-800">Admin</span>
+        </div>
+        <button onClick={() => setAuth(false)} className="flex items-center gap-1.5 text-xs font-bold text-red-400 bg-red-50 px-3 py-1.5 rounded-full border border-red-200">
+          <SignOut size={13} /> Déconnexion
+        </button>
+      </div>
+
+      <div className="px-4 pt-4 max-w-lg mx-auto">
+
+        {/* ══ OVERVIEW ══ */}
+        {active === "overview" && (
+          <div className="flex flex-col gap-3">
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { icon:"🧭", label:"Guides approuvés", val:stats?.approvedGuides||0,  color:"text-bronze-500"  },
+                { icon:"⏳", label:"En attente",        val:stats?.pendingGuides||0,   color:"text-charcoal-600"},
+                { icon:"📋", label:"Réservations",      val:stats?.totalBookings||0,   color:"text-sage-300"    },
+                { icon:"💰", label:"Commission",        val:Math.round((stats?.totalRevenue||0)*0.25)+" MAD", color:"text-charcoal-800" },
+              ].map(s => (
+                <div key={s.label} className="bg-white rounded-2xl border border-sand-300 p-4">
+                  <div className="text-2xl mb-2">{s.icon}</div>
+                  <div className={`font-display text-xl font-bold ${s.color}`}>{s.val}</div>
+                  <div className="text-[10px] text-charcoal-400 mt-0.5">{s.label}</div>
+                </div>
+              ))}
+            </div>
+
+            {BARS.length > 0 && (
+              <div className="bg-white rounded-2xl border border-sand-300 p-4">
+                <div className="text-sm font-bold text-charcoal-800 mb-3">Revenus par mois</div>
+                <div className="flex items-end gap-1 h-20">
+                  {BARS.map((b:any, i:number) => (
+                    <div key={i} className="flex-1 flex flex-col items-center gap-1">
+                      <div className="text-[8px] text-charcoal-400">{b.revenue>0?b.revenue:""}</div>
+                      <div className="w-full rounded-t-sm"
+                        style={{ height: Math.max((b.revenue/maxBar)*60,2)+"px", background: i===BARS.length-1?"#B88A44":"rgba(184,138,68,0.3)" }} />
+                      <div className="text-[8px] text-charcoal-400">{b.month}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {stats?.recentBookings?.length > 0 && (
+              <div className="bg-white rounded-2xl border border-sand-300 p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-sm font-bold text-charcoal-800">Dernières réservations</span>
+                  <button onClick={() => setActive("bookings")} className="text-bronze-500 text-xs font-bold">Voir tout →</button>
+                </div>
+                {stats.recentBookings.slice(0,3).map((b:any,i:number) => (
+                  <div key={i} className={`flex items-center gap-3 py-2.5 ${i<2?"border-b border-sand-200":""}`}>
+                    <div className="w-9 h-9 rounded-xl overflow-hidden bg-sand-300 flex-shrink-0 flex items-center justify-center text-sm font-bold text-charcoal-500">
+                      {b.guide?.avatar ? <img src={b.guide.avatar} className="w-full h-full object-cover" /> : b.guide?.displayName?.[0]}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-bold text-charcoal-800 truncate">{b.guide?.displayName}</div>
+                      <div className="text-xs text-charcoal-400">{b.tourist?.name} · {new Date(b.date).toLocaleDateString("fr-FR")}</div>
+                    </div>
+                    <div className="text-sm font-bold text-sage-300 flex-shrink-0">{b.totalPrice} MAD</div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {stats?.recentGuides?.length > 0 && (
+              <div className="bg-white rounded-2xl border border-sand-300 p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-sm font-bold text-charcoal-800">Guides en attente</span>
+                  <span className="bg-bronze-50 text-bronze-500 border border-bronze-500 text-[10px] font-bold px-2.5 py-0.5 rounded-full">{stats.pendingGuides}</span>
+                </div>
+                {stats.recentGuides.map((g:any) => (
+                  <div key={g.id} className="border border-sand-200 rounded-xl p-3 mb-3 last:mb-0">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-9 h-9 rounded-full overflow-hidden bg-sand-300 flex-shrink-0 flex items-center justify-center font-bold text-charcoal-500">
+                        {g.avatar ? <img src={g.avatar} className="w-full h-full object-cover" /> : g.displayName?.[0]}
+                      </div>
+                      <div className="flex-1">
+                        <div className="text-sm font-bold text-charcoal-800">{g.displayName}</div>
+                        <div className="text-xs text-charcoal-400">📍 {g.city}</div>
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <button onClick={() => updateGuide(g.id,"APPROVED")}
+                        className="flex-1 bg-sage-300 text-white rounded-full py-2 text-xs font-bold flex items-center justify-center gap-1 hover:bg-sage-400 transition-colors">
+                        <Check size={12} weight="bold" /> Approuver
+                      </button>
+                      <button onClick={() => updateGuide(g.id,"REJECTED")}
+                        className="w-9 h-9 bg-red-50 text-red-400 rounded-full flex items-center justify-center flex-shrink-0">
+                        <X size={14} weight="bold" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ══ GUIDES ══ */}
+        {active === "guides" && (
+          <div className="flex flex-col gap-3">
+            <input value={search} onChange={e=>setSearch(e.target.value)}
+              placeholder="Rechercher un guide..." className={inputCls} />
+            <div className="flex gap-2">
+              {["pending","approved","rejected"].map(t => (
+                <button key={t} onClick={() => setGuideTab(t)}
+                  className={`px-4 py-2 rounded-full text-xs font-bold border transition-all flex-shrink-0
+                    ${guideTab===t ? "bg-bronze-500 text-white border-bronze-500" : "bg-white text-charcoal-500 border-sand-300"}`}>
+                  {t==="pending"?"En attente":t==="approved"?"Approuvés":"Refusés"}
+                </button>
+              ))}
+            </div>
+            {filtered.map((g:any) => {
+              const badge = statusBadge(g.status);
+              return (
+                <div key={g.id} className="bg-white rounded-2xl border border-sand-300 p-4">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-11 h-11 rounded-full overflow-hidden bg-sand-300 flex-shrink-0 flex items-center justify-center font-bold text-charcoal-500">
+                      {g.avatar ? <img src={g.avatar} className="w-full h-full object-cover" /> : g.displayName?.[0]}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-bold text-charcoal-800">{g.displayName}</div>
+                      <div className="text-xs text-charcoal-400">📍 {g.city} · {g.halfDayPrice}/{g.fullDayPrice} MAD</div>
+                      {g.user?.email && <div className="text-xs text-bronze-500 truncate">{g.user.email}</div>}
+                    </div>
+                    <span className={badge.cls}>{badge.label}</span>
+                  </div>
+                  <div className="flex gap-2 flex-wrap">
+                    {g.phone && (
+                      <a href={"https://wa.me/"+g.phone.replace(/[^0-9]/g,"")} target="_blank"
+                        className="bg-sage-300 text-white rounded-full px-3 py-1.5 text-xs font-bold no-underline flex items-center gap-1">
+                        <WhatsappLogo size={12} weight="fill" /> WA
+                      </a>
+                    )}
+                    {g.user?.email && (
+                      <button onClick={() => { setEmailForm({to:g.user.email,subject:"Message Laksor",message:""}); setActive("email"); }}
+                        className="bg-sand-200 text-charcoal-600 rounded-full px-3 py-1.5 text-xs font-bold border border-sand-300">
+                        📧 Email
+                      </button>
+                    )}
+                    {guideTab === "pending" && (
+                      <>
+                        <button onClick={() => updateGuide(g.id,"APPROVED")}
+                          className="bg-sage-300 text-white rounded-full px-3 py-1.5 text-xs font-bold flex items-center gap-1">
+                          <Check size={11} weight="bold" /> Approuver
+                        </button>
+                        <button onClick={() => updateGuide(g.id,"REJECTED")}
+                          className="bg-red-50 text-red-400 rounded-full px-3 py-1.5 text-xs font-bold border border-red-200">
+                          <X size={11} weight="bold" /> Refuser
+                        </button>
+                      </>
+                    )}
+                    {guideTab === "approved" && (
+                      <button onClick={() => updateGuide(g.id,"SUSPENDED")}
+                        className="bg-bronze-50 text-bronze-500 rounded-full px-3 py-1.5 text-xs font-bold border border-bronze-500">
+                        Suspendre
+                      </button>
+                    )}
+                    <button onClick={() => deleteGuide(g.id)}
+                      className="bg-red-50 text-red-400 rounded-full px-3 py-1.5 text-xs font-bold border border-red-200 ml-auto">
+                      <Trash size={12} weight="bold" />
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+            {filtered.length === 0 && (
+              <div className="bg-white rounded-2xl border border-sand-300 p-10 text-center">
+                <div className="text-4xl mb-3">🔍</div>
+                <div className="text-sm text-charcoal-400">Aucun guide trouvé</div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ══ RÉSERVATIONS ══ */}
+        {active === "bookings" && (
+          <div className="flex flex-col gap-3">
+            <div className="text-sm font-bold text-charcoal-800">Réservations ({bookings.length})</div>
+            {bookings.length === 0 ? (
+              <div className="bg-white rounded-2xl border border-sand-300 p-10 text-center">
+                <div className="text-sm text-charcoal-400">Aucune réservation</div>
+              </div>
+            ) : bookings.map((b:any,i:number) => {
+              const badge = statusBadge(b.status);
+              return (
+                <div key={i} className="bg-white rounded-2xl border border-sand-300 p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="text-sm font-bold text-charcoal-800">{b.guide?.displayName}</div>
+                    <span className={badge.cls}>{badge.label}</span>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 mb-3">
+                    {[["Date",new Date(b.date).toLocaleDateString("fr-FR")],["Durée",b.duration==="HALF_DAY"?"4h":"8h"],["Pers.",String(b.persons||1)]].map(([k,v]) => (
+                      <div key={k} className="bg-sand-200 rounded-lg p-2 text-center">
+                        <div className="text-[9px] text-charcoal-400 uppercase">{k}</div>
+                        <div className="text-xs font-bold text-charcoal-800 mt-0.5">{v}</div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="bg-sand-200 rounded-xl p-3 mb-3">
+                    <div className="text-[10px] text-charcoal-400 mb-1">Touriste</div>
+                    <div className="text-sm font-bold text-charcoal-800">{b.tourist?.name||"—"}</div>
+                    <div className="text-xs text-charcoal-400">{b.tourist?.email||"—"}</div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <span className="font-bold text-sage-300 text-base">{b.totalPrice} MAD</span>
+                      <span className="text-xs text-charcoal-400 ml-2">+{b.commission} comm.</span>
+                    </div>
+                    <div className="flex gap-2">
+                      {b.tourist?.email && (
+                        <button onClick={() => { setEmailForm({to:b.tourist.email,subject:"Votre réservation",message:""}); setActive("email"); }}
+                          className="bg-sand-200 text-charcoal-600 rounded-full px-3 py-1.5 text-xs font-bold border border-sand-300">
+                          📧
+                        </button>
+                      )}
+                      {b.guide?.phone && (
+                        <a href={"https://wa.me/"+b.guide.phone.replace(/[^0-9]/g,"")} target="_blank"
+                          className="bg-sage-300 text-white rounded-full px-3 py-1.5 text-xs font-bold no-underline">
+                          💬
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* ══ TOURS ══ */}
+        {active === "tours" && (
+          <div className="flex flex-col gap-3">
+            <div className="text-sm font-bold text-charcoal-800">Templates de tours ({templates.length}/7)</div>
+
+            {/* Liste des 7 types */}
+            {TOUR_TYPES.map(tt => {
+              const existing = templates.find((t:any) => t.tourType === tt.type);
+              return (
+                <div key={tt.type} className="bg-white rounded-2xl border border-sand-300 p-4">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="text-2xl">{tt.emoji}</div>
+                    <div className="flex-1">
+                      <div className="text-sm font-bold text-charcoal-800">{tt.title}</div>
+                      <div className="text-xs text-charcoal-400">{tt.desc}</div>
+                    </div>
+                    {existing ? (
+                      <button onClick={() => toggleTemplate(existing.id, existing.isActive)}
+                        className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold border transition-all
+                          ${existing.isActive ? "bg-sage-50 text-sage-300 border-sage-300" : "bg-sand-200 text-charcoal-400 border-sand-300"}`}>
+                        {existing.isActive ? <ToggleRight size={14} weight="fill" /> : <ToggleLeft size={14} />}
+                        {existing.isActive ? "Actif" : "Inactif"}
+                      </button>
+                    ) : (
+                      <span className="text-[10px] text-charcoal-300 font-bold px-2.5 py-1 bg-sand-200 rounded-full">Non créé</span>
+                    )}
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setTourForm(existing ? {
+                        id: existing.id, tourType: tt.type, title: existing.title,
+                        description: existing.description, duration: existing.duration,
+                        groupSize: existing.groupSize, difficulty: existing.difficulty,
+                        bestMoment: existing.bestMoment, coverImage: existing.coverImage || "",
+                        tags: (existing.tags||[]).join(", "),
+                        included: (existing.included||[]).join(", "),
+                        notIncluded: (existing.notIncluded||[]).join(", "),
+                      } : {
+                        tourType: tt.type, title: tt.title, description: "", duration: "4h",
+                        groupSize: "1-6 pers.", difficulty: "Facile", bestMoment: "Matin",
+                        coverImage: "", tags: "", included: "", notIncluded: "",
+                      })}
+                      className="flex items-center gap-1.5 bg-bronze-50 text-bronze-500 border border-bronze-500 rounded-full px-3 py-1.5 text-xs font-bold">
+                      <PencilSimple size={12} weight="bold" />
+                      {existing ? "Modifier" : "Créer"}
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+
+            {/* Formulaire création/édition tour */}
+            {tourForm && (
+              <div className="bg-white rounded-2xl border border-bronze-500 p-4">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="text-sm font-bold text-charcoal-800">
+                    {tourForm.id ? "Modifier le tour" : "Créer le tour"} — {TOUR_TYPES.find(t=>t.type===tourForm.tourType)?.title}
+                  </div>
+                  <button onClick={() => setTourForm(null)} className="w-7 h-7 rounded-full bg-sand-200 flex items-center justify-center">
+                    <X size={12} weight="bold" className="text-charcoal-500" />
+                  </button>
+                </div>
+
+                {[
+                  { key:"title",       label:"Titre",           type:"input",    ph:"Médina & Secrets" },
+                  { key:"description", label:"Description",     type:"textarea", ph:"Description du tour..." },
+                  { key:"coverImage",  label:"Image de couverture (URL)", type:"input", ph:"https://..." },
+                  { key:"duration",    label:"Durée",           type:"input",    ph:"4h" },
+                  { key:"groupSize",   label:"Taille du groupe",type:"input",    ph:"1-6 pers." },
+                  { key:"difficulty",  label:"Difficulté",      type:"input",    ph:"Facile" },
+                  { key:"bestMoment",  label:"Meilleur moment", type:"input",    ph:"Matin" },
+                  { key:"tags",        label:"Tags (virgule)",  type:"input",    ph:"Authentique, Culture" },
+                  { key:"included",    label:"Inclus (virgule)",type:"input",    ph:"Guide officiel, Thé" },
+                  { key:"notIncluded", label:"Non inclus (virgule)", type:"input", ph:"Transport, Repas" },
+                ].map(f => (
+                  <div key={f.key} className="mb-3">
+                    <label className="text-[10px] font-bold text-charcoal-400 uppercase tracking-wider block mb-1">{f.label}</label>
+                    {f.type === "textarea"
+                      ? <textarea value={tourForm[f.key]||""} onChange={e=>setTourForm({...tourForm,[f.key]:e.target.value})}
+                          placeholder={f.ph} rows={3} className={inputCls + " resize-none"} />
+                      : <input value={tourForm[f.key]||""} onChange={e=>setTourForm({...tourForm,[f.key]:e.target.value})}
+                          placeholder={f.ph} className={inputCls} />
+                    }
+                  </div>
+                ))}
+
+                <button onClick={saveTour} disabled={tourSaving}
+                  className={`w-full py-3.5 rounded-2xl text-sm font-bold text-white transition-all
+                    ${tourSaving ? "bg-sand-300 cursor-not-allowed" : "bg-bronze-500 hover:bg-bronze-600"}`}>
+                  {tourSaving ? "Sauvegarde..." : tourForm.id ? "Mettre à jour" : "Créer le template →"}
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ══ EMAIL ══ */}
+        {active === "email" && (
+          <div className="bg-white rounded-2xl border border-sand-300 p-4">
+            <div className="text-sm font-bold text-charcoal-800 mb-4">Envoyer un email</div>
+            {[
+              { key:"to",      label:"Destinataire", ph:"email@exemple.com", type:"input"    },
+              { key:"subject", label:"Sujet",        ph:"Sujet",             type:"input"    },
+              { key:"message", label:"Message",      ph:"Votre message...",  type:"textarea" },
+            ].map(f => (
+              <div key={f.key} className="mb-4">
+                <label className="text-xs font-bold text-charcoal-600 uppercase tracking-wider block mb-1.5">{f.label}</label>
+                {f.type === "textarea"
+                  ? <textarea value={(emailForm as any)[f.key]} onChange={e=>setEmailForm({...emailForm,[f.key]:e.target.value})}
+                      placeholder={f.ph} rows={6} className={inputCls + " resize-none"} />
+                  : <input value={(emailForm as any)[f.key]} onChange={e=>setEmailForm({...emailForm,[f.key]:e.target.value})}
+                      placeholder={f.ph} className={inputCls} />
+                }
+              </div>
+            ))}
+            <button onClick={sendEmail} disabled={emailSending}
+              className={`w-full py-3.5 rounded-2xl text-sm font-bold text-white flex items-center justify-center gap-2 transition-all
+                ${emailSending ? "bg-sand-300 cursor-not-allowed" : emailSent ? "bg-sage-300" : "bg-bronze-500 hover:bg-bronze-600"}`}>
+              <PaperPlaneTilt size={15} weight="bold" />
+              {emailSending ? "Envoi..." : emailSent ? "✓ Envoyé !" : "Envoyer"}
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* ── BOTTOM NAV ── */}
+      <nav className="fixed bottom-0 left-0 right-0 bg-white/97 backdrop-blur-lg border-t border-sand-300 z-50 flex">
+        {TABS.map(({ id, Icon, label }) => (
+          <button key={id} onClick={() => setActive(id)}
+            className={`flex flex-col items-center gap-1 flex-1 py-3 transition-colors border-t-2
+              ${active === id ? "border-bronze-500 text-bronze-500" : "border-transparent text-charcoal-400"}`}>
+            <Icon size={18} weight={active === id ? "fill" : "regular"} />
+            <span className="text-[9px] font-bold">{label}</span>
+          </button>
+        ))}
+      </nav>
+    </div>
+  );
 }
