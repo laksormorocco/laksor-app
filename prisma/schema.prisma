@@ -6,8 +6,7 @@ generator client {
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL") 
-
+  directUrl = env("DIRECT_URL")
 }
 
 // ─── ENUMS ────────────────────────────────────────────────────
@@ -27,8 +26,8 @@ enum BookingStatus {
 }
 
 enum BookingDuration {
-  HALF_DAY // 4h
-  FULL_DAY  // 8h
+  HALF_DAY
+  FULL_DAY
 }
 
 enum VisitType {
@@ -51,63 +50,84 @@ enum GuideStatus {
   SUSPENDED
 }
 
+enum CustomRequestStatus {
+  PENDING
+  QUOTED
+  ACCEPTED
+  REFUSED
+}
+
+enum TourType {
+  MEDINA_SECRETS
+  GASTRONOMIE
+  HISTOIRE_MONUMENTS
+  DESERT_NATURE
+  SHOPPING_ARTISANAT
+  COUCHER_SOLEIL
+  PHOTO_INSTAGRAM
+}
+
+enum TourStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  SUSPENDED
+}
+
 // ─── MODELS ───────────────────────────────────────────────────
 
 model User {
-  id        String   @id @default(cuid())
-  supabaseId String  @unique
-  email     String   @unique
-  name      String?
-  avatar    String?
-  role      Role     @default(TOURIST)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String   @id @default(cuid())
+  supabaseId   String   @unique
+  email        String   @unique
+  name         String?
+  avatar       String?
+  role         Role     @default(TOURIST)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-  guideProfile GuideProfile?
-  bookings     Booking[]     @relation("TouristBookings")
+  guideProfile   GuideProfile?
+  bookings       Booking[]       @relation("TouristBookings")
   customRequests CustomRequest[] @relation("TouristRequests")
-  reviews      Review[]
+  reviews        Review[]
 
   @@map("users")
 }
 
 model GuideProfile {
-  id           String      @id @default(cuid())
-  userId       String      @unique
-  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id            String      @id @default(cuid())
+  userId        String      @unique
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  // Identity
-  displayName  String
-  bio          String      @db.Text
-  avatar       String?
-  phone        String?
-  gallery      String[]    @default([])
-  city         String
-  coveredCities String[]   @default([])
+  displayName   String
+  bio           String      @db.Text
+  avatar        String?
+  phone         String?
+  gallery       String[]    @default([])
+  city          String
+  coveredCities String[]    @default([])
 
-  // Expertise
-  languages    String[]    @default([])
-  visitTypes   VisitType[] @default([])
-  specialties  String[]    @default([])
-  certifications String[]  @default([])
-  yearsExp     Int         @default(0)
+  languages      String[]    @default([])
+  visitTypes     VisitType[] @default([])
+  specialties    String[]    @default([])
+  certifications String[]    @default([])
+  yearsExp       Int         @default(0)
 
-  // Pricing (MAD)
-  halfDayPrice Float       @default(350)
-  fullDayPrice Float       @default(650)
+  halfDayPrice  Float       @default(350)
+  fullDayPrice  Float       @default(650)
 
-  // Status & ratings
-  status       GuideStatus @default(PENDING)
-  avgRating    Float       @default(0)
-  totalReviews Int         @default(0)
+  status        GuideStatus @default(PENDING)
+  avgRating     Float       @default(0)
+  totalReviews  Int         @default(0)
+  views         Int         @default(0)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 
-  views         Int     @default(0)
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
-
-  bookings     Booking[]
+  bookings       Booking[]
   customRequests CustomRequest[]
-  availability Availability[]
+  availability   Availability[]
+  tours          GuideTour[]
+  customTours    CustomTour[]
 
   @@map("guide_profiles")
 }
@@ -125,18 +145,17 @@ model Booking {
   totalPrice  Float
   status      BookingStatus   @default(PENDING)
 
-  // Stripe
-  stripeSessionId  String?    @unique
-  stripePaymentId  String?
+  stripeSessionId String?     @unique
+  stripePaymentId String?
 
   notes       String?         @db.Text
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
 
   review      Review?
-
-  commission  Float    @default(0)
+  commission  Float           @default(0)
   slots       BookingSlot[]
+  tourBooking TourBooking?
 
   @@map("bookings")
 }
@@ -148,6 +167,7 @@ model BookingSlot {
   date      DateTime
   duration  String
   price     Float
+
   @@map("booking_slots")
 }
 
@@ -159,7 +179,7 @@ model Review {
   author    User     @relation(fields: [authorId], references: [id])
   guideId   String
 
-  rating    Int      // 1-5
+  rating    Int
   comment   String   @db.Text
   createdAt DateTime @default(now())
 
@@ -167,7 +187,7 @@ model Review {
 }
 
 model Availability {
-  id      String   @id @default(cuid())
+  id      String       @id @default(cuid())
   guideId String
   guide   GuideProfile @relation(fields: [guideId], references: [id], onDelete: Cascade)
 
@@ -178,26 +198,121 @@ model Availability {
   @@map("availabilities")
 }
 
-enum CustomRequestStatus {
-  PENDING
-  QUOTED
-  ACCEPTED
-  REFUSED
+model CustomRequest {
+  id            String              @id @default(cuid())
+  touristId     String
+  tourist       User                @relation("TouristRequests", fields: [touristId], references: [id])
+  guideId       String
+  guide         GuideProfile        @relation(fields: [guideId], references: [id])
+
+  startDate     DateTime
+  days          Int
+  persons       Int
+  description   String              @db.Text
+  proposedPrice Float?
+  status        CustomRequestStatus @default(PENDING)
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+
+  @@map("custom_requests")
 }
 
-model CustomRequest {
-  id          String              @id @default(cuid())
-  touristId   String
-  tourist     User                @relation("TouristRequests", fields: [touristId], references: [id])
-  guideId     String
-  guide       GuideProfile        @relation(fields: [guideId], references: [id])
-  startDate   DateTime
-  days        Int
-  persons     Int
-  description String              @db.Text
-  proposedPrice Float?
-  status      CustomRequestStatus @default(PENDING)
-  createdAt   DateTime            @default(now())
-  updatedAt   DateTime            @updatedAt
-  @@map("custom_requests")
+// ─── TOURS ────────────────────────────────────────────────────
+
+model TourTemplate {
+  id          String    @id @default(cuid())
+  tourType    TourType  @unique
+  title       String
+  description String    @db.Text
+  duration    String    @default("4h")
+  groupSize   String    @default("1-6 pers.")
+  difficulty  String    @default("Facile")
+  bestMoment  String    @default("Matin")
+  coverImage  String?
+
+  highlights  Json      @default("[]")
+  itinerary   Json      @default("[]")
+  included    Json      @default("[]")
+  notIncluded Json      @default("[]")
+  tags        String[]  @default([])
+
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  guideTours  GuideTour[]
+
+  @@map("tour_templates")
+}
+
+model GuideTour {
+  id            String       @id @default(cuid())
+  guideId       String
+  guide         GuideProfile @relation(fields: [guideId], references: [id], onDelete: Cascade)
+  templateId    String
+  template      TourTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  isActive      Boolean      @default(false)
+  price         Float        @default(0)
+  tips          String?      @db.Text
+
+  totalBookings Int          @default(0)
+  isBestSeller  Boolean      @default(false)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  bookings      TourBooking[]
+
+  @@unique([guideId, templateId])
+  @@map("guide_tours")
+}
+
+model CustomTour {
+  id            String       @id @default(cuid())
+  guideId       String
+  guide         GuideProfile @relation(fields: [guideId], references: [id], onDelete: Cascade)
+
+  status        TourStatus   @default(PENDING)
+  adminNote     String?      @db.Text
+
+  title         String
+  description   String       @db.Text
+  price         Float        @default(0)
+  duration      String       @default("4h")
+  groupSize     String       @default("1-6 pers.")
+  difficulty    String       @default("Facile")
+  bestMoment    String       @default("Matin")
+  coverImage    String?
+  tags          String[]     @default([])
+
+  highlights    Json         @default("[]")
+  itinerary     Json         @default("[]")
+  included      Json         @default("[]")
+  notIncluded   Json         @default("[]")
+  tips          String?      @db.Text
+
+  isActive      Boolean      @default(false)
+  totalBookings Int          @default(0)
+  isBestSeller  Boolean      @default(false)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  bookings      TourBooking[]
+
+  @@map("custom_tours")
+}
+
+model TourBooking {
+  id           String     @id @default(cuid())
+  bookingId    String     @unique
+  booking      Booking    @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  guideTourId  String?
+  guideTour    GuideTour?  @relation(fields: [guideTourId], references: [id])
+  customTourId String?
+  customTour   CustomTour? @relation(fields: [customTourId], references: [id])
+
+  createdAt    DateTime   @default(now())
+
+  @@map("tour_bookings")
 }
