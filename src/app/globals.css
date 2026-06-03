@@ -2,22 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Safelist Laksor */
-@layer utilities {
-  .bg-bronze-500 { background-color: #B88A44; }
-    .bg-bronze-600 { background-color: #A17635; }
-      .bg-bronze-50  { background-color: #FBF5E9; }
-        .text-bronze-500 { color: #B88A44; }
-          .border-bronze-500 { border-color: #B88A44; }
-            .bg-sand-200   { background-color: #F6F1E8; }
-              .bg-sand-300   { background-color: #EADCC8; }
-                .border-sand-300 { border-color: #EADCC8; }
-                  .text-charcoal-800 { color: #111111; }
-                    .text-charcoal-400 { color: #666666; }
-                      .bg-charcoal-800 { background-color: #111111; }
-                        .text-sage-300  { color: #7D8F69; }
-                          .bg-sage-50    { background-color: #EEF2EB; }
-                          }
 
 :root {
   --sand: #F6F1E8;
