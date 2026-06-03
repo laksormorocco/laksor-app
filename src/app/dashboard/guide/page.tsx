@@ -131,7 +131,7 @@ export default function GuideDashboard() {
               <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-bronze-500 rounded-full border border-white" />
             )}
           </button>
-          <a href="/" className="w-10 h-10 bg-sand-200 rounded-xl border border-sand-300 flex items-center justify-center no-underline">
+          <a href="/?from=dashboard" className="w-10 h-10 bg-sand-200 rounded-xl border border-sand-300 flex items-center justify-center no-underline">
             <House size={18} className="text-charcoal-600" />
           </a>
         </div>
