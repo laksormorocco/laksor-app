@@ -1,0 +1,27 @@
+import { prisma } from "@/lib/prisma";
+import { NextResponse } from "next/server";
+export const dynamic = "force-dynamic";
+
+export async function GET(req: Request) {
+  const url = new URL(req.url);
+  const guideId = url.searchParams.get("guideId");
+  if (!guideId) return NextResponse.json({ error: "guideId requis" }, { status: 400 });
+
+  const guide = await prisma.guideProfile.findUnique({
+    where: { id: guideId },
+    select: {
+      id: true,
+      displayName: true,
+      avatar: true,
+      city: true,
+      avgRating: true,
+      totalReviews: true,
+      halfDayPrice: true,
+      fullDayPrice: true,
+      yearsExp: true,
+    }
+  });
+
+  if (!guide) return NextResponse.json({ error: "Guide non trouve" }, { status: 404 });
+  return NextResponse.json({ guide });
+}
