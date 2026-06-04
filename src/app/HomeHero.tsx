@@ -51,7 +51,7 @@ export default function HomeHero() {
 
   function openModal(m: Mode) { setMode(m); setAcc("dest"); setOpen(true); }
   function toggleAcc(id: Acc) { setAcc(p => p === id ? null : id); }
-  function toggleLang(l: string) { setLangs(p => p.includes(l) ? p.filter(x => x !== l) : [...p, l]); }
+  function toggleLang(l: string) { setLangs(p => p.includes(l) ? p.filter(x => x !== l) : [...p, l]); setAcc(null); }
   function selectDest(c: string) { setDest(c); setAcc("date"); }
   function handleDate(v: string) { setDate(v); setTimeout(() => setAcc("pers"), 200); }
   function clearAll() {
@@ -266,7 +266,7 @@ export default function HomeHero() {
                   icon={<MapPin size={15} weight="fill" className="text-bronze-500" />}
                   value={tCity || undefined} placeholder="Choisir une ville">
                   {CITIES.map(city => (
-                    <button key={city} onClick={() => setTCity(city)}
+                    <button key={city} onClick={() => { setTCity(city); setAcc(null); }}
                       className="flex items-center gap-3 w-full py-2.5 border-b border-sand-200 last:border-0 text-left hover:bg-sand-100">
                       <div className="w-10 h-10 rounded-xl bg-sand-200 flex items-center justify-center text-xl flex-shrink-0">
                         {CITY_META[city].icon}
@@ -295,7 +295,7 @@ export default function HomeHero() {
                   icon={<CalendarBlank size={15} weight="fill" className="text-bronze-500" />}
                   value={tDate ? new Date(tDate).toLocaleDateString("fr-FR", { day: "numeric", month: "long" }) : undefined}
                   placeholder="Ajouter une date">
-                  <input type="date" value={tDate} onChange={e => setTDate(e.target.value)}
+                  <input type="date" value={tDate} onChange={e => { setTDate(e.target.value); setTimeout(() => setAcc(null), 200); }}
                     className="w-full border border-sand-300 rounded-xl px-3 py-2.5 text-sm text-charcoal-800 outline-none focus:border-bronze-500" />
                 </AccBlock>
 
