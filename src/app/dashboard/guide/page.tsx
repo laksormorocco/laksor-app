@@ -5,7 +5,7 @@ import ProfileEditor from "@/components/ProfileEditor";
 import {
   House, CalendarCheck, Target, ChartBar, User,
   Bell, ArrowRight, Check, X, Clock, Users, Star,
-  Trophy, ChartLineUp, Eye, ChatCircle
+  Trophy, ChartLineUp, Eye
 } from "@phosphor-icons/react";
 import { createClient } from "@supabase/supabase-js";
 
@@ -91,6 +91,16 @@ export default function GuideDashboard() {
   const confirmed       = bookings.filter(b => b.status === "CONFIRMED");
   const pendingRequests = customRequests.filter(r => r.status === "PENDING");
   const notifications   = pending.length + pendingRequests.length;
+  const tours           = guide?.tours || [];
+  const activeTours     = tours.filter((t: any) => t.isActive);
+  const completionPct   = Math.min(100, 60
+    + (guide?.avatar ? 10 : 0)
+    + ((guide?.gallery?.length ?? 0) > 0 ? 10 : 0)
+    + ((guide?.bio?.length ?? 0) > 100 ? 10 : 0)
+    + (activeTours.length > 0 ? 10 : 0)
+  );
+  const superGuideProgress = Math.min(guide?.totalReviews || 0, 50);
+  const needsForSuper      = Math.max(0, 50 - (guide?.totalReviews || 0));
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-sand-200">
@@ -101,6 +111,7 @@ export default function GuideDashboard() {
     </div>
   );
 
+  if (!guideId) return (
     <div className="min-h-screen flex items-center justify-center bg-sand-200 px-4">
       <div className="bg-white rounded-3xl p-8 text-center max-w-sm w-full border border-sand-300">
         <div className="text-4xl mb-4">🔐</div>
@@ -113,23 +124,12 @@ export default function GuideDashboard() {
     </div>
   );
 
-  const tours = guide?.tours || [];
-  const activeTours = tours.filter((t: any) => t.isActive);
-  const completionPct = Math.min(100, 60
-    + (guide?.avatar ? 10 : 0)
-    + (guide?.gallery?.length > 0 ? 10 : 0)
-    + (guide?.bio?.length > 100 ? 10 : 0)
-    + (activeTours.length > 0 ? 10 : 0)
-  );
-  const superGuideProgress = Math.min(guide?.totalReviews || 0, 50);
-  const needsForSuper = Math.max(0, 50 - (guide?.totalReviews || 0));
-
   return (
     <div className="bg-sand-200 min-h-screen pb-24">
 
       {/* HEADER */}
-      <div className="sticky top-0 z-30 bg-white border-b border-sand-300 px-4 h-14 flex items-center justify-between">
-        <div className="flex flex-col gap-1">
+      <div className="sticky top-0 z-30 bg-white border-b border-sand-300 px-4 py-2 flex items-center justify-between">
+        <div className="flex flex-col gap-1.5">
           <span className="text-[10px] font-bold text-bronze-500 tracking-widest uppercase">LAKSOR — GUIDE</span>
           <div className="flex bg-sand-200 rounded-full p-0.5 border border-sand-300 gap-0.5">
             <a href={`/guide/${guideId}`} className="text-[10px] px-3 py-1 rounded-full text-charcoal-400 font-semibold no-underline flex items-center gap-1">
@@ -158,7 +158,7 @@ export default function GuideDashboard() {
               <div className="relative flex-shrink-0">
                 <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-bronze-500/40">
                   {guide?.avatar
-                    ? <img src={guide.avatar} className="w-full h-full object-cover" />
+                    ? <img src={guide.avatar} className="w-full h-full object-cover" alt="avatar" />
                     : <div className="w-full h-full bg-sand-300 flex items-center justify-center text-lg font-bold text-charcoal-600">{guide?.displayName?.[0]}</div>
                   }
                 </div>
@@ -172,7 +172,7 @@ export default function GuideDashboard() {
                 <div className="text-[10px] text-charcoal-400 mt-1">Guide à {guide?.city} · {guide?.yearsExp} ans d&apos;expérience</div>
                 <div className="flex gap-3 mt-1.5 flex-wrap">
                   <span className="text-[10px] text-amber-400 flex items-center gap-1"><Star size={10} weight="fill" /> {guide?.avgRating} ({guide?.totalReviews} avis)</span>
-                  <span className="text-[10px] text-charcoal-400 flex items-center gap-1"><Users size={10} /> {guide?.totalBookings || bookings.length} visites</span>
+                  <span className="text-[10px] text-charcoal-400 flex items-center gap-1"><Users size={10} /> {bookings.length} visites</span>
                   <span className="text-[10px] text-charcoal-400 flex items-center gap-1"><Clock size={10} /> Répond &lt;10 min</span>
                 </div>
               </div>
@@ -197,10 +197,10 @@ export default function GuideDashboard() {
             </div>
             <div className="grid grid-cols-4 gap-2">
               {[
-                { label:"Revenus",    value: totalRevenue, unit:"MAD", color:"text-bronze-500" },
-                { label:"Réservations", value: bookings.length, unit:"", color:"text-sage-300" },
-                { label:"Note moy.",  value: guide?.avgRating || "—", unit:"★", color:"text-amber-500" },
-                { label:"Réponse",    value: "98", unit:"%", color:"text-sage-300" },
+                { label:"Revenus",       value: totalRevenue, unit:"MAD", color:"text-bronze-500" },
+                { label:"Réservations",  value: bookings.length, unit:"", color:"text-sage-300" },
+                { label:"Note moy.",     value: guide?.avgRating || "—", unit:"★", color:"text-amber-500" },
+                { label:"Réponse",       value: "98", unit:"%", color:"text-sage-300" },
               ].map(s => (
                 <div key={s.label} className="bg-sand-200 rounded-xl p-2 text-center border border-sand-300">
                   <div className={`font-display text-base font-bold ${s.color}`}>{s.value}<span className="text-[9px] text-charcoal-400 ml-0.5">{s.unit}</span></div>
@@ -220,22 +220,23 @@ export default function GuideDashboard() {
                 </div>
                 <div className="text-[10px] text-charcoal-400 mt-1">
                   {needsForSuper > 0
-                    ? <>Encore <b className="text-bronze-500">{needsForSuper} avis 5★</b> pour passer au niveau supérieur</>
+                    ? <span>Encore <b className="text-bronze-500">{needsForSuper} avis 5★</b> pour passer au niveau supérieur</span>
+                    : <span className="text-sage-300 font-bold">🎉 Objectif atteint !</span>
                   }
                 </div>
               </div>
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-bronze-500 to-amber-400 flex items-center justify-center text-xl shadow-lg">🏆</div>
             </div>
             <div className="bg-sand-300 rounded-full h-1.5 overflow-hidden">
-              <div className="h-full bg-gradient-to-r from-bronze-500 to-amber-400 rounded-full transition-all" style={{width: Math.min(100,(superGuideProgress/50)*100)+"%"}} />
+              <div className="h-full bg-gradient-to-r from-bronze-500 to-amber-400 rounded-full" style={{width: Math.min(100,Math.round((superGuideProgress/50)*100))+"%"}} />
             </div>
             <div className="flex justify-between mt-1.5">
               <span className="text-[9px] text-charcoal-400">{superGuideProgress} / 50 avis requis</span>
-              <span className="text-[9px] font-bold text-bronze-500">{Math.round((superGuideProgress/50)*100)}%</span>
+              <span className="text-[9px] font-bold text-bronze-500">{Math.min(100,Math.round((superGuideProgress/50)*100))}%</span>
             </div>
           </div>
 
-          {/* APERÇU RAPIDE */}
+          {/* APERCU RAPIDE */}
           <div className="bg-white rounded-2xl border border-sand-300 p-4">
             <div className="flex items-center justify-between mb-3">
               <span className="text-sm font-bold text-charcoal-800">Aperçu rapide</span>
@@ -245,11 +246,11 @@ export default function GuideDashboard() {
             </div>
             <div className="grid grid-cols-2 gap-2">
               {[
-                { label:"Vues profil",   value: guide?.views || 0,     delta:"+18%", Icon: Eye },
-                { label:"Clics",          value: 342,                   delta:"+12%", Icon: ChartLineUp },
-                { label:"Réservations",  value: bookings.length,        delta:"+27%", Icon: CalendarCheck },
-                { label:"Revenus",        value: totalRevenue+" MAD",  delta:"+21%", Icon: ChartBar },
-              ].map(({ label, value, delta, Icon: Ic }) => (
+                { label:"Vues profil",  value: guide?.views || 0,       delta:"+18%" },
+                { label:"Clics",        value: 342,                      delta:"+12%" },
+                { label:"Réservations", value: bookings.length,          delta:"+27%" },
+                { label:"Revenus",      value: totalRevenue+" MAD",      delta:"+21%" },
+              ].map(({ label, value, delta }) => (
                 <div key={label} className="bg-sand-200 rounded-xl p-3 border border-sand-300">
                   <div className="text-[9px] text-charcoal-400 uppercase tracking-wide font-semibold">{label}</div>
                   <div className="font-display text-sm font-bold text-charcoal-800 mt-1">{value}</div>
@@ -306,7 +307,7 @@ export default function GuideDashboard() {
               </div>
               {confirmed.slice(0,3).map((b: any, i: number) => (
                 <div key={b.id} className={`flex items-center gap-3 py-3 ${i < Math.min(confirmed.length,3)-1 ? "border-b border-sand-200" : ""}`}>
-                  <div className="w-9 h-9 rounded-xl bg-sage-50 border border-sage-300/20 flex items-center justify-center flex-shrink-0">
+                  <div className="w-9 h-9 rounded-xl bg-sage-50 flex items-center justify-center flex-shrink-0">
                     <Users size={16} className="text-sage-300" />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -424,7 +425,7 @@ export default function GuideDashboard() {
       </div>
 
       {/* BOTTOM NAV */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white/97 backdrop-blur-lg border-t border-sand-300 z-50 flex">
+      <nav className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-lg border-t border-sand-300 z-50 flex">
         {TABS.map(({ id, Icon, label }) => (
           <button key={id} onClick={() => setActive(id)}
             className={`flex flex-col items-center gap-1 flex-1 py-3 transition-colors border-t-2 relative
