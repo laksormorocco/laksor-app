@@ -123,7 +123,7 @@ export async function POST(req: Request) {
     // Generer et envoyer facture PDF
     const invoiceEmail = guestContact?.includes("@") ? guestContact : tourist.email;
     try {
-      await fetch(process.env.NEXT_PUBLIC_APP_URL + "/api/invoice", {
+      await fetch("https://laksor.vercel.app/api/invoice", {
         method: "POST",
         headers: {"Content-Type":"application/json"},
         body: JSON.stringify({
