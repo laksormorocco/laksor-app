@@ -290,7 +290,7 @@ export default function HomeHero() {
                   </div>
                 </div>
 
-                <AccBlock active={false} onToggle={() => {}} label="Date"
+                <AccBlock active={acc === "date"} onToggle={() => toggleAcc("date")} label="Date"
                   icon={<CalendarBlank size={15} weight="fill" className="text-bronze-500" />}
                   value={tDate ? new Date(tDate).toLocaleDateString("fr-FR", { day: "numeric", month: "long" }) : undefined}
                   placeholder="Ajouter une date">
