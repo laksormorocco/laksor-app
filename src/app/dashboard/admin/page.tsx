@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import {
-  ChartBar, Compass, CalendarCheck, EnvelopeSimple, MapTrifold,
+  ChartBar, Compass, CalendarCheck, EnvelopeSimple, MapTrifold, UsersThree,
   Check, X, Trash, WhatsappLogo, PaperPlaneTilt, Plus, PencilSimple,
   ToggleLeft, ToggleRight, SignOut
 } from "@phosphor-icons/react";
@@ -14,6 +14,7 @@ const TABS = [
   { id:"bookings", Icon: CalendarCheck,  label:"Réserv."   },
   { id:"tours",    Icon: MapTrifold,     label:"Tours"     },
   { id:"email",    Icon: EnvelopeSimple, label:"Email"     },
+  { id:"crm",     Icon: UsersThree,    label:"CRM"       },
 ];
 
 const TOUR_TYPES = [
@@ -54,9 +55,15 @@ export default function AdminDashboard() {
   const [templates,    setTemplates]    = useState<any[]>([]);
   const [tourForm,     setTourForm]     = useState<any>(null);
   const [tourSaving,   setTourSaving]   = useState(false);
+  const [crmBookings,  setCrmBookings]  = useState<any[]>([]);
+  const [crmSearch,    setCrmSearch]    = useState("");
+  const [crmStatus,    setCrmStatus]    = useState("");
+  const [crmSelected,  setCrmSelected]  = useState<any>(null);
+  const [crmLoading,   setCrmLoading]   = useState(false);
 
   useEffect(() => { if (auth) { fetchAll(); fetchTemplates(); } }, [auth]);
   useEffect(() => { if (auth && active === "guides") fetchGuides(); }, [guideTab, active, auth]);
+  useEffect(() => { if (auth && active === "crm") fetchCrm(); }, [active, auth, crmSearch, crmStatus]);
 
   async function fetchAll() {
     const [sRes, bRes] = await Promise.all([fetch("/api/admin/stats"), fetch("/api/admin/bookings")]);
@@ -68,6 +75,16 @@ export default function AdminDashboard() {
   async function fetchGuides() {
     const res = await fetch("/api/admin/guides?status=" + guideTab.toUpperCase());
     setGuides((await res.json()).guides || []);
+  }
+
+  async function fetchCrm() {
+    setCrmLoading(true);
+    const params = new URLSearchParams();
+    if (crmSearch) params.set("search", crmSearch);
+    if (crmStatus) params.set("status", crmStatus);
+    const res = await fetch("/api/admin/bookings?" + params.toString());
+    if (res.ok) setCrmBookings((await res.json()).bookings || []);
+    setCrmLoading(false);
   }
 
   async function fetchTemplates() {
@@ -461,6 +478,118 @@ export default function AdminDashboard() {
                 </button>
               </div>
             )}
+          </div>
+        )}
+
+
+        {/* ══ CRM ══ */}
+        {active === "crm" && (
+          <div className="flex flex-col gap-3">
+
+            {/* Search + Filtres */}
+            <div className="bg-white rounded-2xl border border-sand-300 p-4">
+              <div className="flex flex-col gap-3">
+                <input
+                  value={crmSearch}
+                  onChange={e => setCrmSearch(e.target.value)}
+                  placeholder="Rechercher par LAK-XXXX, nom, email, guide..."
+                  className={inputCls}
+                />
+                <div className="flex gap-2 flex-wrap">
+                  {["", "CONFIRMED", "PENDING", "CANCELLED", "COMPLETED"].map(s => (
+                    <button key={s} onClick={() => setCrmStatus(s)}
+                      className={`px-3 py-1.5 rounded-full text-xs font-bold border transition-all
+                        ${crmStatus === s ? "bg-bronze-500 text-white border-bronze-500" : "bg-sand-200 text-charcoal-400 border-sand-300"}`}>
+                      {s === "" ? "Tous" : s === "CONFIRMED" ? "Confirme" : s === "PENDING" ? "En attente" : s === "CANCELLED" ? "Annule" : "Complete"}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Stats rapides */}
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                { label: "Total", value: crmBookings.length },
+                { label: "Confirmes", value: crmBookings.filter(b => b.status === "CONFIRMED").length },
+                { label: "Revenue", value: crmBookings.filter(b => b.status === "CONFIRMED").reduce((s, b) => s + Number(b.totalPrice), 0) + " MAD" },
+              ].map(s => (
+                <div key={s.label} className="bg-white rounded-xl border border-sand-300 p-3 text-center">
+                  <div className="font-display text-lg font-bold text-charcoal-800">{s.value}</div>
+                  <div className="text-[10px] text-charcoal-400">{s.label}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Liste reservations */}
+            {crmLoading ? (
+              <div className="text-center py-8 text-charcoal-400 text-sm">Chargement...</div>
+            ) : crmBookings.length === 0 ? (
+              <div className="bg-white rounded-2xl border border-sand-300 p-8 text-center text-charcoal-400 text-sm">Aucune reservation trouvee</div>
+            ) : crmBookings.map(b => (
+              <div key={b.id} className="bg-white rounded-2xl border border-sand-300 p-4 cursor-pointer hover:border-bronze-500 transition-colors"
+                onClick={() => setCrmSelected(crmSelected?.id === b.id ? null : b)}>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-display text-sm font-bold text-bronze-500">{b.bookingRef}</span>
+                  <span className={statusBadge(b.status).cls}>{statusBadge(b.status).label}</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="flex-1">
+                    <div className="text-sm font-semibold text-charcoal-800">{b.tourist?.name || "Guest"}</div>
+                    <div className="text-xs text-charcoal-400">{b.tourist?.email}</div>
+                    {b.whatsapp && <div className="text-xs text-sage-300 font-semibold">WA: {b.whatsapp}</div>}
+                  </div>
+                  <div className="text-right">
+                    <div className="text-sm font-bold text-charcoal-800">{Number(b.totalPrice)} MAD</div>
+                    <div className="text-xs text-charcoal-400">{new Date(b.date).toLocaleDateString("fr-FR")}</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 mt-2 pt-2 border-t border-sand-200">
+                  <div className="w-6 h-6 rounded-full overflow-hidden bg-sand-300 flex-shrink-0">
+                    {b.guide?.avatar
+                      ? <img src={b.guide.avatar} className="w-full h-full object-cover" />
+                      : <div className="w-full h-full flex items-center justify-center text-[10px] font-bold text-charcoal-500">{b.guide?.displayName?.[0]}</div>
+                    }
+                  </div>
+                  <span className="text-xs text-charcoal-400">{b.guide?.displayName} · {b.guide?.city}</span>
+                  <span className="text-xs text-charcoal-400 ml-auto">{b.persons} pers.</span>
+                </div>
+
+                {/* Fiche detaillee */}
+                {crmSelected?.id === b.id && (
+                  <div className="mt-3 pt-3 border-t border-sand-200 flex flex-col gap-2">
+                    <div className="text-[10px] font-bold text-charcoal-400 uppercase tracking-widest">Details complets</div>
+                    <div className="grid grid-cols-2 gap-2">
+                      {[
+                        ["Reference", b.bookingRef],
+                        ["Date", new Date(b.date).toLocaleDateString("fr-FR")],
+                        ["Duree", b.duration === "FULL_DAY" ? "Journee (8h)" : "Demi-journee (4h)"],
+                        ["Personnes", b.persons],
+                        ["Prix total", Number(b.totalPrice) + " MAD"],
+                        ["Paiement", b.paymentMethod || "cash"],
+                        ["Guide", b.guide?.displayName],
+                        ["Ville", b.guide?.city],
+                        ["Client", b.tourist?.name || "Guest"],
+                        ["Email", b.tourist?.email],
+                        ["WhatsApp", b.whatsapp || "Non fourni"],
+                        ["Cree le", new Date(b.createdAt).toLocaleDateString("fr-FR")],
+                      ].map(([k, v]) => (
+                        <div key={k} className="bg-sand-200 rounded-lg p-2">
+                          <div className="text-[9px] text-charcoal-400 uppercase tracking-wide">{k}</div>
+                          <div className="text-xs font-semibold text-charcoal-800 mt-0.5 truncate">{v}</div>
+                        </div>
+                      ))}
+                    </div>
+                    {b.guide?.phone && (
+                      <a href={"https://wa.me/" + b.guide.phone.replace(/[^0-9]/g, "") + "?text=Ref: " + b.bookingRef}
+                        className="flex items-center justify-center gap-2 bg-sage-300 text-white font-bold py-2 rounded-xl text-xs no-underline">
+                        Contacter le guide
+                      </a>
+                    )}
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
         )}
 
