@@ -15,9 +15,9 @@ const supabase = createClient(
 );
 
 const PAYMENT_OPTIONS = [
-  { id: "deposit", Icon: CreditCard, label: "Acompte 30% ⭐ Recommandé", desc: "70% le jour J · Annulation gratuite 72h" },
-  { id: "full",    Icon: CreditCard, label: "100% en ligne",  desc: "Annulation gratuite 72h" },
-  { id: "cash",    Icon: Money,      label: "Cash le jour J", desc: "Aucun prépaiement requis" },
+  { id: "deposit", Icon: CreditCard, label: "Acompte 30%", badge: "Recommandé", desc: "70% le jour J · Annulation gratuite 72h" },
+  { id: "full",    Icon: CreditCard, label: "100% en ligne", badge: null, desc: "Annulation gratuite 72h" },
+  { id: "cash",    Icon: Money,      label: "Cash le jour J", badge: null, desc: "Aucun prépaiement requis" },
 ];
 
 type Step = "dates" | "info" | "recap";
@@ -152,12 +152,19 @@ export default function BookingPage() {
             <MapPin size={11} /> {guide?.city}
           </div>
         </div>
-        {adjustedTotal > 0 && (
-          <div className="text-right">
-            <div className="font-display text-lg font-bold text-charcoal-800">{adjustedTotal} <span className="text-xs font-normal text-charcoal-400">MAD</span></div>
-            {payment === "deposit" && <div className="text-[10px] text-bronze-500">Acompte : {deposit} MAD</div>}
-          </div>
-        )}
+        <div className="text-right">
+          {adjustedTotal > 0 ? (
+            <>
+              <div className="font-display text-lg font-bold text-charcoal-800">{adjustedTotal} <span className="text-xs font-normal text-charcoal-400">MAD</span></div>
+              {payment === "deposit" && <div className="text-[10px] text-bronze-500">Acompte : {deposit} MAD</div>}
+            </>
+          ) : (
+            <>
+              <div className="font-display text-lg font-bold text-charcoal-800">{guide?.halfDayPrice} <span className="text-xs font-normal text-charcoal-400">MAD</span></div>
+              <div className="text-[10px] text-charcoal-400">pour 2 pers.</div>
+            </>
+          )}
+        </div>
       </div>
 
       <div className="px-4 pt-4 pb-8 max-w-lg mx-auto flex flex-col gap-3">
@@ -169,6 +176,8 @@ export default function BookingPage() {
               <div className="flex items-center gap-2 mb-3">
                 <CalendarBlank size={14} className="text-bronze-500" />
                 <span className="text-[10px] font-bold text-charcoal-800 uppercase tracking-widest">Choisissez vos dates</span>
+              </div>
+              <div className="text-[10px] text-charcoal-400 mb-2">💡 Tarifs affichés pour 2 personnes · +15% par personne supplémentaire
               </div>
               <CalendarPicker
                 blockedDates={bookedDates.map((b: any) => b.date)}
