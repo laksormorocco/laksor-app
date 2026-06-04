@@ -9,19 +9,6 @@ const supabase = createClient(
 
 export default function DashboardRedirect() {
   useEffect(() => {
-    async function checkUser() {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        setTimeout(async () => {
-          const { data: { session: s2 } } = await supabase.auth.getSession();
-          if (!s2) { window.location.href = "/auth/login"; return; }
-          redirect(s2);
-        }, 1500);
-        return;
-      }
-      redirect(session);
-    }
-
     async function redirect(session: any) {
       const res = await fetch("/api/auth/me?supabaseId=" + session.user.id);
       const data = await res.json();
@@ -34,11 +21,42 @@ export default function DashboardRedirect() {
       }
     }
 
-    supabase.auth.onAuthStateChange((event, session) => {
-      if (session) redirect(session);
-    });
+    async function init() {
+      // Traiter le hash token de Supabase OAuth
+      if (window.location.hash && window.location.hash.includes("access_token")) {
+        const { data, error } = await supabase.auth.getSession();
+        if (data.session) {
+          await redirect(data.session);
+          return;
+        }
+      }
 
-    checkUser();
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        await redirect(session);
+        return;
+      }
+
+      // Ecouter le changement auth (cas OAuth callback)
+      const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+        if (session) {
+          subscription.unsubscribe();
+          await redirect(session);
+        }
+      });
+
+      // Fallback apres 3s
+      setTimeout(async () => {
+        const { data: { session: s } } = await supabase.auth.getSession();
+        if (s) {
+          await redirect(s);
+        } else {
+          window.location.href = "/auth/login";
+        }
+      }, 3000);
+    }
+
+    init();
   }, []);
 
   return (

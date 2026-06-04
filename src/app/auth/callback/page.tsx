@@ -9,7 +9,28 @@ const supabase = createClient(
 
 export default function CallbackPage() {
   useEffect(() => {
+    async function handle() {
+      // Laisser Supabase parser le hash
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (!session) {
+        // Ecouter l auth state change (OAuth hash parsing)
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, s) => {
+          if (s) {
+            subscription.unsubscribe();
+            await doRedirect(s);
+          }
+        });
+        // Fallback 4s
+        setTimeout(() => { window.location.href = "/auth/login"; }, 4000);
+        return;
+      }
+
+      await doRedirect(session);
+    }
+
     async function doRedirect(session: any) {
+      // Sync user en DB
       await fetch("/api/auth/sync", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -20,40 +41,12 @@ export default function CallbackPage() {
           avatar: session.user.user_metadata?.avatar_url || null,
         })
       });
+
       const res = await fetch("/api/auth/me?supabaseId=" + session.user.id);
       const data = await res.json();
       if (data.role === "ADMIN") window.location.href = "/dashboard/admin";
       else if (data.role === "GUIDE" && data.guideId) window.location.href = "/dashboard/guide?id=" + data.guideId;
       else window.location.href = "/dashboard/tourist";
-    }
-
-    async function handle() {
-      // Cas 1: hash avec access_token (implicit flow)
-      const hash = window.location.hash.substring(1);
-      const hashParams = new URLSearchParams(hash);
-      const accessToken = hashParams.get("access_token");
-      const refreshToken = hashParams.get("refresh_token");
-      if (accessToken && refreshToken) {
-        const { data } = await supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
-        if (data.session) { await doRedirect(data.session); return; }
-      }
-
-      // Cas 2: code dans query (PKCE flow)
-      const code = new URLSearchParams(window.location.search).get("code");
-      if (code) {
-        const { data } = await supabase.auth.exchangeCodeForSession(code);
-        if (data.session) { await doRedirect(data.session); return; }
-      }
-
-      // Cas 3: session deja active
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) { await doRedirect(session); return; }
-
-      // Cas 4: attendre onAuthStateChange
-      const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, s) => {
-        if (s) { subscription.unsubscribe(); await doRedirect(s); }
-      });
-      setTimeout(() => { window.location.href = "/auth/login"; }, 5000);
     }
 
     handle();
