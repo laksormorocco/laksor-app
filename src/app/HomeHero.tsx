@@ -261,7 +261,7 @@ export default function HomeHero() {
                   ))}
                 </div>
 
-                <AccBlock active={true} onToggle={() => {}} label="Ville"
+                <AccBlock active={acc === "dest"} onToggle={() => toggleAcc("dest")} label="Ville"
                   icon={<MapPin size={15} weight="fill" className="text-bronze-500" />}
                   value={tCity || undefined} placeholder="Choisir une ville">
                   {CITIES.map(city => (
@@ -299,7 +299,7 @@ export default function HomeHero() {
                 </AccBlock>
 
                 {tType === "airport" && (
-                  <AccBlock active={false} onToggle={() => {}} label="N° de vol"
+                  <AccBlock active={acc === "lang"} onToggle={() => toggleAcc("lang")} label="N° de vol"
                     icon={<AirplaneTakeoff size={15} weight="fill" className="text-bronze-500" />}
                     value={tFlight || undefined} placeholder="Ex : AT 456">
                     <div className="flex items-center gap-2 bg-sand-200 rounded-xl px-3 py-2.5">
