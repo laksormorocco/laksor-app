@@ -12,6 +12,7 @@ type Props = {
   priceHalfDay?: number;
   priceFullDay?: number;
   onSelectionChange?: (slots: Slot[], total: number) => void;
+  convert?: (mad: number) => string;
 };
 
 export default function CalendarPicker({
@@ -19,7 +20,9 @@ export default function CalendarPicker({
   priceHalfDay = 350,
   priceFullDay = 650,
   onSelectionChange,
+  convert,
 }: Props) {
+  const fmt = (mad: number) => convert ? convert(mad) : mad + " MAD";
   const today = new Date(); today.setHours(0,0,0,0);
   const [current, setCurrent]   = useState(new Date(today.getFullYear(), today.getMonth(), 1));
   const [slots,   setSlots]     = useState<Slot[]>([]);
@@ -222,7 +225,7 @@ export default function CalendarPicker({
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-bold text-bronze-500">
-                    {s.duration === "full" ? priceFullDay : priceHalfDay} MAD
+                    {fmt(s.duration === "full" ? priceFullDay : priceHalfDay)}
                   </span>
                   <button
                     onClick={() => removeSlot(s.date)}
@@ -237,7 +240,7 @@ export default function CalendarPicker({
 
           <div className="flex items-center justify-between pt-2 border-t border-sand-300">
             <span className="text-xs text-charcoal-500 font-medium">Total</span>
-            <span className="font-display text-lg font-bold text-charcoal-800">{total} MAD</span>
+            <span className="font-display text-lg font-bold text-charcoal-800">{fmt(total)}</span>
           </div>
         </div>
       )}

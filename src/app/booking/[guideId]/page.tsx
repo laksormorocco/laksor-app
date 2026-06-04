@@ -185,6 +185,7 @@ export default function BookingPage() {
                 blockedDates={bookedDates.map((b: any) => b.date)}
                 priceHalfDay={guide?.halfDayPrice || 350}
                 priceFullDay={guide?.fullDayPrice || 650}
+                convert={convert}
                 onSelectionChange={(slots: any[], t: number) => {
                   setSelectedDates(slots.map((s: any) => s.date));
                   setTotal(t);
