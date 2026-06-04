@@ -90,17 +90,18 @@ export default function ConfirmationPage({ searchParams }: { searchParams: { gui
             </div>
 
             {/* MESSAGE REMERCIEMENTS */}
-            <div className="bg-charcoal-800 rounded-2xl p-4 text-center">
-              <div className="text-white font-display text-base mb-2">Merci pour votre confiance 🙏</div>
-              <div className="text-charcoal-400 text-xs leading-relaxed mb-3">
-                Tous nos guides et chauffeurs sont agréés par le Ministère du Tourisme du Maroc et vérifiés par notre équipe.
+            <div className="bg-charcoal-800 rounded-2xl p-5 text-center">
+              <div className="font-display text-lg text-white mb-2">Merci de voyager avec Laksor 🧭</div>
+              <div className="text-charcoal-400 text-xs leading-relaxed mb-4">
+                Votre expérience au Maroc commence ici. Chaque guide et chauffeur Laksor est certifié par le <strong className="text-white">Ministère du Tourisme marocain</strong> et personnellement validé par notre équipe — pour que vous voyagiez l&apos;esprit tranquille.
               </div>
-              <div className="text-charcoal-400 text-xs">
-                Nous restons joignables 7j/7 via WhatsApp
+              <div className="text-charcoal-400 text-xs leading-relaxed mb-4">
+                Une question ? Un imprévu ? Notre équipe est disponible <strong className="text-white">7j/7</strong> via notre plateforme <strong className="text-white">laksor.ma</strong> ou sur WhatsApp au numéro d&apos;urgence.
               </div>
-              <a href="https://wa.me/212657436342" className="mt-3 inline-flex items-center gap-2 bg-sage-300 hover:bg-sage-400 text-white text-xs font-bold px-4 py-2 rounded-full no-underline transition-colors">
-                💬 Nous contacter sur WhatsApp
+              <a href="https://wa.me/212657436342" className="inline-flex items-center gap-2 bg-sage-300 hover:bg-sage-400 text-white text-xs font-bold px-5 py-2.5 rounded-full no-underline transition-colors">
+                💬 Contacter Laksor sur WhatsApp
               </a>
+              <div className="mt-3 text-[10px] text-charcoal-500 italic">Bienvenue au Maroc authentique.</div>
             </div>
 
             {/* CTA */}

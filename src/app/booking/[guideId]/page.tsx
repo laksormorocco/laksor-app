@@ -238,6 +238,12 @@ export default function BookingPage() {
               </div>
             </div>
 
+            {persons > 2 && (
+              <div className="bg-amber-50 border border-bronze-500/20 rounded-xl px-3 py-2 flex items-center gap-2">
+                <span className="text-bronze-500 text-lg">⚠️</span>
+                <span className="text-xs text-bronze-500 font-semibold">+15% par personne au-delà de 2 · Supplément estimé : +{extraCost} MAD</span>
+              </div>
+            )}
             <button onClick={() => selectedDates.length > 0 && setStep("info")}
               className={`w-full py-4 rounded-full text-sm font-bold transition-all flex items-center justify-center gap-2
                 ${selectedDates.length > 0 ? "bg-bronze-500 hover:bg-bronze-600 text-white shadow-lg" : "bg-sand-300 text-charcoal-400 cursor-not-allowed"}`}>

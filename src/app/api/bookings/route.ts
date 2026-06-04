@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { guideId, supabaseId, date, duration, persons, totalPrice, notes, paymentMethod, startTime, transport } = body;
+    const { guideId, supabaseId, date, duration, persons, totalPrice, notes, paymentMethod, startTime, transport, guestName, guestContact } = body;
 
     if (!guideId || !supabaseId) return NextResponse.json({ error: "Données manquantes" }, { status: 400 });
 
@@ -82,6 +82,30 @@ export async function POST(req: Request) {
 🔗 Dashboard: https://laksor.vercel.app/dashboard/guide?id=${guideId}`
       );
       whatsappUrl = `https://wa.me/${phone}?text=${msg}`;
+    }
+
+    // Envoyer email de confirmation
+    const dateStr = new Date(date).toLocaleDateString("fr-FR");
+    const duree = duration === "FULL_DAY" ? "Journee complete (8h)" : "Demi-journee (4h)";
+    const emailTo = guestContact?.includes("@") ? guestContact : tourist.email;
+    if (emailTo) {
+      try {
+        await fetch(process.env.NEXT_PUBLIC_APP_URL + "/api/email", {
+          method: "POST",
+          headers: {"Content-Type":"application/json"},
+          body: JSON.stringify({
+            to: emailTo,
+            guideName: guide.displayName,
+            date: dateStr,
+            persons,
+            price: totalPrice || price,
+            duration: duree,
+            paymentMethod,
+            guestName: tourist.name || guestName || "Client",
+            bookingId: booking.id
+          })
+        });
+      } catch(emailErr) { console.error("Email error:", emailErr); }
     }
 
     return NextResponse.json({ booking, whatsappUrl });
