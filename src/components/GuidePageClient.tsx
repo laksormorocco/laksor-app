@@ -169,7 +169,7 @@ export default function GuidePageClient({ guide }: { guide: any }) {
             <div className="text-xs text-charcoal-400 font-medium">À partir de</div>
             <div className="font-display text-2xl font-bold text-charcoal-800 leading-tight">
               {guide.halfDayPrice} MAD
-            </div>}
+            </div>
             <div className="text-xs text-charcoal-400">/ 2 personnes</div>
           </div>
 <div className="text-right">
