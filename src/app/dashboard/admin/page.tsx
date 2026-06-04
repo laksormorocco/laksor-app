@@ -132,7 +132,15 @@ export default function AdminDashboard() {
     if (!tourForm) return;
     setTourSaving(true);
     const method = tourForm.id ? "PATCH" : "POST";
-    const res = await fetch("/api/admin/tours", { method, headers:{"Content-Type":"application/json"}, body:JSON.stringify(tourForm) });
+    const formData = {...tourForm};
+    if (formData.itinerary_raw) {
+      formData.itinerary = formData.itinerary_raw.split("\n").filter((l:string)=>l.trim()).map((l:string)=>{
+        const parts = l.split("|").map((p:string)=>p.trim());
+        return { time: parts[0]||"", title: parts[1]||"", desc: parts[2]||"" };
+      });
+      delete formData.itinerary_raw;
+    }
+    const res = await fetch("/api/admin/tours", { method, headers:{"Content-Type":"application/json"}, body:JSON.stringify(formData) });
     if (res.ok) { await fetchTemplates(); setTourForm(null); }
     else alert("Erreur sauvegarde");
     setTourSaving(false);
