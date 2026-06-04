@@ -120,7 +120,8 @@ export async function POST(req: Request) {
       } catch(emailErr) { console.error("Email error:", emailErr); }
     }
 
-    // Generer et envoyer facture PDF
+    // INVOICE DESACTIVE TEMPORAIREMENT
+    /*
     const invoiceEmail = guestContact?.includes("@") ? guestContact : tourist.email;
     try {
       await fetch("https://laksor.vercel.app/api/invoice", {
@@ -144,6 +145,7 @@ export async function POST(req: Request) {
         })
       });
     } catch(invErr) { console.error("Invoice error:", invErr); }
+    */
 
     return NextResponse.json({ booking, whatsappUrl, bookingRef });
   } catch(e: any) {
