@@ -475,8 +475,7 @@ export default function AdminDashboard() {
                         tags: (existing.tags||[]).join(", "),
                         included: (existing.included||[]).join(", "),
                         notIncluded: (existing.notIncluded||[]).join(", "),
-                        itinerary_raw: (existing.itinerary||[]).map((s:any)=>s.time+" | "+s.title+" | "+(s.desc||"" )).join("
-"),
+                        itinerary_raw: (existing.itinerary||[]).map((s:any)=>s.time+" | "+s.title+" | "+(s.desc||"")).join("\n"),
                       } : {
                         tourType: tt.type, title: tt.title, description: "", duration: "4h",
                         groupSize: "1-6 pers.", difficulty: "Facile", bestMoment: "Matin",
