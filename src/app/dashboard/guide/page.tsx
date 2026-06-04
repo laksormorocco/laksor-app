@@ -453,7 +453,7 @@ export default function GuideDashboard() {
 
           {toursLoading ? (
             <div className="text-center py-8 text-charcoal-400 text-sm">Chargement...</div>
-          ) : tours.length === 0 ? (
+          ) : guideTours.length === 0 ? (
             <div className="bg-white rounded-2xl border border-sand-300 p-8 text-center">
               <div className="text-sm text-charcoal-400">Aucun service disponible — contactez l admin</div>
             </div>
