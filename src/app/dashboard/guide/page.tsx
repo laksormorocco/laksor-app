@@ -5,7 +5,7 @@ import ProfileEditor from "@/components/ProfileEditor";
 import {
   House, CalendarCheck, Target, ChartBar, User,
   Bell, ArrowRight, Check, X, Clock, Users, Star,
-  Trophy, ChartLineUp, Eye, SignOut
+  Trophy, ChartLineUp, Eye, SignOut, MapTrifold, ToggleLeft, ToggleRight
 } from "@phosphor-icons/react";
 import { createClient } from "@supabase/supabase-js";
 
@@ -20,6 +20,7 @@ const TABS = [
   { id:"demandes",     Icon: Target,        label:"Demandes"     },
   { id:"stats",        Icon: ChartBar,      label:"Stats"        },
   { id:"profil",       Icon: User,          label:"Profil"       },
+  { id:"services",     Icon: MapTrifold,    label:"Services"    },
 ];
 
 function statusBadge(status: string) {
@@ -42,11 +43,14 @@ export default function GuideDashboard() {
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [loading, setLoading] = useState(true);
   const [guideId, setGuideId] = useState("");
+  const [guideTours, setGuideTours] = useState<any[]>([]);
+  const [toursLoading, setToursLoading] = useState(false);
+  const [editPrice, setEditPrice] = useState<Record<string,string>>({});
 
   useEffect(() => {
     const id = new URLSearchParams(window.location.search).get("id") || "";
     setGuideId(id);
-    if (id) fetchData(id);
+    if (id) { fetchData(id); fetchTours(id); }
     else setLoading(false);
   }, []);
 
@@ -67,6 +71,23 @@ export default function GuideDashboard() {
       setCustomRequests(reqData.requests || []);
     } catch(e) { console.error(e); }
     setLoading(false);
+  }
+
+  async function fetchTours(id: string) {
+    setToursLoading(true);
+    const res = await fetch("/api/guide/tours?guideId=" + id);
+    const data = await res.json();
+    setGuideTours(data.tours || []);
+    setToursLoading(false);
+  }
+
+  async function toggleTour(templateId: string, isActive: boolean, price?: string) {
+    await fetch("/api/guide/tours", {
+      method: "PATCH",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({ guideId, templateId, isActive, price: price || null })
+    });
+    fetchTours(guideId);
   }
 
   async function updateBooking(bookingId: string, status: string) {
@@ -418,6 +439,63 @@ export default function GuideDashboard() {
                     Refuser
                   </button>
                 </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+
+      {active === "services" && (
+        <div className="flex flex-col gap-3">
+          <div className="text-sm font-bold text-charcoal-800">Mes services ({guideTours.filter(t=>t.isActive).length} actifs)</div>
+          <div className="text-xs text-charcoal-400 -mt-1">Activez les services que vous proposez et définissez vos tarifs</div>
+
+          {toursLoading ? (
+            <div className="text-center py-8 text-charcoal-400 text-sm">Chargement...</div>
+          ) : tours.length === 0 ? (
+            <div className="bg-white rounded-2xl border border-sand-300 p-8 text-center">
+              <div className="text-sm text-charcoal-400">Aucun service disponible — contactez l admin</div>
+            </div>
+          ) : guideTours.map(t => (
+            <div key={t.template.id} className={`bg-white rounded-2xl border p-4 transition-all ${t.isActive ? "border-sage-300/50" : "border-sand-300"}`}>
+              <div className="flex items-start gap-3 mb-3">
+                <div className="text-2xl flex-shrink-0">{t.template.tourType === "MEDINA_SECRETS" ? "🕌" : t.template.tourType === "GASTRONOMIE" ? "🍽️" : t.template.tourType === "HISTOIRE_MONUMENTS" ? "🏛️" : t.template.tourType === "DESERT_NATURE" ? "🏜️" : t.template.tourType === "SHOPPING_ARTISANAT" ? "🛍️" : t.template.tourType === "COUCHER_SOLEIL" ? "🌅" : "📸"}</div>
+                <div className="flex-1">
+                  <div className="text-sm font-bold text-charcoal-800">{t.template.title}</div>
+                  <div className="text-xs text-charcoal-400 mt-0.5">{t.template.description?.slice(0,80)}...</div>
+                  <div className="flex gap-2 mt-1 flex-wrap">
+                    {t.template.tags?.slice(0,3).map((tag: string) => (
+                      <span key={tag} className="text-[9px] bg-sand-200 text-charcoal-400 px-2 py-0.5 rounded-full">{tag}</span>
+                    ))}
+                  </div>
+                </div>
+                <button onClick={() => toggleTour(t.template.id, !t.isActive, editPrice[t.template.id])}
+                  className={`flex-shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold border transition-all
+                    ${t.isActive ? "bg-sage-300/15 text-sage-300 border-sage-300/40" : "bg-sand-200 text-charcoal-400 border-sand-300"}`}>
+                  {t.isActive ? <ToggleRight size={14} weight="fill" /> : <ToggleLeft size={14} />}
+                  {t.isActive ? "Actif" : "Inactif"}
+                </button>
+              </div>
+
+              {/* Prix */}
+              <div className="flex items-center gap-2 pt-3 border-t border-sand-200">
+                <div className="text-xs text-charcoal-400 flex-shrink-0">Mon tarif :</div>
+                <input
+                  type="number"
+                  value={editPrice[t.template.id] ?? (t.price || "")}
+                  onChange={e => setEditPrice({...editPrice, [t.template.id]: e.target.value})}
+                  placeholder={t.price ? String(t.price) : "Prix MAD"}
+                  className="flex-1 border border-sand-300 rounded-xl px-3 py-1.5 text-sm text-charcoal-800 outline-none focus:border-bronze-500"
+                />
+                <span className="text-xs text-charcoal-400">MAD</span>
+                <button onClick={() => toggleTour(t.template.id, t.isActive, editPrice[t.template.id])}
+                  className="bg-bronze-500 text-white font-bold px-3 py-1.5 rounded-xl text-xs">
+                  OK
+                </button>
+              </div>
+              {t.price && (
+                <div className="text-xs text-sage-300 font-semibold mt-1.5">Tarif actuel : {t.price} MAD</div>
               )}
             </div>
           ))}

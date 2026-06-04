@@ -6,11 +6,7 @@ export default async function InvoicePage({ params, searchParams }: { params: { 
   if (!searchParams.token || !verifyInvoiceToken(params.bookingId, searchParams.token)) notFound();
   const booking = await prisma.booking.findUnique({
     where: { id: params.bookingId },
-    include: {
-      guide: { select: { displayName: true, city: true, phone: true } },
-      tourist: { select: { name: true, email: true } },
-      slots: true,
-    }
+    select: { id: true, date: true, duration: true, persons: true, totalPrice: true, notes: true, guide: { select: { displayName: true, city: true, phone: true } }, tourist: { select: { name: true, email: true } }, slots: true }
   });
 
   if (!booking) notFound();
@@ -18,8 +14,9 @@ export default async function InvoicePage({ params, searchParams }: { params: { 
   const bookingRef = booking.notes?.match(/REF:([A-Z0-9-]+)/)?.[1] || "LAK-" + booking.id.slice(-8).toUpperCase();
   const total = Number(booking.totalPrice);
   const deposit = Math.round(total * 0.3);
-  const isPaid = booking.paymentMethod === "deposit" || booking.paymentMethod === "full";
-  const paymentLabel = booking.paymentMethod === "deposit" ? "Acompte 30%" : booking.paymentMethod === "full" ? "100% en ligne" : "Cash le jour J";
+  const paymentMethodFromNotes = (booking.notes || "").includes("Acompte") ? "Acompte 30%" : (booking.notes || "").includes("100%") ? "100% en ligne" : "Cash le jour J";
+  const isPaid = paymentMethodFromNotes.includes("Acompte") || paymentMethodFromNotes.includes("ligne");
+  const paymentLabel = isPaid ? paymentMethodFromNotes : "Cash le jour J";
   const dateStr = new Date(booking.date).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
   const duration = booking.duration === "FULL_DAY" ? "Journee complete (8h)" : "Demi-journee (4h)";
   const emissionDate = new Date().toLocaleDateString("fr-FR");
