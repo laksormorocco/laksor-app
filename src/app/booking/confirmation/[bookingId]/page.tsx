@@ -218,7 +218,22 @@ export default function ConfirmationPage() {
                 <input value={whatsapp} onChange={e => setWhatsapp(e.target.value)}
                   placeholder="+212 6XX XXX XXX"
                   className="flex-1 border border-sand-300 rounded-xl px-3 py-2 text-sm text-charcoal-800 outline-none focus:border-bronze-500" />
-                <button onClick={() => { if (whatsapp.trim()) setWaSaved(true); }}
+                <button onClick={async () => {
+                    if (!whatsapp.trim()) return;
+                    const res = await fetch("/api/bookings/whatsapp", {
+                      method: "POST",
+                      headers: {"Content-Type":"application/json"},
+                      body: JSON.stringify({
+                        bookingId,
+                        whatsapp,
+                        bookingRef,
+                        touristName: tourist?.name || "Client"
+                      })
+                    });
+                    const data = await res.json();
+                    if (data.notifyUrl) window.open(data.notifyUrl, "_blank");
+                    setWaSaved(true);
+                  }}
                   className="bg-sage-300 text-white font-bold px-4 py-2 rounded-xl text-sm">
                   OK
                 </button>
