@@ -35,33 +35,40 @@ export async function GET(req: Request) {
   const html = `<!DOCTYPE html>
 <html><head><meta charset="utf-8"><title>Facture ${bookingRef} - Laksor</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;800&family=Inter:wght@400;500;600;700&display=swap');
 * { margin:0; padding:0; box-sizing:border-box; }
-body { font-family: Georgia, serif; background:#fff; color:#111; }
-.page { max-width:794px; margin:0 auto; padding:40px; }
-.header { background:#111; border-radius:12px; padding:28px 32px; display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; }
-.logo { font-size:22px; font-weight:800; color:#B88A44; letter-spacing:4px; }
+body { font-family: 'Inter', sans-serif; background:#F6F1E8; color:#111; }
+.page { max-width:760px; margin:0 auto; padding:48px 40px; }
+.header { background:#111111; border-radius:16px; padding:32px 36px; display:flex; justify-content:space-between; align-items:center; margin-bottom:28px; }
+.logo { font-family:'Playfair Display',serif; font-size:24px; font-weight:800; color:#B88A44; letter-spacing:5px; }
 .header-right { text-align:right; }
-.header-title { font-size:16px; color:#fff; font-weight:700; }
-.header-sub { font-size:11px; color:#888; margin-top:4px; }
-.ref-box { background:#F6F1E8; border:1px solid #EADCC8; border-radius:10px; padding:16px 20px; display:flex; justify-content:space-between; margin-bottom:20px; }
-.ref-label { font-size:10px; color:#888; text-transform:uppercase; letter-spacing:1px; }
-.ref-value { font-size:22px; font-weight:800; color:#B88A44; margin-top:4px; }
-.parties { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px; }
-.card { background:#F6F1E8; border:1px solid #EADCC8; border-radius:10px; padding:16px; }
-.card-title { font-size:10px; color:#888; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; }
-.card-name { font-size:14px; font-weight:700; color:#111; }
-.card-sub { font-size:11px; color:#888; margin-top:3px; }
-table { width:100%; border-collapse:collapse; border:1px solid #EADCC8; border-radius:10px; overflow:hidden; margin-bottom:16px; }
-th { background:#F6F1E8; font-size:10px; text-transform:uppercase; letter-spacing:1px; color:#888; padding:10px 16px; text-align:left; }
-td { padding:10px 16px; font-size:12px; border-bottom:1px solid #F6F1E8; }
-td.right { text-align:right; font-weight:600; }
-.total td { font-size:16px; font-weight:800; color:#B88A44; border-bottom:none; padding-top:14px; }
-.thanks { background:#F6F1E8; border-radius:10px; padding:20px 24px; margin-bottom:16px; text-align:center; border:1px solid #EADCC8; }
-.footer { text-align:center; }
-.badge { background:#7D8F69; color:#fff; font-size:10px; font-weight:700; padding:6px 16px; border-radius:20px; display:inline-block; margin-bottom:10px; }
-.footer-text { font-size:10px; color:#aaa; line-height:1.8; }
-.print-btn { position:fixed; bottom:24px; right:24px; background:#B88A44; color:#fff; border:none; border-radius:99px; padding:14px 24px; font-size:14px; font-weight:700; cursor:pointer; font-family:Georgia,serif; box-shadow:0 4px 20px rgba(184,138,68,0.4); }
-@media print { .print-btn { display:none; } }
+.header-title { font-family:'Playfair Display',serif; font-size:16px; color:#fff; font-weight:700; }
+.header-sub { font-size:11px; color:#888; margin-top:5px; letter-spacing:0.5px; }
+.ref-box { background:#fff; border:1px solid #EADCC8; border-radius:12px; padding:20px 24px; display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; box-shadow:0 1px 4px rgba(0,0,0,0.04); }
+.ref-label { font-size:9px; color:#B88A44; text-transform:uppercase; letter-spacing:2px; font-weight:700; }
+.ref-value { font-family:'Playfair Display',serif; font-size:26px; font-weight:800; color:#111; margin-top:5px; letter-spacing:2px; }
+.parties { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:20px; }
+.card { background:#fff; border:1px solid #EADCC8; border-radius:12px; padding:18px 20px; box-shadow:0 1px 4px rgba(0,0,0,0.04); }
+.card-title { font-size:9px; color:#B88A44; text-transform:uppercase; letter-spacing:2px; font-weight:700; margin-bottom:10px; }
+.card-name { font-family:'Playfair Display',serif; font-size:15px; font-weight:700; color:#111; }
+.card-sub { font-size:11px; color:#888; margin-top:4px; line-height:1.6; }
+table { width:100%; border-collapse:collapse; background:#fff; border:1px solid #EADCC8; border-radius:12px; overflow:hidden; margin-bottom:20px; box-shadow:0 1px 4px rgba(0,0,0,0.04); }
+thead tr { background:#F6F1E8; }
+th { font-size:9px; text-transform:uppercase; letter-spacing:2px; color:#B88A44; font-weight:700; padding:12px 20px; text-align:left; border-bottom:1px solid #EADCC8; }
+td { padding:11px 20px; font-size:12px; border-bottom:1px solid #F6F1E8; color:#444; }
+td.right { text-align:right; font-weight:600; color:#111; }
+tr:last-child td { border-bottom:none; }
+.total-row { background:#F6F1E8; }
+.total-row td { font-family:'Playfair Display',serif; font-size:18px; font-weight:800; color:#B88A44; padding:16px 20px; border-bottom:none; }
+.thanks { background:#111; border-radius:12px; padding:24px 28px; margin-bottom:20px; text-align:center; }
+.thanks-title { font-family:'Playfair Display',serif; font-size:17px; color:#B88A44; margin-bottom:10px; }
+.thanks-text { font-size:11px; color:#aaa; line-height:1.9; }
+.footer { text-align:center; padding-top:8px; }
+.badge { background:#7D8F69; color:#fff; font-size:10px; font-weight:700; padding:7px 18px; border-radius:20px; display:inline-block; margin-bottom:12px; letter-spacing:0.5px; }
+.footer-text { font-size:10px; color:#aaa; line-height:2; }
+.print-btn { position:fixed; bottom:28px; right:28px; background:#B88A44; color:#fff; border:none; border-radius:99px; padding:14px 28px; font-size:14px; font-weight:700; cursor:pointer; font-family:'Inter',sans-serif; box-shadow:0 6px 24px rgba(184,138,68,0.4); letter-spacing:0.3px; }
+.print-btn:hover { background:#a07838; }
+@media print { .print-btn { display:none; } body { background:#fff; } }
 </style></head>
 <body>
 <div class="page">
