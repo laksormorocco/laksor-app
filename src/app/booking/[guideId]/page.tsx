@@ -93,7 +93,7 @@ export default function BookingPage() {
       const data = await res.json();
       if (!res.ok) { alert(data.error || "Erreur"); setSubmitting(false); return; }
       if (data.whatsappUrl) window.open(data.whatsappUrl, "_blank");
-      router.push("/booking/confirmation?guide=" + encodeURIComponent(guide?.displayName || "") + "&price=" + adjustedTotal + "&persons=" + persons);
+      router.push("/booking/confirmation?guide=" + encodeURIComponent(guide?.displayName || "") + "&price=" + adjustedTotal + "&persons=" + persons + "&payment=" + payment + "&ref=" + (data.bookingRef || "") + "&dates=" + selectedDates.length + "&transport=" + transport);
     } catch(e) { alert("Erreur reseau"); }
     setSubmitting(false);
   }

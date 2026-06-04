@@ -1,14 +1,21 @@
 import Link from "next/link";
-import { CheckCircle, CalendarCheck, Compass, TeaBag } from "@phosphor-icons/react/dist/ssr";
+import { CheckCircle, CalendarCheck, Compass, TeaBag, Copy } from "@phosphor-icons/react/dist/ssr";
 
-export default function ConfirmationPage({ searchParams }: { searchParams: { guide?: string; price?: string; persons?: string; payment?: string } }) {
+export default function ConfirmationPage({ searchParams }: {
+  searchParams: {
+    guide?: string; price?: string; persons?: string;
+    payment?: string; ref?: string; dates?: string; transport?: string
+  }
+}) {
   const isPaid = searchParams.payment === "deposit" || searchParams.payment === "full";
   const deposit = searchParams.price ? Math.round(Number(searchParams.price) * 0.3) : 0;
+  const reste = Number(searchParams.price || 0) - deposit;
+  const ref = searchParams.ref || "LAK-2026-XXXX";
+  const paymentLabel = searchParams.payment === "deposit" ? "Acompte 30%" : searchParams.payment === "full" ? "100% en ligne" : "Cash le jour J";
 
   return (
     <div className="min-h-screen bg-sand-200 flex flex-col">
 
-      {/* NAVBAR */}
       <nav className="bg-white border-b border-sand-300 h-14 flex items-center justify-center px-4">
         <span className="font-display text-lg font-bold text-bronze-500 tracking-widest">LAKSOR</span>
       </nav>
@@ -16,7 +23,7 @@ export default function ConfirmationPage({ searchParams }: { searchParams: { gui
       <div className="flex-1 flex items-start justify-center px-4 py-8">
         <div className="bg-white rounded-3xl border border-sand-300 w-full max-w-sm overflow-hidden shadow-sm">
 
-          {/* TOP BANNER */}
+          {/* TOP */}
           <div className="bg-sage-300 px-6 pt-8 pb-6 text-center">
             <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
               <CheckCircle size={36} weight="fill" className="text-white" />
@@ -29,35 +36,48 @@ export default function ConfirmationPage({ searchParams }: { searchParams: { gui
 
           <div className="p-5 flex flex-col gap-4">
 
-            {/* PRIX */}
-            {searchParams.price && (
-              <div className="bg-sand-200 rounded-2xl p-4 border border-sand-300">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-xs text-charcoal-400">Personnes</span>
-                  <span className="text-sm font-bold text-charcoal-800">{searchParams.persons} pers.</span>
+            {/* NUMERO DE RESERVATION */}
+            <div className="bg-charcoal-800 rounded-2xl p-4 text-center">
+              <div className="text-[10px] font-bold text-charcoal-400 uppercase tracking-widest mb-1">Numéro de réservation</div>
+              <div className="font-display text-2xl font-bold text-bronze-500 tracking-widest">{ref}</div>
+              <div className="text-[10px] text-charcoal-400 mt-1">Conservez ce numéro pour tout suivi</div>
+            </div>
+
+            {/* DETAILS */}
+            <div className="bg-sand-200 rounded-2xl p-4 border border-sand-300">
+              <div className="text-[10px] font-bold text-charcoal-800 uppercase tracking-widest mb-3">Détails de la réservation</div>
+              <div className="flex flex-col gap-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-charcoal-400">Guide</span>
+                  <span className="font-semibold text-charcoal-800">{searchParams.guide}</span>
                 </div>
-                <div className="flex justify-between items-center pt-2 border-t border-sand-300">
-                  <span className="text-sm font-bold text-charcoal-800">Total</span>
-                  <span className="font-display text-2xl font-bold text-charcoal-800">{searchParams.price} <span className="text-sm font-normal text-charcoal-400">MAD</span></span>
+                <div className="flex justify-between text-sm">
+                  <span className="text-charcoal-400">Jours réservés</span>
+                  <span className="font-semibold text-charcoal-800">{searchParams.dates || 1} jour{Number(searchParams.dates) > 1 ? "s" : ""}</span>
                 </div>
-                {isPaid && (
-                  <div className="mt-2 text-[11px] text-bronze-500 font-semibold text-right">
-                    Acompte payé : {deposit} MAD · Reste : {Number(searchParams.price) - deposit} MAD le jour J
+                <div className="flex justify-between text-sm">
+                  <span className="text-charcoal-400">Participants</span>
+                  <span className="font-semibold text-charcoal-800">{searchParams.persons} pers.</span>
+                </div>
+                {searchParams.transport === "true" && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-charcoal-400">Transport</span>
+                    <span className="font-semibold text-charcoal-800">+300 MAD</span>
                   </div>
                 )}
-              </div>
-            )}
-
-            {/* PAIEMENT */}
-            <div className={`rounded-2xl p-3 border flex items-start gap-3 ${isPaid ? "bg-amber-50 border-bronze-500/30" : "bg-sand-200 border-sand-300"}`}>
-              <span className="text-lg">{isPaid ? "💳" : "💵"}</span>
-              <div>
-                <div className={`text-xs font-bold ${isPaid ? "text-bronze-500" : "text-charcoal-600"}`}>
-                  {isPaid ? searchParams.payment === "deposit" ? "Acompte 30% — Merci !" : "100% payé en ligne — Merci !" : "Paiement cash le jour J"}
+                <div className="flex justify-between text-sm">
+                  <span className="text-charcoal-400">Paiement</span>
+                  <span className="font-semibold text-charcoal-800">{paymentLabel}</span>
                 </div>
-                <div className="text-[10px] text-charcoal-400 mt-0.5">
-                  {isPaid ? "Le reste sera réglé directement au guide le jour de la visite" : "Le paiement s'effectue directement au guide"}
+                <div className="flex justify-between pt-2 border-t border-sand-300">
+                  <span className="font-bold text-charcoal-800">Total</span>
+                  <span className="font-display text-xl font-bold text-charcoal-800">{searchParams.price} <span className="text-xs font-normal text-charcoal-400">MAD</span></span>
                 </div>
+                {isPaid && (
+                  <div className="text-[11px] text-bronze-500 font-semibold text-right">
+                    Acompte : {deposit} MAD · Reste le jour J : {reste} MAD
+                  </div>
+                )}
               </div>
             </div>
 
@@ -66,13 +86,13 @@ export default function ConfirmationPage({ searchParams }: { searchParams: { gui
               <div className="bg-amber-50 border border-bronze-500/30 rounded-2xl p-3 flex items-center gap-3">
                 <TeaBag size={20} className="text-bronze-500 flex-shrink-0" weight="duotone" />
                 <div>
-                  <div className="text-xs font-bold text-bronze-500">🍵 Thé de bienvenu offert !</div>
+                  <div className="text-xs font-bold text-bronze-500">Thé de bienvenu offert !</div>
                   <div className="text-[10px] text-charcoal-400 mt-0.5">Votre guide vous offrira un thé chez un café partenaire Laksor</div>
                 </div>
               </div>
             )}
 
-            {/* ÉTAPES */}
+            {/* ETAPES */}
             <div className="bg-sand-200 rounded-2xl p-4 border border-sand-300">
               {[
                 { Icon: CheckCircle, label: "Réservation confirmée", done: true },
@@ -80,8 +100,7 @@ export default function ConfirmationPage({ searchParams }: { searchParams: { gui
                 { Icon: Compass, label: "Vivez l'expérience !", done: false },
               ].map((s, i) => (
                 <div key={i} className={`flex items-center gap-3 ${i < 2 ? "mb-3" : ""}`}>
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0
-                    ${s.done ? "bg-sage-300" : "bg-sand-300"}`}>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${s.done ? "bg-sage-300" : "bg-sand-300"}`}>
                     <s.Icon size={16} weight="fill" className={s.done ? "text-white" : "text-charcoal-400"} />
                   </div>
                   <span className={`text-sm ${s.done ? "font-bold text-charcoal-800" : "text-charcoal-400"}`}>{s.label}</span>
@@ -89,22 +108,21 @@ export default function ConfirmationPage({ searchParams }: { searchParams: { gui
               ))}
             </div>
 
-            {/* MESSAGE REMERCIEMENTS */}
+            {/* REMERCIEMENTS */}
             <div className="bg-charcoal-800 rounded-2xl p-5 text-center">
-              <div className="font-display text-lg text-white mb-2">Merci de voyager avec Laksor 🧭</div>
-              <div className="text-charcoal-400 text-xs leading-relaxed mb-4">
-                Votre expérience au Maroc commence ici. Chaque guide et chauffeur Laksor est certifié par le <strong className="text-white">Ministère du Tourisme marocain</strong> et personnellement validé par notre équipe — pour que vous voyagiez l&apos;esprit tranquille.
-              </div>
-              <div className="text-charcoal-400 text-xs leading-relaxed mb-4">
-                Une question ? Un imprévu ? Notre équipe est disponible <strong className="text-white">7j/7</strong> via notre plateforme <strong className="text-white">laksor.ma</strong> ou sur WhatsApp au numéro d&apos;urgence.
-              </div>
+              <p className="font-display text-base text-bronze-500 mb-2">Merci de voyager avec Laksor</p>
+              <p className="text-charcoal-400 text-xs leading-relaxed mb-3">
+                Chaque guide et chauffeur Laksor est certifié par le <strong className="text-white">Ministère du Tourisme marocain</strong> et personnellement validé par notre équipe.
+              </p>
+              <p className="text-charcoal-400 text-xs leading-relaxed mb-4">
+                Disponibles <strong className="text-white">7j/7</strong> via <strong className="text-white">laksor.ma</strong> ou WhatsApp au <strong className="text-white">+212 6 57 43 63 42</strong>
+              </p>
               <a href="https://wa.me/212657436342" className="inline-flex items-center gap-2 bg-sage-300 hover:bg-sage-400 text-white text-xs font-bold px-5 py-2.5 rounded-full no-underline transition-colors">
-                💬 Contacter Laksor sur WhatsApp
+                Contacter Laksor sur WhatsApp
               </a>
-              <div className="mt-3 text-[10px] text-charcoal-500 italic">Bienvenue au Maroc authentique.</div>
+              <p className="text-charcoal-500 text-[10px] mt-3 italic">Bienvenue au Maroc authentique.</p>
             </div>
 
-            {/* CTA */}
             <Link href="/" className="block bg-bronze-500 hover:bg-bronze-600 text-white font-bold py-4 rounded-full text-sm text-center no-underline transition-colors">
               Retour à l&apos;accueil
             </Link>

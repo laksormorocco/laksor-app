@@ -22,6 +22,11 @@ export async function POST(req: Request) {
       });
     }
 
+    // Generer numero de reservation unique
+    const year = new Date().getFullYear();
+    const rand = Math.random().toString(36).substring(2, 6).toUpperCase();
+    const bookingRef = "LAK-" + year + "-" + rand;
+
     const price = duration === "FULL_DAY" ? Number(guide.fullDayPrice) : Number(guide.halfDayPrice);
     const commission = Math.round(price * 0.25);
 
@@ -35,7 +40,7 @@ export async function POST(req: Request) {
         totalPrice: totalPrice || price,
         commission,
         status: "CONFIRMED",
-        notes: notes || "",
+        notes: (notes || "") + " | REF:" + bookingRef,
         slots: {
           create: [{
             date: new Date(date),
@@ -115,7 +120,7 @@ export async function POST(req: Request) {
       } catch(emailErr) { console.error("Email error:", emailErr); }
     }
 
-    return NextResponse.json({ booking, whatsappUrl });
+    return NextResponse.json({ booking, whatsappUrl, bookingRef });
   } catch(e: any) {
     console.error("Booking error:", e);
     return NextResponse.json({ error: "Erreur serveur: " + e.message }, { status: 500 });
