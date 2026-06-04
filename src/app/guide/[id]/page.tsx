@@ -6,7 +6,7 @@ import GuidePageClient from "@/components/GuidePageClient";
 export default async function GuidePage({ params }: { params: { id: string } }) {
   const guide = await prisma.guideProfile.findUnique({
     where: { id: params.id },
-    include: { user: true }
+    include: { user: true, tours: { where: { isActive: true }, include: { template: true } } }
   });
   if (!guide) notFound();
   const reviews = await prisma.review.findMany({
