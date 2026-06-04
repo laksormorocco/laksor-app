@@ -251,7 +251,7 @@ export default function HomeHero() {
                     { id: "airport" as TType, icon: <AirplaneTakeoff size={24} weight="duotone" />, label: "Transfert Aéroport", desc: "Arrivée · Départ · A/R" },
                     { id: "private"  as TType, icon: <Car size={24} weight="duotone" />,             label: "Chauffeur Privé",    desc: "Ville · Excursion" },
                   ].map(t => (
-                    <button key={t.id} onClick={() => setTType(t.id)}
+                    <button key={t.id} onClick={() => { setTType(t.id); }}
                       className={`p-4 rounded-2xl border-2 text-left transition-all
                         ${tType === t.id ? "border-charcoal-800 bg-sand-200" : "border-sand-300 bg-white"}`}>
                       <div className={`mb-2 ${tType === t.id ? "text-bronze-500" : "text-charcoal-400"}`}>{t.icon}</div>
@@ -314,7 +314,7 @@ export default function HomeHero() {
           </div>
 
           {/* Bottom */}
-          <div className="fixed bottom-16 left-0 right-0 bg-white border-t border-sand-300 px-4 py-3 flex items-center justify-between z-50 shadow-lg">
+          <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-sand-300 px-4 py-4 flex items-center justify-between z-[60] shadow-lg">
             <button onClick={clearAll} className="text-sm font-bold text-charcoal-800 underline">
               Tout effacer
             </button>
