@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { renderToBuffer } from "@react-pdf/renderer";
-import { createElement } from "react";
+import { renderToBuffer, Document } from "@react-pdf/renderer";
+import React from "react";
 import InvoicePDF from "@/components/pdf/InvoicePDF";
 import { Resend } from "resend";
 
@@ -17,13 +17,12 @@ export async function POST(req: Request) {
     } = await req.json();
 
     // Generer PDF
-    const buffer = await renderToBuffer(
-      createElement(InvoicePDF, {
-        bookingRef, guideName, touristName, touristEmail,
-        date, duration, persons, transport, paymentMethod,
-        basePrice, extraCost, transportCost, serviceFee, total
-      })
-    );
+    const element = React.createElement(InvoicePDF, {
+      bookingRef, guideName, touristName, touristEmail,
+      date, duration, persons, transport, paymentMethod,
+      basePrice, extraCost, transportCost, serviceFee, total
+    }) as unknown as React.ReactElement<any>;
+    const buffer = await renderToBuffer(element);
 
     const base64 = Buffer.from(buffer).toString("base64");
 
@@ -41,7 +40,7 @@ export async function POST(req: Request) {
       });
     }
 
-    return new NextResponse(buffer, {
+    return new NextResponse(buffer as unknown as BodyInit, {
       headers: {
         "Content-Type": "application/pdf",
         "Content-Disposition": "attachment; filename=facture-" + bookingRef + ".pdf",
