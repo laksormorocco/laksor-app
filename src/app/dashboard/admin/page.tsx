@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import {
-  ChartBar, Compass, CalendarCheck, EnvelopeSimple, MapTrifold, UsersThree,
+  ChartBar, Compass, CalendarCheck, EnvelopeSimple, MapTrifold, UsersThree, UserCircle,
   Check, X, Trash, WhatsappLogo, PaperPlaneTilt, Plus, PencilSimple,
   ToggleLeft, ToggleRight, SignOut
 } from "@phosphor-icons/react";
@@ -15,6 +15,7 @@ const TABS = [
   { id:"tours",    Icon: MapTrifold,     label:"Tours"     },
   { id:"email",    Icon: EnvelopeSimple, label:"Email"     },
   { id:"crm",     Icon: UsersThree,    label:"CRM"       },
+  { id:"tourists", Icon: UserCircle,    label:"Clients"   },
 ];
 
 const TOUR_TYPES = [
@@ -62,10 +63,14 @@ export default function AdminDashboard() {
   const [crmLoading,   setCrmLoading]   = useState(false);
   const [crmPeriod,    setCrmPeriod]    = useState("");
   const [crmGuide,     setCrmGuide]     = useState("");
+  const [tourists,     setTourists]     = useState<any[]>([]);
+  const [touristSearch,setTouristSearch]= useState("");
+  const [touristSel,   setTouristSel]   = useState<any>(null);
 
   useEffect(() => { if (auth) { fetchAll(); fetchTemplates(); } }, [auth]);
   useEffect(() => { if (auth && active === "guides") fetchGuides(); }, [guideTab, active, auth]);
   useEffect(() => { if (auth && active === "crm") fetchCrm(); }, [active, auth, crmSearch, crmStatus, crmPeriod, crmGuide]);
+  useEffect(() => { if (auth && active === "tourists") fetchTourists(); }, [active, auth, touristSearch]);
 
   async function fetchAll() {
     const [sRes, bRes] = await Promise.all([fetch("/api/admin/stats"), fetch("/api/admin/bookings")]);
@@ -77,6 +82,13 @@ export default function AdminDashboard() {
   async function fetchGuides() {
     const res = await fetch("/api/admin/guides?status=" + guideTab.toUpperCase());
     setGuides((await res.json()).guides || []);
+  }
+
+  async function fetchTourists() {
+    const params = new URLSearchParams();
+    if (touristSearch) params.set("search", touristSearch);
+    const res = await fetch("/api/admin/tourists?" + params.toString());
+    if (res.ok) setTourists((await res.json()).tourists || []);
   }
 
   async function fetchCrm() {
@@ -646,6 +658,88 @@ export default function AdminDashboard() {
           </div>
         )}
 
+
+
+        {/* ══ TOURISTES ══ */}
+        {active === "tourists" && (
+          <div className="flex flex-col gap-3">
+
+            {/* Search */}
+            <div className="bg-white rounded-2xl border border-sand-300 p-4">
+              <input value={touristSearch} onChange={e => setTouristSearch(e.target.value)}
+                placeholder="Rechercher par nom ou email..."
+                className={inputCls} />
+            </div>
+
+            {/* Stats */}
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                { label:"Total clients", value: tourists.length },
+                { label:"Avec reservations", value: tourists.filter(t=>t.totalBookings>0).length },
+                { label:"Revenue total", value: tourists.reduce((s,t)=>s+t.totalSpent,0)+" MAD" },
+              ].map(s => (
+                <div key={s.label} className="bg-white rounded-xl border border-sand-300 p-3 text-center">
+                  <div className="font-display text-lg font-bold text-charcoal-800">{s.value}</div>
+                  <div className="text-[9px] text-charcoal-400">{s.label}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Liste touristes */}
+            {tourists.length === 0 ? (
+              <div className="bg-white rounded-2xl border border-sand-300 p-8 text-center text-charcoal-400 text-sm">Aucun client</div>
+            ) : tourists.map(t => (
+              <div key={t.id} className="bg-white rounded-2xl border border-sand-300 p-4 cursor-pointer hover:border-bronze-500 transition-colors"
+                onClick={() => setTouristSel(touristSel?.id === t.id ? null : t)}>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full overflow-hidden bg-sand-300 flex-shrink-0">
+                    {t.avatar
+                      ? <img src={t.avatar} className="w-full h-full object-cover" />
+                      : <div className="w-full h-full flex items-center justify-center font-bold text-charcoal-500">{t.name?.[0] || "?"}</div>
+                    }
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-bold text-charcoal-800">{t.name || "Guest"}</div>
+                    <div className="text-xs text-charcoal-400 truncate">{t.email}</div>
+                  </div>
+                  <div className="text-right flex-shrink-0">
+                    <div className="text-sm font-bold text-bronze-500">{t.totalSpent} MAD</div>
+                    <div className="text-xs text-charcoal-400">{t.totalBookings} resa</div>
+                  </div>
+                </div>
+
+                {touristSel?.id === t.id && (
+                  <div className="mt-3 pt-3 border-t border-sand-200 flex flex-col gap-2">
+                    <div className="text-[10px] font-bold text-charcoal-400 uppercase tracking-widest mb-1">Historique reservations</div>
+                    {t.bookings.length === 0 ? (
+                      <div className="text-xs text-charcoal-400 text-center py-2">Aucune reservation</div>
+                    ) : t.bookings.map((b: any) => (
+                      <div key={b.id} className="bg-sand-200 rounded-xl p-2.5 flex items-center justify-between">
+                        <div>
+                          <div className="text-xs font-bold text-charcoal-800">{b.guide?.displayName} · {b.guide?.city}</div>
+                          <div className="text-[10px] text-charcoal-400">{new Date(b.date).toLocaleDateString("fr-FR")} · {b.persons} pers.</div>
+                          <div className="text-[10px] text-charcoal-400">Reserve le: {new Date(b.createdAt).toLocaleDateString("fr-FR")}</div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-xs font-bold text-charcoal-800">{Number(b.totalPrice)} MAD</div>
+                          <span className={statusBadge(b.status).cls}>{statusBadge(b.status).label}</span>
+                        </div>
+                      </div>
+                    ))}
+                    <div className="flex gap-2 mt-1">
+                      {t.email && (
+                        <a href={"mailto:"+t.email}
+                          className="flex-1 flex items-center justify-center gap-1 bg-charcoal-800 text-white font-bold py-2 rounded-xl text-xs no-underline">
+                          Email
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* ══ EMAIL ══ */}
         {active === "email" && (
