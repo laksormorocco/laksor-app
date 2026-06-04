@@ -15,6 +15,7 @@ export default function LoginButton() {
       options: {
         redirectTo: "https://laksor.vercel.app/auth/callback",
         skipBrowserRedirect: false,
+        queryParams: { access_type: "offline", prompt: "consent" }
       }
     });
   }

@@ -28,24 +28,32 @@ export default function CallbackPage() {
     }
 
     async function handle() {
-      // Attendre que Supabase parse le hash automatiquement
+      // Cas 1: hash avec access_token (implicit flow)
+      const hash = window.location.hash.substring(1);
+      const hashParams = new URLSearchParams(hash);
+      const accessToken = hashParams.get("access_token");
+      const refreshToken = hashParams.get("refresh_token");
+      if (accessToken && refreshToken) {
+        const { data } = await supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
+        if (data.session) { await doRedirect(data.session); return; }
+      }
+
+      // Cas 2: code dans query (PKCE flow)
+      const code = new URLSearchParams(window.location.search).get("code");
+      if (code) {
+        const { data } = await supabase.auth.exchangeCodeForSession(code);
+        if (data.session) { await doRedirect(data.session); return; }
+      }
+
+      // Cas 3: session deja active
       const { data: { session } } = await supabase.auth.getSession();
       if (session) { await doRedirect(session); return; }
 
-      // Sinon ecouter onAuthStateChange
+      // Cas 4: attendre onAuthStateChange
       const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, s) => {
-        if (event === "SIGNED_IN" && s) {
-          subscription.unsubscribe();
-          await doRedirect(s);
-        }
+        if (s) { subscription.unsubscribe(); await doRedirect(s); }
       });
-
-      // Fallback 5s
-      setTimeout(async () => {
-        const { data: { session: s2 } } = await supabase.auth.getSession();
-        if (s2) await doRedirect(s2);
-        else window.location.href = "/auth/login";
-      }, 5000);
+      setTimeout(() => { window.location.href = "/auth/login"; }, 5000);
     }
 
     handle();
