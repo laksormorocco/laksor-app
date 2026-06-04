@@ -117,6 +117,36 @@ export default function TouristDashboard() {
           ))}
         </div>
 
+        {/* PROCHAINE VISITE */}
+        {(() => {
+          const next = upcoming.find(b => b.status === "CONFIRMED");
+          if (!next) return null;
+          const days = Math.ceil((new Date(next.date).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+          return (
+            <div className="bg-gradient-to-br from-sage-300 to-sage-400 rounded-2xl p-4 text-white">
+              <div className="text-[10px] font-bold uppercase tracking-widest text-white/60 mb-1">Prochaine aventure</div>
+              <div className="font-display text-xl font-bold mb-1">Dans {days} jour{days > 1 ? "s" : ""} !</div>
+              <div className="text-sm text-white/80">Avec <strong className="text-white">{next.guide?.displayName}</strong> à {next.guide?.city}</div>
+              <div className="text-xs text-white/60 mt-1">{new Date(next.date).toLocaleDateString("fr-FR", {weekday:"long", day:"numeric", month:"long"})}</div>
+            </div>
+          );
+        })()}
+
+        {/* PROCHAINE VISITE */}
+        {(() => {
+          const next = upcoming.find(b => b.status === "CONFIRMED");
+          if (!next) return null;
+          const days = Math.ceil((new Date(next.date).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+          return (
+            <div className="bg-gradient-to-br from-sage-300 to-sage-400 rounded-2xl p-4 text-white">
+              <div className="text-[10px] font-bold uppercase tracking-widest text-white/60 mb-1">Prochaine aventure</div>
+              <div className="font-display text-xl font-bold mb-1">Dans {days} jour{days > 1 ? "s" : ""} !</div>
+              <div className="text-sm text-white/80">Avec <strong className="text-white">{next.guide?.displayName}</strong> à {next.guide?.city}</div>
+              <div className="text-xs text-white/60 mt-1">{new Date(next.date).toLocaleDateString("fr-FR", {weekday:"long", day:"numeric", month:"long"})}</div>
+            </div>
+          );
+        })()}
+
         {/* UPCOMING */}
         {tab === "upcoming" && (
           <>
@@ -200,6 +230,16 @@ export default function TouristDashboard() {
                     className="mt-2 block text-center text-[11px] text-bronze-500 font-semibold no-underline">
                     Voir la confirmation →
                   </Link>
+                  {b.status === "PENDING" && (
+                    <div className="mt-2 text-[10px] text-charcoal-400 text-center">
+                      Annulation gratuite jusqu\u0027a 72h avant la visite
+                    </div>
+                  )}
+                  {b.status === "PENDING" && (
+                    <div className="mt-2 text-[10px] text-charcoal-400 text-center">
+                      Annulation gratuite jusqu\u0027a 72h avant la visite
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -230,6 +270,12 @@ export default function TouristDashboard() {
                     <div className="text-right flex-shrink-0">
                       <div className="text-sm font-bold text-charcoal-800">{Number(b.totalPrice)} MAD</div>
                       <StatusBadge status={b.status} />
+                      {b.status === "COMPLETED" && (
+                        <Link href={"/guide/" + b.guide?.id + "#avis"}
+                          className="mt-1 block text-[10px] text-bronze-500 font-bold no-underline">
+                          Laisser un avis →
+                        </Link>
+                      )}
                     </div>
                   </div>
                 ))}
