@@ -99,7 +99,7 @@ export default function BookingModal({ guideName, halfDayPrice, fullDayPrice, gu
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setOpen(false)} />
 
       {/* Bottom Sheet */}
-      <div className="relative bg-sand-200 rounded-t-3xl w-full max-w-lg mx-auto max-h-[92vh] flex flex-col overflow-hidden shadow-2xl">
+      <div className="relative bg-sand-200 rounded-t-3xl w-full max-w-lg mx-auto min-h-[60vh] max-h-[92vh] flex flex-col overflow-hidden shadow-2xl">
 
         {/* Drag handle */}
         <div className="flex justify-center pt-3 pb-1 flex-shrink-0">
