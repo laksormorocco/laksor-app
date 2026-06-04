@@ -512,6 +512,7 @@ export default function AdminDashboard() {
                   { key:"tags",        label:"Tags (virgule)",  type:"input",    ph:"Authentique, Culture" },
                   { key:"included",    label:"Inclus (virgule)",type:"input",    ph:"Guide officiel, Thé" },
                   { key:"notIncluded", label:"Non inclus (virgule)", type:"input", ph:"Transport, Repas" },
+  { key:"itinerary_raw", label:"Itineraire (une etape par ligne: HH:MM | Titre | Description)", type:"textarea", ph:"09:00 | Depart medina | Rendez-vous place Jemaa el-Fna\n10:00 | Souks | Visite des souks authentiques" },
                 ].map(f => (
                   <div key={f.key} className="mb-3">
                     <label className="text-[10px] font-bold text-charcoal-400 uppercase tracking-wider block mb-1">{f.label}</label>
