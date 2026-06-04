@@ -9,28 +9,7 @@ const supabase = createClient(
 
 export default function CallbackPage() {
   useEffect(() => {
-    async function handle() {
-      // Laisser Supabase parser le hash
-      const { data: { session } } = await supabase.auth.getSession();
-
-      if (!session) {
-        // Ecouter l auth state change (OAuth hash parsing)
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, s) => {
-          if (s) {
-            subscription.unsubscribe();
-            await doRedirect(s);
-          }
-        });
-        // Fallback 4s
-        setTimeout(() => { window.location.href = "/auth/login"; }, 4000);
-        return;
-      }
-
-      await doRedirect(session);
-    }
-
     async function doRedirect(session: any) {
-      // Sync user en DB
       await fetch("/api/auth/sync", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -41,12 +20,32 @@ export default function CallbackPage() {
           avatar: session.user.user_metadata?.avatar_url || null,
         })
       });
-
       const res = await fetch("/api/auth/me?supabaseId=" + session.user.id);
       const data = await res.json();
       if (data.role === "ADMIN") window.location.href = "/dashboard/admin";
       else if (data.role === "GUIDE" && data.guideId) window.location.href = "/dashboard/guide?id=" + data.guideId;
       else window.location.href = "/dashboard/tourist";
+    }
+
+    async function handle() {
+      // Attendre que Supabase parse le hash automatiquement
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) { await doRedirect(session); return; }
+
+      // Sinon ecouter onAuthStateChange
+      const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, s) => {
+        if (event === "SIGNED_IN" && s) {
+          subscription.unsubscribe();
+          await doRedirect(s);
+        }
+      });
+
+      // Fallback 5s
+      setTimeout(async () => {
+        const { data: { session: s2 } } = await supabase.auth.getSession();
+        if (s2) await doRedirect(s2);
+        else window.location.href = "/auth/login";
+      }, 5000);
     }
 
     handle();
