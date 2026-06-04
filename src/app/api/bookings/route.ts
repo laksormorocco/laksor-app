@@ -120,6 +120,31 @@ export async function POST(req: Request) {
       } catch(emailErr) { console.error("Email error:", emailErr); }
     }
 
+    // Generer et envoyer facture PDF
+    const invoiceEmail = guestContact?.includes("@") ? guestContact : tourist.email;
+    try {
+      await fetch(process.env.NEXT_PUBLIC_APP_URL + "/api/invoice", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({
+          bookingRef,
+          guideName: guide.displayName,
+          touristName: tourist.name || guestName || "Client",
+          touristEmail: invoiceEmail,
+          date: new Date(date).toLocaleDateString("fr-FR"),
+          duration: duration === "FULL_DAY" ? "Journee complete (8h)" : "Demi-journee (4h)",
+          persons: parseInt(persons) || 1,
+          transport: !!transport,
+          paymentMethod: paymentMethod || "cash",
+          basePrice: price,
+          extraCost: persons > 2 ? Math.round((totalPrice || price) * (parseInt(persons) - 2) * 0.15) : 0,
+          transportCost: transport ? 300 : 0,
+          serviceFee: 25,
+          total: totalPrice || price
+        })
+      });
+    } catch(invErr) { console.error("Invoice error:", invErr); }
+
     return NextResponse.json({ booking, whatsappUrl, bookingRef });
   } catch(e: any) {
     console.error("Booking error:", e);
