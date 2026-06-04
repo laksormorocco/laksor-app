@@ -19,6 +19,7 @@ export async function GET(req: Request) {
       halfDayPrice: true,
       fullDayPrice: true,
       yearsExp: true,
+      tours: { where: { isActive: true }, select: { id: true, isActive: true, price: true, template: { select: { id: true, title: true, description: true, duration: true, tourType: true, tags: true, included: true, groupSize: true } } } }
     }
   });
 
