@@ -60,10 +60,12 @@ export default function AdminDashboard() {
   const [crmStatus,    setCrmStatus]    = useState("");
   const [crmSelected,  setCrmSelected]  = useState<any>(null);
   const [crmLoading,   setCrmLoading]   = useState(false);
+  const [crmPeriod,    setCrmPeriod]    = useState("");
+  const [crmGuide,     setCrmGuide]     = useState("");
 
   useEffect(() => { if (auth) { fetchAll(); fetchTemplates(); } }, [auth]);
   useEffect(() => { if (auth && active === "guides") fetchGuides(); }, [guideTab, active, auth]);
-  useEffect(() => { if (auth && active === "crm") fetchCrm(); }, [active, auth, crmSearch, crmStatus]);
+  useEffect(() => { if (auth && active === "crm") fetchCrm(); }, [active, auth, crmSearch, crmStatus, crmPeriod, crmGuide]);
 
   async function fetchAll() {
     const [sRes, bRes] = await Promise.all([fetch("/api/admin/stats"), fetch("/api/admin/bookings")]);
@@ -82,6 +84,8 @@ export default function AdminDashboard() {
     const params = new URLSearchParams();
     if (crmSearch) params.set("search", crmSearch);
     if (crmStatus) params.set("status", crmStatus);
+    if (crmPeriod) params.set("period", crmPeriod);
+    if (crmGuide) params.set("guideId", crmGuide);
     const res = await fetch("/api/admin/bookings?" + params.toString());
     if (res.ok) setCrmBookings((await res.json()).bookings || []);
     setCrmLoading(false);
@@ -487,32 +491,53 @@ export default function AdminDashboard() {
           <div className="flex flex-col gap-3">
 
             {/* Search + Filtres */}
-            <div className="bg-white rounded-2xl border border-sand-300 p-4">
-              <div className="flex flex-col gap-3">
-                <input
-                  value={crmSearch}
-                  onChange={e => setCrmSearch(e.target.value)}
-                  placeholder="Rechercher par LAK-XXXX, nom, email, guide..."
-                  className={inputCls}
-                />
-                <div className="flex gap-2 flex-wrap">
-                  {["", "CONFIRMED", "PENDING", "CANCELLED", "COMPLETED"].map(s => (
-                    <button key={s} onClick={() => setCrmStatus(s)}
-                      className={`px-3 py-1.5 rounded-full text-xs font-bold border transition-all
-                        ${crmStatus === s ? "bg-bronze-500 text-white border-bronze-500" : "bg-sand-200 text-charcoal-400 border-sand-300"}`}>
-                      {s === "" ? "Tous" : s === "CONFIRMED" ? "Confirme" : s === "PENDING" ? "En attente" : s === "CANCELLED" ? "Annule" : "Complete"}
-                    </button>
-                  ))}
-                </div>
+            <div className="bg-white rounded-2xl border border-sand-300 p-4 flex flex-col gap-3">
+              <input value={crmSearch} onChange={e => setCrmSearch(e.target.value)}
+                placeholder="Rechercher LAK-XXXX, nom, email, guide..."
+                className={inputCls} />
+              <div className="flex gap-2 flex-wrap">
+                {["","CONFIRMED","PENDING","CANCELLED","COMPLETED"].map(s => (
+                  <button key={s} onClick={() => setCrmStatus(s)}
+                    className={`px-3 py-1.5 rounded-full text-xs font-bold border transition-all
+                      ${crmStatus===s ? "bg-bronze-500 text-white border-bronze-500" : "bg-sand-200 text-charcoal-400 border-sand-300"}`}>
+                    {s===""?"Tous":s==="CONFIRMED"?"Confirme":s==="PENDING"?"En attente":s==="CANCELLED"?"Annule":"Complete"}
+                  </button>
+                ))}
               </div>
+              <div className="flex gap-2 flex-wrap">
+                {[["","Toutes dates"],["week","Cette semaine"],["month","Ce mois"]].map(([v,l]) => (
+                  <button key={v} onClick={() => setCrmPeriod(v)}
+                    className={`px-3 py-1.5 rounded-full text-xs font-bold border transition-all
+                      ${crmPeriod===v ? "bg-sage-300 text-white border-sage-300" : "bg-sand-200 text-charcoal-400 border-sand-300"}`}>
+                    {l}
+                  </button>
+                ))}
+              </div>
+              <button onClick={() => {
+                const rows = [["Ref","Client","Email","WhatsApp","Guide","Ville","Date visite","Date reservation","Personnes","Prix","Paiement","Statut"]];
+                crmBookings.forEach(b => rows.push([
+                  b.bookingRef, b.tourist?.name||"Guest", b.tourist?.email||"",
+                  b.whatsapp||"", b.guide?.displayName||"", b.guide?.city||"",
+                  new Date(b.date).toLocaleDateString("fr-FR"),
+                  new Date(b.createdAt).toLocaleDateString("fr-FR"),
+                  b.persons, b.totalPrice, b.paymentMethod||"cash", b.status
+                ]));
+                const csv = rows.map(r => r.join(";")).join("\n");
+                const a = document.createElement("a");
+                a.href = "data:text/csv;charset=utf-8," + encodeURIComponent(csv);
+                a.download = "laksor-reservations.csv";
+                a.click();
+              }} className="w-full flex items-center justify-center gap-2 bg-charcoal-800 text-white rounded-xl py-2.5 text-xs font-bold">
+                Exporter CSV
+              </button>
             </div>
 
-            {/* Stats rapides */}
+            {/* Stats */}
             <div className="grid grid-cols-3 gap-2">
               {[
-                { label: "Total", value: crmBookings.length },
-                { label: "Confirmes", value: crmBookings.filter(b => b.status === "CONFIRMED").length },
-                { label: "Revenue", value: crmBookings.filter(b => b.status === "CONFIRMED").reduce((s, b) => s + Number(b.totalPrice), 0) + " MAD" },
+                { label:"Total", value: crmBookings.length },
+                { label:"Confirmes", value: crmBookings.filter(b=>b.status==="CONFIRMED").length },
+                { label:"Revenue", value: crmBookings.filter(b=>b.status==="CONFIRMED").reduce((s,b)=>s+Number(b.totalPrice),0)+" MAD" },
               ].map(s => (
                 <div key={s.label} className="bg-white rounded-xl border border-sand-300 p-3 text-center">
                   <div className="font-display text-lg font-bold text-charcoal-800">{s.value}</div>
@@ -521,27 +546,28 @@ export default function AdminDashboard() {
               ))}
             </div>
 
-            {/* Liste reservations */}
+            {/* Liste */}
             {crmLoading ? (
               <div className="text-center py-8 text-charcoal-400 text-sm">Chargement...</div>
             ) : crmBookings.length === 0 ? (
-              <div className="bg-white rounded-2xl border border-sand-300 p-8 text-center text-charcoal-400 text-sm">Aucune reservation trouvee</div>
+              <div className="bg-white rounded-2xl border border-sand-300 p-8 text-center text-charcoal-400 text-sm">Aucune reservation</div>
             ) : crmBookings.map(b => (
               <div key={b.id} className="bg-white rounded-2xl border border-sand-300 p-4 cursor-pointer hover:border-bronze-500 transition-colors"
-                onClick={() => setCrmSelected(crmSelected?.id === b.id ? null : b)}>
+                onClick={() => setCrmSelected(crmSelected?.id===b.id ? null : b)}>
                 <div className="flex items-center justify-between mb-2">
                   <span className="font-display text-sm font-bold text-bronze-500">{b.bookingRef}</span>
                   <span className={statusBadge(b.status).cls}>{statusBadge(b.status).label}</span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <div className="flex-1">
-                    <div className="text-sm font-semibold text-charcoal-800">{b.tourist?.name || "Guest"}</div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-sm font-semibold text-charcoal-800">{b.tourist?.name||"Guest"}</div>
                     <div className="text-xs text-charcoal-400">{b.tourist?.email}</div>
                     {b.whatsapp && <div className="text-xs text-sage-300 font-semibold">WA: {b.whatsapp}</div>}
                   </div>
                   <div className="text-right">
                     <div className="text-sm font-bold text-charcoal-800">{Number(b.totalPrice)} MAD</div>
-                    <div className="text-xs text-charcoal-400">{new Date(b.date).toLocaleDateString("fr-FR")}</div>
+                    <div className="text-xs text-charcoal-400">Visite: {new Date(b.date).toLocaleDateString("fr-FR")}</div>
+                    <div className="text-xs text-charcoal-300">Reserve le: {new Date(b.createdAt).toLocaleDateString("fr-FR")}</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 mt-2 pt-2 border-t border-sand-200">
@@ -555,43 +581,52 @@ export default function AdminDashboard() {
                   <span className="text-xs text-charcoal-400 ml-auto">{b.persons} pers.</span>
                 </div>
 
-                {/* Fiche detaillee */}
-                {crmSelected?.id === b.id && (
+                {crmSelected?.id===b.id && (
                   <div className="mt-3 pt-3 border-t border-sand-200 flex flex-col gap-2">
-                    <div className="text-[10px] font-bold text-charcoal-400 uppercase tracking-widest">Details complets</div>
+                    <div className="text-[10px] font-bold text-charcoal-400 uppercase tracking-widest mb-1">Fiche complete</div>
                     <div className="grid grid-cols-2 gap-2">
                       {[
                         ["Reference", b.bookingRef],
-                        ["Date", new Date(b.date).toLocaleDateString("fr-FR")],
-                        ["Duree", b.duration === "FULL_DAY" ? "Journee (8h)" : "Demi-journee (4h)"],
+                        ["Date visite", new Date(b.date).toLocaleDateString("fr-FR")],
+                        ["Date reservation", new Date(b.createdAt).toLocaleDateString("fr-FR")],
+                        ["Duree", b.duration==="FULL_DAY"?"Journee (8h)":"Demi-journee (4h)"],
                         ["Personnes", b.persons],
-                        ["Prix total", Number(b.totalPrice) + " MAD"],
-                        ["Paiement", b.paymentMethod || "cash"],
+                        ["Prix total", Number(b.totalPrice)+" MAD"],
+                        ["Paiement", b.paymentMethod||"cash"],
+                        ["Statut", b.status],
                         ["Guide", b.guide?.displayName],
                         ["Ville", b.guide?.city],
-                        ["Client", b.tourist?.name || "Guest"],
+                        ["Client", b.tourist?.name||"Guest"],
                         ["Email", b.tourist?.email],
-                        ["WhatsApp", b.whatsapp || "Non fourni"],
-                        ["Cree le", new Date(b.createdAt).toLocaleDateString("fr-FR")],
-                      ].map(([k, v]) => (
+                        ["WhatsApp", b.whatsapp||"Non fourni"],
+                      ].map(([k,v]) => (
                         <div key={k} className="bg-sand-200 rounded-lg p-2">
                           <div className="text-[9px] text-charcoal-400 uppercase tracking-wide">{k}</div>
                           <div className="text-xs font-semibold text-charcoal-800 mt-0.5 truncate">{v}</div>
                         </div>
                       ))}
                     </div>
-                    {b.guide?.phone && (
-                      <a href={"https://wa.me/" + b.guide.phone.replace(/[^0-9]/g, "") + "?text=Ref: " + b.bookingRef}
-                        className="flex items-center justify-center gap-2 bg-sage-300 text-white font-bold py-2 rounded-xl text-xs no-underline">
-                        Contacter le guide
-                      </a>
-                    )}
+                    <div className="flex gap-2 mt-1">
+                      {b.guide?.phone && (
+                        <a href={"https://wa.me/"+b.guide.phone.replace(/[^0-9]/g,"")+"?text=Ref: "+b.bookingRef}
+                          className="flex-1 flex items-center justify-center gap-1 bg-sage-300 text-white font-bold py-2 rounded-xl text-xs no-underline">
+                          Guide WA
+                        </a>
+                      )}
+                      {b.whatsapp && (
+                        <a href={"https://wa.me/"+b.whatsapp.replace(/[^0-9]/g,"")+"?text=Ref: "+b.bookingRef}
+                          className="flex-1 flex items-center justify-center gap-1 bg-bronze-500 text-white font-bold py-2 rounded-xl text-xs no-underline">
+                          Client WA
+                        </a>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
             ))}
           </div>
         )}
+
 
         {/* ══ EMAIL ══ */}
         {active === "email" && (

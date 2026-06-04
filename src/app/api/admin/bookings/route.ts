@@ -6,15 +6,26 @@ export async function GET(req: Request) {
   const url = new URL(req.url);
   const search = url.searchParams.get("search") || "";
   const status = url.searchParams.get("status") || "";
-  const city = url.searchParams.get("city") || "";
+  const period = url.searchParams.get("period") || "";
+  const guideId = url.searchParams.get("guideId") || "";
+
+  let dateFilter = {};
+  if (period === "week") {
+    const d = new Date(); d.setDate(d.getDate() - 7);
+    dateFilter = { createdAt: { gte: d } };
+  } else if (period === "month") {
+    const d = new Date(); d.setDate(d.getDate() - 30);
+    dateFilter = { createdAt: { gte: d } };
+  }
 
   const bookings = await prisma.booking.findMany({
     orderBy: { createdAt: "desc" },
-    take: 100,
+    take: 200,
     where: {
       AND: [
         status ? { status: status as any } : {},
-        city ? { guide: { city } } : {},
+        guideId ? { guideId } : {},
+        dateFilter,
         search ? {
           OR: [
             { notes: { contains: search, mode: "insensitive" } },
@@ -32,7 +43,6 @@ export async function GET(req: Request) {
     }
   });
 
-  // Extraire bookingRef depuis notes
   const enriched = bookings.map(b => ({
     ...b,
     bookingRef: b.notes?.match(/REF:([A-Z0-9-]+)/)?.[1] || "LAK-" + b.id.slice(-8).toUpperCase(),
