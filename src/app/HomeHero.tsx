@@ -200,13 +200,12 @@ export default function HomeHero() {
                   label="Quand ?" icon={<CalendarBlank size={15} weight="fill" className="text-bronze-500" />}
                   value={date ? new Date(date).toLocaleDateString("fr-FR", { day: "numeric", month: "long" }) : undefined}
                   placeholder="Ajouter des dates">
-                  <input type="date" value={date} onChange={e => handleDate(e.target.value)}
-                    className="w-full border border-sand-300 rounded-xl px-3 py-2.5 text-sm text-charcoal-800 outline-none focus:border-bronze-500 mb-3" />
-                  <div className="flex gap-2">
-                    {[{ id: "half", label: "Demi-journée" }, { id: "full", label: "Journée complète" }].map(d => (
+                  <MiniCal value={date} onChange={handleDate} />
+                  <div className="flex gap-2 mt-2">
+                    {([{ id: "half", label: "Demi-journee" }, { id: "full", label: "Journee complete" }] as {id:"half"|"full", label:string}[]).map(d => (
                       <button key={d.id} onClick={() => setDur(d.id as "half"|"full")}
-                        className={`px-4 py-2 rounded-full text-sm font-semibold border transition-all
-                          ${dur === d.id ? "border-charcoal-800 text-charcoal-800 bg-sand-200" : "border-sand-300 text-charcoal-400"}`}>
+                        className={`flex-1 px-3 py-2 rounded-full text-xs font-semibold border transition-all ${
+                          dur === d.id ? "border-charcoal-800 text-charcoal-800 bg-sand-200" : "border-sand-300 text-charcoal-400"}`}>
                         {d.label}
                       </button>
                     ))}
