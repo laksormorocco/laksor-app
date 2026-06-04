@@ -3,6 +3,10 @@ import { useState, useEffect } from "react";
 import { createClient } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 import CalendarPicker from "@/components/CalendarPicker";
+import {
+  X, CaretLeft, User, Sun, SunHorizon, Users, Baby,
+  Minus, Plus, Car, CreditCard, Money, Lock, CalendarBlank
+} from "@phosphor-icons/react";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || "",
@@ -11,11 +15,10 @@ const supabase = createClient(
 
 type Props = { guideName: string; halfDayPrice: number; fullDayPrice: number; guideId: string };
 
-const HOURS = ["08h00","09h00","10h00","11h00","14h00","15h00","16h00"];
 const PAYMENT_OPTIONS = [
-  { id: "deposit", label: "💳 Acompte 30%", desc: "+ 70% le jour J · Annulation gratuite 72h" },
-  { id: "full",    label: "💳 100% en ligne", desc: "Annulation gratuite 72h" },
-  { id: "cash",    label: "💵 Cash le jour J", desc: "Aucun prépaiement" },
+  { id: "deposit", Icon: CreditCard, label: "Acompte 30%",    desc: "70% le jour J · Annulation gratuite 72h" },
+  { id: "full",    Icon: CreditCard, label: "100% en ligne",  desc: "Annulation gratuite 72h" },
+  { id: "cash",    Icon: Money,      label: "Cash le jour J", desc: "Aucun prépaiement requis" },
 ];
 
 export default function BookingModal({ guideName, halfDayPrice, fullDayPrice, guideId }: Props) {
@@ -84,209 +87,231 @@ export default function BookingModal({ guideName, halfDayPrice, fullDayPrice, gu
   }
 
   if (!open) return (
-    <button onClick={handleOpen} className="btn-bronze" style={{ width: "100%", padding: 16, fontSize: 15, justifyContent: "center" }}>
-      Vérifier les disponibilités →
+    <button onClick={handleOpen} className="w-full bg-sage-300 hover:bg-sage-400 text-white font-bold py-4 rounded-full text-sm transition-colors flex items-center justify-center gap-2">
+      <CalendarBlank size={18} weight="bold" />
+      Vérifier les disponibilités
     </button>
   );
 
   return (
-    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.55)", zIndex: 1000, display: "flex", alignItems: "flex-end", justifyContent: "center" }}>
-      <div style={{ background: "var(--sand)", borderRadius: "28px 28px 0 0", width: "100%", maxWidth: 520, maxHeight: "92vh", overflowY: "auto", display: "flex", flexDirection: "column" }}>
+    <div className="fixed inset-0 z-50 flex flex-col justify-end">
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setOpen(false)} />
 
-        {/* ── HEADER SAGE ── */}
-        <div style={{ background: "var(--sage)", padding: "16px 20px 0", flexShrink: 0 }}>
-          <button onClick={() => setOpen(false)} style={{ background: "rgba(255,255,255,0.15)", border: "none", borderRadius: "999px", color: "#fff", padding: "7px 14px", fontSize: 12, cursor: "pointer", fontFamily: "inherit", marginBottom: 14 }}>← Fermer</button>
-          <div style={{ display: "flex", gap: 10, alignItems: "center", paddingBottom: 14, borderBottom: "1px solid rgba(255,255,255,0.15)" }}>
-            <div style={{ width: 44, height: 44, borderRadius: "50%", background: "rgba(255,255,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>👤</div>
-            <div>
-              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.5)" }}>Réservation avec</div>
-              <div style={{ fontFamily: "var(--font-serif)", fontSize: 16, fontWeight: 700, color: "#fff" }}>{guideName}</div>
-            </div>
+      {/* Bottom Sheet */}
+      <div className="relative bg-sand-200 rounded-t-3xl w-full max-w-lg mx-auto max-h-[92vh] flex flex-col overflow-hidden shadow-2xl">
+
+        {/* Drag handle */}
+        <div className="flex justify-center pt-3 pb-1 flex-shrink-0">
+          <div className="w-10 h-1 bg-sand-300 rounded-full" />
+        </div>
+
+        {/* HEADER SAGE */}
+        <div className="bg-sage-300 px-5 pt-2 pb-4 flex-shrink-0">
+          <div className="flex items-center justify-between mb-3">
+            <button onClick={() => setOpen(false)} className="flex items-center gap-1.5 bg-white/15 text-white text-xs font-semibold px-3 py-1.5 rounded-full border border-white/20">
+              <CaretLeft size={12} weight="bold" /> Fermer
+            </button>
+            <span className="text-[10px] text-white/50 font-bold uppercase tracking-widest">Réservation</span>
+            <button onClick={() => setOpen(false)} className="w-7 h-7 bg-white/15 rounded-full flex items-center justify-center border border-white/20">
+              <X size={13} weight="bold" className="text-white" />
+            </button>
           </div>
 
-          {/* Service sélectionné */}
-          <div style={{ padding: "12px 0 14px" }}>
-            <div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 8 }}>Service sélectionné</div>
-            <div style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 16, padding: 12, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <div>
-                <div style={{ fontSize: 14, fontWeight: 700, color: "#fff" }}>
-                  {duration === "half" ? "🌅 Demi-journée (4h)" : "☀️ Journée complète (8h)"}
-                </div>
-                <div style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", marginTop: 3 }}>
-                  {duration === "half" ? halfDayPrice : fullDayPrice} MAD · {adults} adulte{adults > 1 ? "s" : ""}{children > 0 ? ` · ${children} enfant${children > 1 ? "s" : ""}` : ""}
-                </div>
+          {/* Guide info */}
+          <div className="flex items-center gap-3 pb-3 border-b border-white/15">
+            <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
+              <User size={20} className="text-white" />
+            </div>
+            <div className="flex-1">
+              <div className="text-[10px] text-white/50">Réservation avec</div>
+              <div className="font-display text-white font-bold text-sm">{guideName}</div>
+            </div>
+            {selectedDates.length > 0 && (
+              <div className="text-right">
+                <div className="font-display text-white font-bold text-lg">{adjustedTotal} <span className="text-sm font-normal text-white/60">MAD</span></div>
+                {payment === "deposit" && <div className="text-white/50 text-[10px]">Acompte : {deposit} MAD</div>}
               </div>
+            )}
+          </div>
+
+          {/* Selected service */}
+          <div className="mt-3 bg-white/10 border border-white/15 rounded-2xl px-3 py-2.5 flex items-center gap-3">
+            {duration === "half" ? <SunHorizon size={18} className="text-white/70 flex-shrink-0" /> : <Sun size={18} className="text-white/70 flex-shrink-0" />}
+            <div>
+              <div className="text-white text-sm font-bold">{duration === "half" ? "Demi-journée (4h)" : "Journée complète (8h)"}</div>
+              <div className="text-white/50 text-[10px]">{duration === "half" ? halfDayPrice : fullDayPrice} MAD · {adults} adulte{adults>1?"s":""}{children>0?` · ${children} enfant${children>1?"s":""}`:""}</div>
             </div>
           </div>
         </div>
 
-        {/* ── CONTENT ── */}
-        <div style={{ padding: 16, display: "flex", flexDirection: "column", gap: 10 }}>
+        {/* SCROLLABLE CONTENT */}
+        <div className="overflow-y-auto flex-1 px-4 py-3 flex flex-col gap-3">
 
-          {/* Durée */}
-          <div className="card" style={{ padding: 14 }}>
-            <div style={{ fontSize: 10, fontWeight: 800, color: "var(--charcoal)", textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 12 }}>⏱️ Durée</div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-              {(["half","full"] as const).map(d => (
-                <button key={d} onClick={() => setDuration(d)} style={{
-                  padding: "12px 8px", borderRadius: 14,
-                  border: `2px solid ${duration === d ? "var(--bronze)" : "var(--sand-dark)"}`,
-                  background: duration === d ? "#FEF3E8" : "var(--sand)",
-                  color: duration === d ? "var(--bronze)" : "var(--soft)",
-                  fontWeight: 600, fontSize: 12, cursor: "pointer", fontFamily: "inherit"
-                }}>
-                  {d === "half" ? "Demi-journée (4h)" : "Journée complète (8h)"}
-                  <div style={{ fontSize: 14, marginTop: 4, fontWeight: 700, color: duration === d ? "var(--bronze)" : "var(--charcoal)" }}>
-                    {d === "half" ? halfDayPrice : fullDayPrice} MAD
-                  </div>
+          {/* DURÉE */}
+          <div className="bg-white rounded-2xl border border-sand-300 p-4">
+            <div className="text-[10px] font-bold text-charcoal-800 uppercase tracking-widest mb-3">Durée</div>
+            <div className="grid grid-cols-2 gap-2">
+              {([
+                { id:"half", Icon: SunHorizon, label:"Demi-journée", sub:"4 heures", price: halfDayPrice },
+                { id:"full", Icon: Sun,        label:"Journée complète", sub:"8 heures", price: fullDayPrice },
+              ] as const).map(d => (
+                <button key={d.id} onClick={() => setDuration(d.id as "half"|"full")}
+                  className={`rounded-xl p-3 border-2 text-left transition-all
+                    ${duration===d.id ? "border-bronze-500 bg-amber-50" : "border-sand-300 bg-sand-200"}`}>
+                  <d.Icon size={18} className={duration===d.id ? "text-bronze-500" : "text-charcoal-400"} />
+                  <div className={`text-sm font-bold mt-1 ${duration===d.id ? "text-bronze-500" : "text-charcoal-800"}`}>{d.label}</div>
+                  <div className="text-[10px] text-charcoal-400">{d.sub}</div>
+                  <div className={`font-display text-base font-bold mt-1 ${duration===d.id ? "text-bronze-500" : "text-charcoal-800"}`}>{d.price} <span className="text-xs font-normal text-charcoal-400">MAD</span></div>
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Date */}
-          <div className="card" style={{ padding: 14 }}>
-            <div style={{ fontSize: 10, fontWeight: 800, color: "var(--charcoal)", textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 12 }}>📅 Date</div>
+          {/* CALENDRIER */}
+          <div className="bg-white rounded-2xl border border-sand-300 p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <CalendarBlank size={14} className="text-bronze-500" />
+              <div className="text-[10px] font-bold text-charcoal-800 uppercase tracking-widest">Date</div>
+            </div>
             <CalendarPicker
               blockedDates={bookedDates.map(b => b.date)}
-              priceHalfDay={pricePerDay} priceFullDay={pricePerDay * 2}
-              onSelectionChange={(dates, t) => { setSelectedDates(dates.map(s => s.date)); setTotal(t); }}
+              priceHalfDay={halfDayPrice}
+              priceFullDay={fullDayPrice}
+              onSelectionChange={(slots, tot) => {
+                setSelectedDates(slots.map(s => s.date));
+                setTotal(tot);
+              }}
             />
           </div>
 
-          {/* Heure */}
-          <div className="card" style={{ padding: 14 }}>
-            <div style={{ fontSize: 10, fontWeight: 800, color: "var(--charcoal)", textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 12 }}>🕘 Heure</div>
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-              {HOURS.map(h => (
-                <button key={h} onClick={() => setSelectedHour(h)}
-                  className={selectedHour === h ? "pill active" : "pill"}>
-                  {h}
+          {/* PARTICIPANTS */}
+          <div className="bg-white rounded-2xl border border-sand-300 p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Users size={14} className="text-bronze-500" />
+              <div className="text-[10px] font-bold text-charcoal-800 uppercase tracking-widest">Participants</div>
+            </div>
+            {[
+              { label:"Adultes", desc:"12 ans +", Icon: Users, val: adults, set: setAdults, min: 1 },
+              { label:"Enfants", desc:"Moins de 12 ans", Icon: Baby, val: children, set: setChildren, min: 0 },
+            ].map(p => (
+              <div key={p.label} className="flex items-center justify-between py-2.5 border-b border-sand-200 last:border-0">
+                <div className="flex items-center gap-2">
+                  <p.Icon size={16} className="text-charcoal-400" />
+                  <div>
+                    <div className="text-sm font-semibold text-charcoal-800">{p.label}</div>
+                    <div className="text-[10px] text-charcoal-400">{p.desc}</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <button onClick={() => p.set(Math.max(p.min, p.val-1))}
+                    className="w-8 h-8 rounded-full border border-sand-300 flex items-center justify-center text-charcoal-800 hover:border-bronze-500 transition-colors">
+                    <Minus size={12} weight="bold" />
+                  </button>
+                  <span className="font-display text-base font-bold text-charcoal-800 w-4 text-center">{p.val}</span>
+                  <button onClick={() => p.set(Math.min(20, p.val+1))}
+                    className="w-8 h-8 rounded-full bg-charcoal-800 flex items-center justify-center text-white hover:bg-charcoal-600 transition-colors">
+                    <Plus size={12} weight="bold" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* TRANSPORT */}
+          <div className="bg-white rounded-2xl border border-sand-300 p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Car size={16} className="text-bronze-500" />
+                <div>
+                  <div className="text-sm font-semibold text-charcoal-800">Prise en charge hôtel/riad</div>
+                  <div className="text-[10px] text-charcoal-400">+150 MAD aller-retour</div>
+                </div>
+              </div>
+              <button onClick={() => setTransport(!transport)}
+                className={`w-12 h-6 rounded-full relative transition-colors flex-shrink-0 ${transport ? "bg-sage-300" : "bg-sand-300"}`}>
+                <div className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-all shadow-sm ${transport ? "left-6" : "left-0.5"}`} />
+              </button>
+            </div>
+          </div>
+
+          {/* PAIEMENT */}
+          <div className="bg-white rounded-2xl border border-sand-300 p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <CreditCard size={14} className="text-bronze-500" />
+              <div className="text-[10px] font-bold text-charcoal-800 uppercase tracking-widest">Paiement</div>
+            </div>
+            <div className="flex flex-col gap-2">
+              {PAYMENT_OPTIONS.map(opt => (
+                <button key={opt.id} onClick={() => setPayment(opt.id)}
+                  className={`flex items-center justify-between p-3 rounded-xl border-2 text-left transition-all
+                    ${payment===opt.id ? "border-bronze-500 bg-amber-50" : "border-sand-300 bg-sand-200"}`}>
+                  <div>
+                    <div className={`text-sm font-bold ${payment===opt.id ? "text-bronze-500" : "text-charcoal-800"}`}>{opt.label}</div>
+                    <div className="text-[10px] text-charcoal-400 mt-0.5">{opt.desc}</div>
+                  </div>
+                  <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0
+                    ${payment===opt.id ? "border-bronze-500 bg-bronze-500" : "border-sand-300 bg-white"}`}>
+                    {payment===opt.id && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
+                  </div>
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Participants */}
-          <div className="card" style={{ padding: 14 }}>
-            <div style={{ fontSize: 10, fontWeight: 800, color: "var(--charcoal)", textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 12 }}>👥 Participants</div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              {[
-                { label: "👤 Adultes", desc: "12 ans +", val: adults, set: setAdults, min: 1 },
-                { label: "🧒 Enfants", desc: "Moins de 12 ans", val: children, set: setChildren, min: 0 },
-              ].map(p => (
-                <div key={p.label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "var(--sand)", borderRadius: 14, padding: "11px 14px" }}>
-                  <div>
-                    <div style={{ fontSize: 13, fontWeight: 600 }}>{p.label}</div>
-                    <div style={{ fontSize: 10, color: "var(--muted)", marginTop: 1 }}>{p.desc}</div>
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                    <button onClick={() => p.set(Math.max(p.min, p.val - 1))} style={{ width: 32, height: 32, borderRadius: "50%", border: "1.5px solid var(--sand-dark)", background: "var(--white)", fontSize: 18, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>−</button>
-                    <span style={{ fontFamily: "var(--font-serif)", fontSize: 20, fontWeight: 700, minWidth: 22, textAlign: "center" }}>{p.val}</span>
-                    <button onClick={() => p.set(Math.min(20, p.val + 1))} style={{ width: 32, height: 32, borderRadius: "50%", border: "none", background: "var(--charcoal)", color: "#fff", fontSize: 18, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>+</button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Transport */}
-          <div className="card" style={{ padding: 14 }}>
-            <div style={{ fontSize: 10, fontWeight: 800, color: "var(--charcoal)", textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 10 }}>🚗 Transport</div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "var(--sand)", borderRadius: 14, padding: "12px 14px" }}>
-              <div>
-                <div style={{ fontSize: 13, fontWeight: 600 }}>Prise en charge hôtel/riad</div>
-                <div style={{ fontSize: 10, color: "var(--muted)", marginTop: 1 }}>+150 MAD aller-retour</div>
-              </div>
-              <div onClick={() => setTransport(!transport)} style={{ width: 48, height: 26, background: transport ? "var(--sage)" : "var(--sand-dark)", borderRadius: 13, position: "relative", cursor: "pointer", flexShrink: 0, transition: "background 0.3s" }}>
-                <div style={{ width: 20, height: 20, background: "#fff", borderRadius: "50%", position: "absolute", top: 3, left: transport ? 25 : 3, transition: "left 0.3s", boxShadow: "0 1px 4px rgba(0,0,0,0.2)" }} />
-              </div>
-            </div>
-          </div>
-
-          {/* Paiement */}
-          <div className="card" style={{ padding: 14 }}>
-            <div style={{ fontSize: 10, fontWeight: 800, color: "var(--charcoal)", textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 12 }}>💳 Paiement</div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
-              {PAYMENT_OPTIONS.map(opt => (
-                <div key={opt.id} onClick={() => setPayment(opt.id)} style={{
-                  background: payment === opt.id ? "#FEF3E8" : "var(--sand)",
-                  border: `${payment === opt.id ? "2" : "1.5"}px solid ${payment === opt.id ? "var(--bronze)" : "var(--sand-dark)"}`,
-                  borderRadius: 14, padding: "12px 14px",
-                  display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer"
-                }}>
-                  <div>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: "var(--charcoal)" }}>{opt.label}</div>
-                    <div style={{ fontSize: 11, color: "var(--soft)", marginTop: 2 }}>{opt.desc}</div>
-                  </div>
-                  <div style={{ width: 18, height: 18, borderRadius: "50%", border: `2px solid ${payment === opt.id ? "var(--bronze)" : "var(--sand-dark)"}`, background: payment === opt.id ? "var(--bronze)" : "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                    {payment === opt.id && <div style={{ width: 7, height: 7, background: "#fff", borderRadius: "50%" }} />}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Récapitulatif */}
+          {/* RÉCAP */}
           {selectedDates.length > 0 && (
-            <div style={{ background: "var(--sage)", borderRadius: "var(--r-card)", padding: 18 }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: 2, marginBottom: 12 }}>Récapitulatif</div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 7, paddingBottom: 12, borderBottom: "1px solid rgba(255,255,255,0.12)" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "rgba(255,255,255,0.6)" }}>
-                  <span>{duration === "half" ? "Demi-journée" : "Journée"} · {selectedDates.length} jour{selectedDates.length > 1 ? "s" : ""} · {persons} pers.</span>
-                  <span style={{ color: "#fff" }}>{total} MAD</span>
+            <div className="bg-sage-300 rounded-2xl p-4">
+              <div className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-3">Récapitulatif</div>
+              <div className="flex flex-col gap-2 pb-3 border-b border-white/10">
+                <div className="flex justify-between text-xs">
+                  <span className="text-white/60">{duration==="half"?"Demi-journée":"Journée"} · {selectedDates.length} jour{selectedDates.length>1?"s":""} · {persons} pers.</span>
+                  <span className="text-white font-semibold">{total} MAD</span>
                 </div>
                 {extraPersonCost > 0 && (
-                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "rgba(255,255,255,0.6)" }}>
-                    <span>+10% pers. supplémentaires</span>
-                    <span style={{ color: "#fff" }}>+{extraPersonCost} MAD</span>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-white/60">+10% pers. supplémentaires</span>
+                    <span className="text-white font-semibold">+{extraPersonCost} MAD</span>
                   </div>
                 )}
                 {transport && (
-                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "rgba(255,255,255,0.6)" }}>
-                    <span>🚗 Transport</span>
-                    <span style={{ color: "#fff" }}>+150 MAD</span>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-white/60">Transport</span>
+                    <span className="text-white font-semibold">+150 MAD</span>
                   </div>
                 )}
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "rgba(255,255,255,0.6)" }}>
-                  <span>🔧 Frais de service</span>
-                  <span style={{ color: "#fff" }}>+{serviceFee} MAD</span>
+                <div className="flex justify-between text-xs">
+                  <span className="text-white/60">Frais de service</span>
+                  <span className="text-white font-semibold">+{serviceFee} MAD</span>
                 </div>
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "rgba(255,255,255,0.3)" }}>
-                  <span>Commission Laksor (25%)</span>
-                  <span>inclus</span>
+                <div className="flex justify-between text-xs">
+                  <span className="text-white/30">Commission Laksor (25%)</span>
+                  <span className="text-white/30">inclus</span>
                 </div>
               </div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginTop: 12 }}>
-                <span style={{ fontSize: 12, color: "rgba(255,255,255,0.4)" }}>Total</span>
-                <div style={{ textAlign: "right" }}>
-                  <div style={{ fontFamily: "var(--font-serif)", fontSize: 32, fontWeight: 700, color: "#fff", lineHeight: 1 }}>{adjustedTotal} MAD</div>
-                  {payment === "deposit" && <div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", marginTop: 2 }}>Acompte dû : {deposit} MAD</div>}
+              <div className="flex justify-between items-baseline mt-3">
+                <span className="text-white/40 text-xs">Total</span>
+                <div className="text-right">
+                  <div className="font-display text-2xl font-bold text-white">{adjustedTotal} <span className="text-sm font-normal text-white/50">MAD</span></div>
+                  {payment==="deposit" && <div className="text-white/40 text-[10px]">Acompte dû : {deposit} MAD</div>}
                 </div>
               </div>
             </div>
           )}
 
-          {/* Bouton confirmer */}
+          {/* BOUTON CONFIRMER */}
           <button
             onClick={handleConfirm}
             disabled={loading || selectedDates.length === 0}
-            className={selectedDates.length > 0 ? "btn-bronze" : ""}
-            style={{
-              width: "100%", padding: 16, fontSize: 15, fontWeight: 700,
-              borderRadius: "999px", border: "none",
-              cursor: selectedDates.length > 0 ? "pointer" : "not-allowed",
-              background: selectedDates.length > 0 ? undefined : "var(--sand-dark)",
-              color: selectedDates.length > 0 ? undefined : "var(--muted)",
-              fontFamily: "inherit", justifyContent: "center", display: "flex", alignItems: "center"
-            }}
-          >
-            {loading ? "Envoi en cours..." : selectedDates.length > 0 ? `Confirmer la réservation ✦` : "Sélectionnez vos dates"}
+            className={`w-full py-4 rounded-full text-sm font-bold transition-all
+              ${selectedDates.length > 0 ? "bg-bronze-500 hover:bg-bronze-600 text-white shadow-lg" : "bg-sand-300 text-charcoal-400 cursor-not-allowed"}`}>
+            {loading ? "Envoi en cours..." : selectedDates.length > 0 ? "Confirmer la réservation ✦" : "Sélectionnez une date"}
           </button>
 
-          <div style={{ textAlign: "center", fontSize: 11, color: "var(--muted)", marginTop: -4, paddingBottom: 8 }}>
-            🔒 Paiement sécurisé · CMI · Visa · Mastercard
+          <div className="flex items-center justify-center gap-1.5 text-[10px] text-charcoal-400 pb-4">
+            <Lock size={10} /> Paiement sécurisé · CMI · Visa · Mastercard
           </div>
+
         </div>
       </div>
     </div>
