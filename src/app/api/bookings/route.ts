@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { guideId, supabaseId, date, duration, persons, totalPrice, notes } = body;
+    const { guideId, supabaseId, date, duration, persons, totalPrice, notes, paymentMethod, startTime } = body;
 
     if (!guideId || !supabaseId) return NextResponse.json({ error: "Données manquantes" }, { status: 400 });
 
@@ -16,7 +16,7 @@ export async function POST(req: Request) {
     if (!tourist) return NextResponse.json({ error: "Touriste introuvable" }, { status: 404 });
 
     const price = duration === "FULL_DAY" ? Number(guide.fullDayPrice) : Number(guide.halfDayPrice);
-    const commission = Math.round(price * 0.24);
+    const commission = Math.round(price * 0.25);
 
     const booking = await prisma.booking.create({
       data: {
@@ -27,7 +27,8 @@ export async function POST(req: Request) {
         persons: parseInt(persons) || 1,
         totalPrice: totalPrice || price,
         commission,
-        status: "PENDING",
+        status: "CONFIRMED",
+        notes: notes || "",
         slots: {
           create: [{
             date: new Date(date),
@@ -38,18 +39,45 @@ export async function POST(req: Request) {
       }
     });
 
+    const isPaid = paymentMethod === "deposit" || paymentMethod === "full";
+
     let whatsappUrl = null;
     if (guide.phone) {
       const phone = guide.phone.replace(/[^0-9]/g, "");
       const dateStr = new Date(date).toLocaleDateString("fr-FR");
       const duree = duration === "FULL_DAY" ? "Journée complète (8h)" : "Demi-journée (4h)";
+
       const msg = encodeURIComponent(
-        `🎉 Nouvelle réservation Laksor!\n\n` +
-        `Date: ${dateStr}\n` +
-        `Durée: ${duree}\n` +
-        `Personnes: ${persons}\n` +
-        `Prix: ${totalPrice || price} MAD\n\n` +
-        `Accepter sur:\nhttps://laksor.vercel.app/dashboard/guide?id=${guideId}`
+        `✅ Nouvelle réservation confirmée!
+
+` +
+        `👤 Touriste: ${tourist.name || tourist.email}
+` +
+        `📅 Date: ${dateStr}
+` +
+        `⏱ Durée: ${duree}
+` +
+        (startTime ? `🕐 Heure souhaitée: ${startTime}
+` : "") +
+        `👥 Personnes: ${persons}
+` +
+        `💰 Prix total: ${totalPrice || price} MAD
+` +
+        `💳 Paiement: ${paymentMethod === "deposit" ? "Acompte 30%" : paymentMethod === "full" ? "100% en ligne" : "Cash le jour J"}
+` +
+        (isPaid
+          ? `
+📞 Contact touriste: ${tourist.email}
+` +
+            `
+🍵 Offrez un thé de bienvenu à votre touriste chez un café partenaire Laksor — Laksor vous rembourse.
+`
+          : `
+⚠️ Paiement cash — contactez le touriste 72h avant la visite via votre dashboard.
+`
+        ) +
+        `
+🔗 Dashboard: https://laksor.vercel.app/dashboard/guide?id=${guideId}`
       );
       whatsappUrl = `https://wa.me/${phone}?text=${msg}`;
     }
