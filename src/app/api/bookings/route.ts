@@ -7,7 +7,7 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { guideId, supabaseId, date, duration, persons, totalPrice, notes, paymentMethod, startTime, transport, guestName, guestContact } = body;
 
-    if (!guideId || !supabaseId) return NextResponse.json({ error: "Données manquantes" }, { status: 400 });
+    if (!guideId) return NextResponse.json({ error: "Données manquantes" }, { status: 400 });
 
     const guide = await prisma.guideProfile.findUnique({ where: { id: guideId } });
     if (!guide) return NextResponse.json({ error: "Guide introuvable" }, { status: 404 });
