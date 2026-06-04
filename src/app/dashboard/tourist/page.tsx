@@ -135,12 +135,12 @@ export default function TouristDashboard() {
                 <div key={b.id} className="bg-white rounded-2xl border border-sand-300 p-4">
                   {/* Guide info */}
                   <div className="flex items-center gap-3 mb-3">
-                    <div className="w-12 h-12 rounded-xl overflow-hidden bg-sand-300 flex-shrink-0">
+                    <Link href={"/guide/" + b.guide?.id} className="w-12 h-12 rounded-xl overflow-hidden bg-sand-300 flex-shrink-0 no-underline">
                       {b.guide?.avatar
                         ? <img src={b.guide.avatar} className="w-full h-full object-cover" alt={b.guide.displayName} />
-                        : <div className="w-full h-full flex items-center justify-center font-bold text-charcoal-500 text-lg">{b.guide?.displayName?.[0]}</div>
+                        : <div className="w-full h-full flex items-center justify-center font-bold text-charcoal-500 text-lg bg-sage-300/20">{b.guide?.displayName?.[0]}</div>
                       }
-                    </div>
+                    </Link>
                     <div className="flex-1">
                       <div className="text-sm font-bold text-charcoal-800">{b.guide?.displayName}</div>
                       <div className="flex items-center gap-1 mt-0.5">
