@@ -147,7 +147,7 @@ export async function POST(req: Request) {
     } catch(invErr) { console.error("Invoice error:", invErr); }
     */
 
-    return NextResponse.json({ booking, whatsappUrl, bookingRef });
+    console.log("BOOKING SUCCESS:", bookingRef); return NextResponse.json({ booking, whatsappUrl, bookingRef });
   } catch(e: any) {
     console.error("Booking error:", e);
     return NextResponse.json({ error: "Erreur serveur: " + e.message }, { status: 500 });
