@@ -94,22 +94,7 @@ export default function BookingPage() {
       if (!res.ok) { alert(data.error || "Erreur"); setSubmitting(false); return; }
       console.log("DATA RECEIVED:", JSON.stringify(data)); if (data.whatsappUrl) window.open(data.whatsappUrl, "_blank");
       const dateStr = encodeURIComponent(selectedDates.join(","));
-      router.push(
-        "/booking/confirmation" +
-        "?guide=" + encodeURIComponent(guide?.displayName || "") +
-        "&guideId=" + guideId +
-        "&city=" + encodeURIComponent(guide?.city || "") +
-        "&price=" + adjustedTotal +
-        "&base=" + total +
-        "&extra=" + extraCost +
-        "&persons=" + persons +
-        "&payment=" + payment +
-        "&ref=" + (data.bookingRef || "") +
-        "&dates=" + dateStr +
-        "&transport=" + transport +
-        "&serviceFee=" + serviceFee +
-        "&name=" + encodeURIComponent(guestName)
-      );
+    router.push("/booking/confirmation/" + data.booking.id);
     } catch(e) { alert("Erreur reseau"); }
     setSubmitting(false);
   }
