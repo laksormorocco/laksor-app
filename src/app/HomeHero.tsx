@@ -138,7 +138,7 @@ export default function HomeHero() {
 
       {/* ── MODAL ── */}
       {open && (
-        <div className="fixed inset-0 z-50 bg-white overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-white flex flex-col">
 
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-sand-300">
@@ -164,7 +164,7 @@ export default function HomeHero() {
             </button>
           </div>
 
-          <div className="px-4 pt-4 pb-28 flex flex-col gap-3">
+          <div className="flex-1 overflow-y-auto px-4 pt-4 pb-4 flex flex-col gap-3">
 
             {/* ── GUIDES ── */}
             {mode === "guides" && (
@@ -314,7 +314,7 @@ export default function HomeHero() {
           </div>
 
           {/* Bottom */}
-          <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-sand-300 px-4 py-4 flex items-center justify-between z-[60] shadow-lg">
+          <div className="flex-shrink-0 bg-white border-t border-sand-300 px-4 py-4 flex items-center justify-between shadow-lg">
             <button onClick={clearAll} className="text-sm font-bold text-charcoal-800 underline">
               Tout effacer
             </button>
