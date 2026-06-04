@@ -5,7 +5,7 @@ import ProfileEditor from "@/components/ProfileEditor";
 import {
   House, CalendarCheck, Target, ChartBar, User,
   Bell, ArrowRight, Check, X, Clock, Users, Star,
-  Trophy, ChartLineUp, Eye
+  Trophy, ChartLineUp, Eye, SignOut
 } from "@phosphor-icons/react";
 import { createClient } from "@supabase/supabase-js";
 
@@ -140,10 +140,15 @@ export default function GuideDashboard() {
             </button>
           </div>
         </div>
-        <button className="relative w-9 h-9 bg-sand-200 rounded-xl border border-sand-300 flex items-center justify-center">
-          <Bell size={17} className="text-charcoal-600" />
-          {notifications > 0 && <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-bronze-500 rounded-full border border-white" />}
-        </button>
+        <div className="flex items-center gap-2">
+          <button className="relative w-9 h-9 bg-sand-200 rounded-xl border border-sand-300 flex items-center justify-center">
+            <Bell size={17} className="text-charcoal-600" />
+            {notifications > 0 && <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-bronze-500 rounded-full border border-white" />}
+          </button>
+          <a href="/logout" className="w-9 h-9 bg-sand-200 rounded-xl border border-sand-300 flex items-center justify-center no-underline">
+            <SignOut size={17} className="text-charcoal-600" />
+          </a>
+        </div>
       </div>
 
       <div className="px-4 pt-4 max-w-lg mx-auto flex flex-col gap-3">
