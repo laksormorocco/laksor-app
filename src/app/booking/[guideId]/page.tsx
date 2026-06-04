@@ -246,6 +246,37 @@ export default function BookingPage() {
                 <span className="text-xs text-bronze-500 font-semibold">+15% par personne au-delà de 2 · Supplément estimé : +{extraCost} MAD</span>
               </div>
             )}
+            {selectedDates.length > 0 && (
+              <div className="bg-white rounded-2xl border border-sand-300 p-4">
+                <div className="text-[10px] font-bold text-charcoal-800 uppercase tracking-widest mb-3">Detail du prix</div>
+                <div className="flex flex-col gap-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-charcoal-400">Creneaux ({selectedDates.length} jour{selectedDates.length>1?"s":""})</span>
+                    <span className="font-semibold text-charcoal-800">{total} MAD</span>
+                  </div>
+                  {persons > 2 && (
+                    <div className="flex justify-between text-sm">
+                      <span className="text-amber-600 text-xs font-semibold">+15% x {persons-2} pers. suppl. (base 2 pers.)</span>
+                      <span className="font-semibold text-amber-600">+{extraCost} MAD</span>
+                    </div>
+                  )}
+                  {transport && (
+                    <div className="flex justify-between text-sm">
+                      <span className="text-charcoal-400">Transport</span>
+                      <span className="font-semibold text-charcoal-800">+300 MAD</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between text-sm">
+                    <span className="text-charcoal-400">Frais de service</span>
+                    <span className="font-semibold text-charcoal-800">+{serviceFee} MAD</span>
+                  </div>
+                  <div className="flex justify-between pt-2 border-t border-sand-300">
+                    <span className="font-bold text-charcoal-800">Total</span>
+                    <span className="font-display text-xl font-bold text-bronze-500">{adjustedTotal} MAD</span>
+                  </div>
+                </div>
+              </div>
+            )}
             <button onClick={() => selectedDates.length > 0 && setStep("info")}
               className={`w-full py-4 rounded-full text-sm font-bold transition-all flex items-center justify-center gap-2
                 ${selectedDates.length > 0 ? "bg-bronze-500 hover:bg-bronze-600 text-white shadow-lg" : "bg-sand-300 text-charcoal-400 cursor-not-allowed"}`}>
