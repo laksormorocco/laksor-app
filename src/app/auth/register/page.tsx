@@ -64,8 +64,14 @@ export default function RegisterGuidePage() {
         specialties: form.specialties.split(",").map((s:string)=>s.trim()).filter(Boolean)
       })
     });
+    const result = await res.json();
     if (res.ok) router.push("/auth/register/success");
-    else alert("Erreur, réessaie.");
+    else if (result.error && result.error.includes("deja un profil")) {
+      const me = await fetch("/api/auth/me?supabaseId=" + user.id);
+      const meData = await me.json();
+      if (meData.guideId) router.push("/dashboard/guide?id=" + meData.guideId);
+      else router.push("/dashboard");
+    } else alert("Erreur: " + result.error);
     setSubmitting(false);
   }
 
