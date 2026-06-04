@@ -92,7 +92,7 @@ export default function BookingPage() {
       });
       const data = await res.json();
       if (!res.ok) { alert(data.error || "Erreur"); setSubmitting(false); return; }
-      if (data.whatsappUrl) window.open(data.whatsappUrl, "_blank");
+      console.log("DATA RECEIVED:", JSON.stringify(data)); if (data.whatsappUrl) window.open(data.whatsappUrl, "_blank");
       const dateStr = encodeURIComponent(selectedDates.join(","));
       router.push(
         "/booking/confirmation" +
