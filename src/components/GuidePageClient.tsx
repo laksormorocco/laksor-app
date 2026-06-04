@@ -2,7 +2,6 @@
 import { useExchangeRate } from "@/hooks/useExchangeRate";
 import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
-import BookingModal from "@/components/BookingModal";
 import {
   ArrowLeft, Heart, ShareNetwork, MapPin, Star,
   Clock, Shield, Translate, Camera, CheckCircle,
@@ -461,12 +460,7 @@ export default function GuidePageClient({ guide }: { guide: any }) {
               </div>
             )}
           </div>
-          <BookingModal
-            guideName={guide.displayName}
-            halfDayPrice={Number(guide.halfDayPrice)}
-            fullDayPrice={Number(guide.fullDayPrice)}
-            guideId={guide.id}
-          />
+          <a href={"/booking/" + guide.id} className="w-full bg-sage-300 hover:bg-sage-400 text-white font-bold py-4 rounded-full text-sm transition-colors flex items-center justify-center gap-2 no-underline">Verifier les disponibilites</a>
         </div>
       </div>
     </div>
