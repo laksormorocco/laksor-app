@@ -12,8 +12,15 @@ export async function POST(req: Request) {
     const guide = await prisma.guideProfile.findUnique({ where: { id: guideId } });
     if (!guide) return NextResponse.json({ error: "Guide introuvable" }, { status: 404 });
 
-    const tourist = await prisma.user.findUnique({ where: { supabaseId } });
-    if (!tourist) return NextResponse.json({ error: "Touriste introuvable" }, { status: 404 });
+    let tourist = supabaseId ? await prisma.user.findUnique({ where: { supabaseId } }) : null;
+    if (!tourist) {
+      const guestEmail = guestContact && guestContact.includes("@") ? guestContact : (guestName || "guest") + "@guest.laksor.ma";
+      tourist = await prisma.user.upsert({
+        where: { email: guestEmail },
+        update: { name: guestName || "Guest" },
+        create: { supabaseId: "guest_" + Date.now(), email: guestEmail, name: guestName || "Guest", role: "TOURIST" }
+      });
+    }
 
     const price = duration === "FULL_DAY" ? Number(guide.fullDayPrice) : Number(guide.halfDayPrice);
     const commission = Math.round(price * 0.25);
