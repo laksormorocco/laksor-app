@@ -15,7 +15,7 @@ const supabase = createClient(
 );
 
 const PAYMENT_OPTIONS = [
-  { id: "deposit", Icon: CreditCard, label: "Acompte 30%",    desc: "70% le jour J · Annulation gratuite 72h" },
+  { id: "deposit", Icon: CreditCard, label: "Acompte 30% ⭐ Recommandé", desc: "70% le jour J · Annulation gratuite 72h" },
   { id: "full",    Icon: CreditCard, label: "100% en ligne",  desc: "Annulation gratuite 72h" },
   { id: "cash",    Icon: Money,      label: "Cash le jour J", desc: "Aucun prépaiement requis" },
 ];
@@ -54,7 +54,7 @@ export default function BookingPage() {
   }, [guideId]);
 
   const persons = adults + children;
-  const extraCost = persons > 2 ? Math.round(total * (persons - 2) * 0.1) : 0;
+  const extraCost = persons > 2 ? Math.round(total * (persons - 2) * 0.15) : 0;
   const transportCost = transport ? 300 : 0;
   const serviceFee = selectedDates.length > 0 ? 25 : 0;
   const adjustedTotal = total + extraCost + transportCost + serviceFee;
@@ -325,7 +325,7 @@ export default function BookingPage() {
                 </div>
                 {extraCost > 0 && (
                   <div className="flex justify-between text-sm">
-                    <span className="text-charcoal-400">Supplément pers.</span>
+                    <span className="text-charcoal-400">+15% / pers. suppl. (au-delà de 2)</span>
                     <span className="font-semibold text-charcoal-800">+{extraCost} MAD</span>
                   </div>
                 )}

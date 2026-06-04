@@ -1,76 +1,116 @@
 import Link from "next/link";
+import { CheckCircle, CalendarCheck, Compass, TeaBag } from "@phosphor-icons/react/dist/ssr";
 
-export default function ConfirmationPage({ searchParams }: { searchParams: { guide?: string; price?: string; persons?: string } }) {
+export default function ConfirmationPage({ searchParams }: { searchParams: { guide?: string; price?: string; persons?: string; payment?: string } }) {
+  const isPaid = searchParams.payment === "deposit" || searchParams.payment === "full";
+  const deposit = searchParams.price ? Math.round(Number(searchParams.price) * 0.3) : 0;
+
   return (
-    <div style={{ minHeight:"100vh", background:"#F7F7F7", fontFamily:"Inter, -apple-system, sans-serif", display:"flex", flexDirection:"column" }}>
+    <div className="min-h-screen bg-sand-200 flex flex-col">
 
-      {/* Navbar */}
-      <nav style={{ background:"linear-gradient(135deg,#123EAB,#1a4fd6)", padding:"0 16px", height:60, display:"flex", alignItems:"center", justifyContent:"center" }}>
-        <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-          <span style={{ fontWeight:900, color:"#fff", fontSize:18 }}>LAKSOR</span>
-          <span style={{ color:"#F4C542", fontSize:11, fontWeight:700, letterSpacing:"1px" }}>MOROCCO</span>
-        </div>
+      {/* NAVBAR */}
+      <nav className="bg-white border-b border-sand-300 h-14 flex items-center justify-center px-4">
+        <span className="font-display text-lg font-bold text-bronze-500 tracking-widest">LAKSOR</span>
       </nav>
 
-      <div style={{ flex:1, display:"flex", alignItems:"center", justifyContent:"center", padding:"40px 16px" }}>
-        <div style={{ background:"#fff", borderRadius:24, padding:32, maxWidth:420, width:"100%", textAlign:"center", border:"1px solid #EBEBEB", boxShadow:"0 4px 24px rgba(0,0,0,0.06)" }}>
+      <div className="flex-1 flex items-start justify-center px-4 py-8">
+        <div className="bg-white rounded-3xl border border-sand-300 w-full max-w-sm overflow-hidden shadow-sm">
 
-          {/* Success Icon */}
-          <div style={{ width:80, height:80, background:"linear-gradient(135deg,#22c55e,#16a34a)", borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 24px", fontSize:36 }}>
-            🎉
-          </div>
-
-          <h1 style={{ fontSize:24, fontWeight:700, color:"#0F172A", marginBottom:8 }}>
-            Demande envoyée !
-          </h1>
-          <p style={{ color:"#718096", fontSize:15, lineHeight:1.6, marginBottom:24 }}>
-            <strong>{searchParams.guide || "Votre guide"}</strong> va examiner votre demande et vous contacter sous 24h.
-          </p>
-
-          {/* Details */}
-          {(searchParams.price || searchParams.persons) && (
-            <div style={{ background:"#F8FAFC", borderRadius:16, padding:18, marginBottom:20, textAlign:"left" }}>
-              {searchParams.persons && (
-                <div style={{ display:"flex", justifyContent:"space-between", marginBottom:8 }}>
-                  <span style={{ color:"#94A3B8", fontSize:14 }}>Personnes</span>
-                  <span style={{ fontWeight:600, fontSize:14, color:"#0F172A" }}>{searchParams.persons}</span>
-                </div>
-              )}
-              {searchParams.price && (
-                <div style={{ display:"flex", justifyContent:"space-between", paddingTop:8, borderTop:"1px solid #E2E8F0" }}>
-                  <span style={{ color:"#123EAB", fontWeight:700, fontSize:15 }}>Total</span>
-                  <span style={{ fontWeight:900, fontSize:20, color:"#22c55e" }}>{searchParams.price} MAD</span>
-                </div>
-              )}
+          {/* TOP BANNER */}
+          <div className="bg-sage-300 px-6 pt-8 pb-6 text-center">
+            <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <CheckCircle size={36} weight="fill" className="text-white" />
             </div>
-          )}
-
-          {/* Payment info */}
-          <div style={{ background:"#FFF7ED", borderRadius:14, padding:14, marginBottom:24, border:"1px solid #FED7AA", textAlign:"left" }}>
-            <div style={{ fontWeight:700, fontSize:13, color:"#c2410c", marginBottom:4 }}>💵 Paiement cash</div>
-            <div style={{ fontSize:12, color:"#9a3412", lineHeight:1.5 }}>Le paiement s effectue directement au guide le jour de la visite.</div>
+            <h1 className="font-display text-2xl text-white mb-1">Réservation confirmée !</h1>
+            <p className="text-white/70 text-sm">
+              <strong className="text-white">{searchParams.guide || "Votre guide"}</strong> a bien reçu votre demande
+            </p>
           </div>
 
-          {/* Steps */}
-          <div style={{ background:"#F8FAFC", borderRadius:16, padding:16, marginBottom:24, textAlign:"left" }}>
-            {[
-              { icon:"✅", title:"Demande soumise", done:true },
-              { icon:"💬", title:"Le guide vous contacte sous 24h", done:false },
-              { icon:"🧭", title:"Vivez l experience !", done:false },
-            ].map((s,i) => (
-              <div key={i} style={{ display:"flex", gap:12, alignItems:"center", marginBottom:i<2?12:0 }}>
-                <div style={{ width:32, height:32, borderRadius:"50%", background:s.done?"#DCFCE7":"#F1F5F9", display:"flex", alignItems:"center", justifyContent:"center", fontSize:16, flexShrink:0 }}>{s.icon}</div>
-                <div style={{ fontSize:13, fontWeight:s.done?600:400, color:s.done?"#166534":"#475569" }}>{s.title}</div>
+          <div className="p-5 flex flex-col gap-4">
+
+            {/* PRIX */}
+            {searchParams.price && (
+              <div className="bg-sand-200 rounded-2xl p-4 border border-sand-300">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-xs text-charcoal-400">Personnes</span>
+                  <span className="text-sm font-bold text-charcoal-800">{searchParams.persons} pers.</span>
+                </div>
+                <div className="flex justify-between items-center pt-2 border-t border-sand-300">
+                  <span className="text-sm font-bold text-charcoal-800">Total</span>
+                  <span className="font-display text-2xl font-bold text-charcoal-800">{searchParams.price} <span className="text-sm font-normal text-charcoal-400">MAD</span></span>
+                </div>
+                {isPaid && (
+                  <div className="mt-2 text-[11px] text-bronze-500 font-semibold text-right">
+                    Acompte payé : {deposit} MAD · Reste : {Number(searchParams.price) - deposit} MAD le jour J
+                  </div>
+                )}
               </div>
-            ))}
-          </div>
+            )}
 
-          <Link href="/dashboard/tourist" style={{ display:"block", background:"#0B132B", color:"#fff", borderRadius:30, padding:"16px 32px", fontSize:15, fontWeight:600, textDecoration:"none", marginBottom:10 }}>
-            Voir mes réservations
-          </Link>
-          <Link href="/search" style={{ display:"block", background:"#F7F7F7", color:"#123EAB", borderRadius:30, padding:"14px 32px", fontSize:14, fontWeight:600, textDecoration:"none", border:"1px solid #EBEBEB" }}>
-            Explorer d autres guides
-          </Link>
+            {/* PAIEMENT */}
+            <div className={`rounded-2xl p-3 border flex items-start gap-3 ${isPaid ? "bg-amber-50 border-bronze-500/30" : "bg-sand-200 border-sand-300"}`}>
+              <span className="text-lg">{isPaid ? "💳" : "💵"}</span>
+              <div>
+                <div className={`text-xs font-bold ${isPaid ? "text-bronze-500" : "text-charcoal-600"}`}>
+                  {isPaid ? searchParams.payment === "deposit" ? "Acompte 30% — Merci !" : "100% payé en ligne — Merci !" : "Paiement cash le jour J"}
+                </div>
+                <div className="text-[10px] text-charcoal-400 mt-0.5">
+                  {isPaid ? "Le reste sera réglé directement au guide le jour de la visite" : "Le paiement s'effectue directement au guide"}
+                </div>
+              </div>
+            </div>
+
+            {/* THE BIENVENU */}
+            {isPaid && (
+              <div className="bg-amber-50 border border-bronze-500/30 rounded-2xl p-3 flex items-center gap-3">
+                <TeaBag size={20} className="text-bronze-500 flex-shrink-0" weight="duotone" />
+                <div>
+                  <div className="text-xs font-bold text-bronze-500">🍵 Thé de bienvenu offert !</div>
+                  <div className="text-[10px] text-charcoal-400 mt-0.5">Votre guide vous offrira un thé chez un café partenaire Laksor</div>
+                </div>
+              </div>
+            )}
+
+            {/* ÉTAPES */}
+            <div className="bg-sand-200 rounded-2xl p-4 border border-sand-300">
+              {[
+                { Icon: CheckCircle, label: "Réservation confirmée", done: true },
+                { Icon: CalendarCheck, label: "Le guide vous contacte 72h avant", done: false },
+                { Icon: Compass, label: "Vivez l'expérience !", done: false },
+              ].map((s, i) => (
+                <div key={i} className={`flex items-center gap-3 ${i < 2 ? "mb-3" : ""}`}>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0
+                    ${s.done ? "bg-sage-300" : "bg-sand-300"}`}>
+                    <s.Icon size={16} weight="fill" className={s.done ? "text-white" : "text-charcoal-400"} />
+                  </div>
+                  <span className={`text-sm ${s.done ? "font-bold text-charcoal-800" : "text-charcoal-400"}`}>{s.label}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* MESSAGE REMERCIEMENTS */}
+            <div className="bg-charcoal-800 rounded-2xl p-4 text-center">
+              <div className="text-white font-display text-base mb-2">Merci pour votre confiance 🙏</div>
+              <div className="text-charcoal-400 text-xs leading-relaxed mb-3">
+                Tous nos guides et chauffeurs sont agréés par le Ministère du Tourisme du Maroc et vérifiés par notre équipe.
+              </div>
+              <div className="text-charcoal-400 text-xs">
+                Nous restons joignables 7j/7 via WhatsApp
+              </div>
+              <a href="https://wa.me/212657436342" className="mt-3 inline-flex items-center gap-2 bg-sage-300 hover:bg-sage-400 text-white text-xs font-bold px-4 py-2 rounded-full no-underline transition-colors">
+                💬 Nous contacter sur WhatsApp
+              </a>
+            </div>
+
+            {/* CTA */}
+            <Link href="/" className="block bg-bronze-500 hover:bg-bronze-600 text-white font-bold py-4 rounded-full text-sm text-center no-underline transition-colors">
+              Retour à l&apos;accueil
+            </Link>
+            <Link href="/search" className="block bg-sand-200 hover:bg-sand-300 text-charcoal-800 font-bold py-3.5 rounded-full text-sm text-center no-underline transition-colors border border-sand-300">
+              Explorer d&apos;autres guides
+            </Link>
+          </div>
         </div>
       </div>
     </div>
