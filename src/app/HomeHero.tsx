@@ -314,7 +314,7 @@ export default function HomeHero() {
           </div>
 
           {/* Bottom */}
-          <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-sand-300 px-4 py-3 flex items-center justify-between">
+          <div className="fixed bottom-16 left-0 right-0 bg-white border-t border-sand-300 px-4 py-3 flex items-center justify-between z-50 shadow-lg">
             <button onClick={clearAll} className="text-sm font-bold text-charcoal-800 underline">
               Tout effacer
             </button>
