@@ -22,7 +22,7 @@ export default function ConfirmationPage() {
     if (bookingId) {
       fetch("/api/invoice/token?bookingId=" + bookingId)
         .then(r => r.json())
-        .then(d => setInvoiceUrl(d.url || ""));
+        .then(d => { if (d.token) setInvoiceUrl("/api/invoice/pdf?bookingId=" + bookingId + "&token=" + d.token); });
     }
   }, [bookingId]);
   const { convert } = useExchangeRate();
