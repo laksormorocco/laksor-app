@@ -606,17 +606,23 @@ export default function AdminDashboard() {
                         </div>
                       ))}
                     </div>
-                    <div className="flex gap-2 mt-1">
+                    <div className="flex gap-2 mt-1 flex-wrap">
                       {b.guide?.phone && (
                         <a href={"https://wa.me/"+b.guide.phone.replace(/[^0-9]/g,"")+"?text=Ref: "+b.bookingRef}
-                          className="flex-1 flex items-center justify-center gap-1 bg-sage-300 text-white font-bold py-2 rounded-xl text-xs no-underline">
-                          Guide WA
+                          className="flex items-center gap-1 bg-sage-300 text-white font-bold px-3 py-1.5 rounded-full text-xs no-underline">
+                          WA Guide
                         </a>
                       )}
                       {b.whatsapp && (
-                        <a href={"https://wa.me/"+b.whatsapp.replace(/[^0-9]/g,"")+"?text=Ref: "+b.bookingRef}
-                          className="flex-1 flex items-center justify-center gap-1 bg-bronze-500 text-white font-bold py-2 rounded-xl text-xs no-underline">
-                          Client WA
+                        <a href={"https://wa.me/"+b.whatsapp.replace(/[^0-9]/g,"")+"?text=Bonjour, ref reservation: "+b.bookingRef}
+                          className="flex items-center gap-1 bg-bronze-500 text-white font-bold px-3 py-1.5 rounded-full text-xs no-underline">
+                          WA Client
+                        </a>
+                      )}
+                      {b.tourist?.email && (
+                        <a href={"mailto:"+b.tourist.email+"?subject=Reservation "+b.bookingRef}
+                          className="flex items-center gap-1 bg-charcoal-800 text-white font-bold px-3 py-1.5 rounded-full text-xs no-underline">
+                          Email
                         </a>
                       )}
                     </div>
