@@ -297,18 +297,6 @@ export default function HomeHero() {
                   <input type="date" value={tDate} onChange={e => { setTDate(e.target.value); setTimeout(() => setAcc(null), 200); }}
                     className="w-full border border-sand-300 rounded-xl px-3 py-2.5 text-sm text-charcoal-800 outline-none focus:border-bronze-500" />
                 </AccBlock>
-
-                {tType === "airport" && (
-                  <AccBlock active={acc === "lang"} onToggle={() => toggleAcc("lang")} label="N° de vol"
-                    icon={<AirplaneTakeoff size={15} weight="fill" className="text-bronze-500" />}
-                    value={tFlight || undefined} placeholder="Ex : AT 456">
-                    <div className="flex items-center gap-2 bg-sand-200 rounded-xl px-3 py-2.5">
-                      <AirplaneTakeoff size={14} className="text-charcoal-400" />
-                      <input className="flex-1 bg-transparent text-sm text-charcoal-800 outline-none placeholder-charcoal-400"
-                        placeholder="AT 456" value={tFlight} onChange={e => setTFlight(e.target.value)} />
-                    </div>
-                  </AccBlock>
-                )}
               </>
             )}
           </div>
