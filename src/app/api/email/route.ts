@@ -65,7 +65,7 @@ export async function POST(req: Request) {
 </body></html>`;
 
     await resend.emails.send({
-      from: "Laksor <noreply@laksor.ma>",
+      from: "Laksor <onboarding@resend.dev>",
       to,
       subject: "Reservation confirmee avec " + guideName + " - Laksor",
       html,
