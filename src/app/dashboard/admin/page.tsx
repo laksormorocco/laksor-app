@@ -132,7 +132,7 @@ export default function AdminDashboard() {
   }
 
   const filtered = guides.filter(g => !search || g.displayName?.toLowerCase().includes(search.toLowerCase()) || g.city?.toLowerCase().includes(search.toLowerCase()));
-  const BARS = stats?.revenueByMonth || [];
+  const BARS = stats?.monthlyRevenue || [];
   const maxBar = Math.max(...BARS.map((b:any) => b.revenue), 1);
 
   if (!auth) return (
@@ -625,6 +625,19 @@ export default function AdminDashboard() {
                           Email
                         </a>
                       )}
+                    </div>
+                    <div className="flex gap-2 mt-2 flex-wrap">
+                      <div className="text-[10px] font-bold text-charcoal-400 uppercase w-full">Changer statut :</div>
+                      {["CONFIRMED","CANCELLED","COMPLETED"].map(s => (
+                        <button key={s} onClick={async (e) => {
+                          e.stopPropagation();
+                          await fetch("/api/guide/booking", { method:"PATCH", headers:{"Content-Type":"application/json"}, body:JSON.stringify({bookingId:b.id, status:s}) });
+                          fetchCrm();
+                        }} className={`px-3 py-1.5 rounded-full text-xs font-bold border transition-all
+                          ${b.status===s ? "bg-bronze-500 text-white border-bronze-500" : "bg-sand-200 text-charcoal-500 border-sand-300 hover:border-bronze-500"}`}>
+                          {s==="CONFIRMED"?"Confirmer":s==="CANCELLED"?"Annuler":"Completer"}
+                        </button>
+                      ))}
                     </div>
                   </div>
                 )}
