@@ -674,6 +674,16 @@ export default function AdminDashboard() {
                           Email
                         </a>
                       )}
+                      <a href={"/api/invoice/token?bookingId="+b.id}
+                        onClick={async (e) => {
+                          e.preventDefault();
+                          const res = await fetch("/api/invoice/token?bookingId="+b.id);
+                          const data = await res.json();
+                          window.open(data.url, "_blank");
+                        }}
+                        className="flex items-center gap-1 bg-bronze-500 text-white font-bold px-3 py-1.5 rounded-full text-xs no-underline cursor-pointer">
+                        Facture
+                      </a>
                     </div>
                     <div className="flex gap-2 mt-2 flex-wrap">
                       <div className="text-[10px] font-bold text-charcoal-400 uppercase w-full">Changer statut :</div>

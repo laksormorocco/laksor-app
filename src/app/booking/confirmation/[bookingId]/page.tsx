@@ -16,6 +16,15 @@ export default function ConfirmationPage() {
   const [loading, setLoading] = useState(true);
   const [whatsapp, setWhatsapp] = useState("");
   const [waSaved, setWaSaved] = useState(false);
+  const [invoiceUrl, setInvoiceUrl] = useState("");
+
+  useEffect(() => {
+    if (bookingId) {
+      fetch("/api/invoice/token?bookingId=" + bookingId)
+        .then(r => r.json())
+        .then(d => setInvoiceUrl(d.url || ""));
+    }
+  }, [bookingId]);
   const { convert } = useExchangeRate();
 
   useEffect(() => {
@@ -284,6 +293,13 @@ export default function ConfirmationPage() {
             </a>
             <p className="text-charcoal-500 text-[10px] mt-3 italic">Bienvenue au Maroc authentique.</p>
           </div>
+
+          {invoiceUrl && (
+            <a href={invoiceUrl} target="_blank"
+              className="block bg-charcoal-800 hover:bg-charcoal-600 text-white font-bold py-4 rounded-full text-sm text-center no-underline transition-colors">
+              Telecharger la facture
+            </a>
+          )}
 
           <Link href="/" className="block bg-bronze-500 hover:bg-bronze-600 text-white font-bold py-4 rounded-full text-sm text-center no-underline transition-colors">
             Retour a l accueil
