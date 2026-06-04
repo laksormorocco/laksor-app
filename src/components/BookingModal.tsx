@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { createClient } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 import CalendarPicker from "@/components/CalendarPicker";
@@ -103,7 +104,7 @@ export default function BookingModal({ guideName, halfDayPrice, fullDayPrice, gu
   const STEPS = ["dates", "info", "recap"];
   const stepIndex = STEPS.indexOf(step);
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setOpen(false)} />
 
@@ -382,5 +383,5 @@ export default function BookingModal({ guideName, halfDayPrice, fullDayPrice, gu
         </div>
       </div>
     </div>
-  );
+  , document.body);
 }
