@@ -13,7 +13,7 @@ export default function LoginButton() {
     await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: "https://laksor.vercel.app/auth/callback",
+        redirectTo: "https://laksor.vercel.app/dashboard",
         skipBrowserRedirect: false,
         queryParams: { access_type: "offline", prompt: "consent" }
       }
