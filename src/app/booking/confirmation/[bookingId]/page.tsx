@@ -105,17 +105,23 @@ export default function ConfirmationPage() {
                   </div>
                 )}
                 {guide?.languages?.length > 0 && (
-                  <div className="text-xs text-charcoal-400 mt-1">{guide.languages.join(" · ")}</div>
+                  <div className="flex gap-1 mt-1 flex-wrap">
+                    {guide.languages.map((lang: string) => (
+                      <span key={lang} className="text-sm">
+                        {lang === "Francais" || lang === "Français" ? "🇫🇷" :
+                         lang === "Anglais" || lang === "English" ? "🇬🇧" :
+                         lang === "Arabe" || lang === "Arabic" ? "🇲🇦" :
+                         lang === "Espagnol" || lang === "Spanish" ? "🇪🇸" :
+                         lang === "Allemand" || lang === "German" ? "🇩🇪" :
+                         lang === "Hebreu" || lang === "Hebrew" ? "🇮🇱" :
+                         lang === "Russe" || lang === "Russian" ? "🇷🇺" : "🌍"}
+                      </span>
+                    ))}
+                  </div>
                 )}
               </div>
             </div>
-            {guide?.phone && (
-              <a href={"https://wa.me/" + guide.phone.replace(/[^0-9]/g, "")}
-                className="w-full flex items-center justify-center gap-2 bg-sage-300 hover:bg-sage-400 text-white font-bold py-2.5 rounded-full text-sm no-underline transition-colors">
-                <WhatsappLogo size={16} weight="fill" />
-                Contacter le guide sur WhatsApp
-              </a>
-            )}
+
           </div>
 
           {/* DETAILS VISITE */}
@@ -131,8 +137,7 @@ export default function ConfirmationPage() {
                   <div key={i} className="flex items-center gap-2">
                     <Compass size={16} className="text-bronze-500 flex-shrink-0" />
                     <span className="text-sm text-charcoal-800">
-                      {new Date(s.date + "T00:00:00").toLocaleDateString("fr-FR", {weekday:"short", day:"numeric", month:"short"})} -
-                      {s.duration === "full" ? " Journee complete (8h)" : s.duration === "half_am" ? " Matin (4h)" : " Apres-midi (4h)"}
+                      {new Date(s.date).toLocaleDateString("fr-FR", {weekday:"short", day:"numeric", month:"short"})} - {s.duration === "full" ? "Journee complete (8h)" : "Demi-journee (4h)"}
                     </span>
                   </div>
                 ))
@@ -208,7 +213,7 @@ export default function ConfirmationPage() {
           {!waSaved && (
             <div className="bg-white rounded-2xl border border-sand-300 p-4">
               <div className="text-[10px] font-bold text-charcoal-800 uppercase tracking-widest mb-1">Ameliorez votre experience</div>
-              <div className="text-xs text-charcoal-400 mb-3">Partagez votre WhatsApp pour une meilleure communication concernant votre sejour</div>
+              <div className="text-xs text-charcoal-400 mb-1">Partagez votre WhatsApp pour une meilleure communication concernant votre sejour.</div><div className="text-xs text-bronze-500 font-semibold mb-3">Merci de nous communiquer votre numero de reservation : {bookingRef}</div>
               <div className="flex gap-2">
                 <input value={whatsapp} onChange={e => setWhatsapp(e.target.value)}
                   placeholder="+212 6XX XXX XXX"
