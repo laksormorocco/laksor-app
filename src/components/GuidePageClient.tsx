@@ -354,7 +354,7 @@ export default function GuidePageClient({ guide }: { guide: any }) {
               </div>
             ) : (
               guide.tours?.filter((gt: any) => gt.isActive).map((gt: any) => (
-                <TourCard key={gt.id} guideTour={gt} />
+                <TourCard key={gt.id} guideTour={gt} guideId={guide.id} />
               ))
             )}
           </div>
@@ -468,7 +468,7 @@ export default function GuidePageClient({ guide }: { guide: any }) {
 }
 
 // ── TOUR CARD ──
-function TourCard({ guideTour }: { guideTour: any }) {
+function TourCard({ guideTour, guideId }: { guideTour: any; guideId: string }) {
   const [open, setOpen] = useState(false);
   const [inclTab, setInclTab] = useState<"incl"|"excl">("incl");
   const t = guideTour.template;
@@ -531,7 +531,7 @@ function TourCard({ guideTour }: { guideTour: any }) {
           <div>
             <div className="text-[10px] text-charcoal-400">À partir de</div>
             <div className="font-display text-xl font-bold text-charcoal-800">
-              {guideTour.price} <span className="text-sm font-normal text-charcoal-400">MAD / pers.</span>
+              {guideTour.price} <span className="text-sm font-normal text-charcoal-400">MAD pour 2 pers.</span>
             </div>
           </div>
           <div className="flex gap-2">
@@ -542,9 +542,9 @@ function TourCard({ guideTour }: { guideTour: any }) {
             >
               {open ? "Fermer ↑" : "Détails ↓"}
             </button>
-            <button className="px-4 py-2 rounded-full bg-sage-300 text-white text-xs font-bold hover:bg-sage-400 transition-colors">
+            <a href={"/booking/" + guideId + "?tourId=" + t.id} className="px-4 py-2 rounded-full bg-sage-300 text-white text-xs font-bold hover:bg-sage-400 transition-colors no-underline">
               Réserver
-            </button>
+            </a>
           </div>
         </div>
       </div>
