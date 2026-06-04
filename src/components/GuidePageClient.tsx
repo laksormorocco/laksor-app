@@ -470,150 +470,141 @@ export default function GuidePageClient({ guide }: { guide: any }) {
 // ── TOUR CARD ──
 function TourCard({ guideTour, guideId }: { guideTour: any; guideId: string }) {
   const [open, setOpen] = useState(false);
-  const [inclTab, setInclTab] = useState<"incl"|"excl">("incl");
   const t = guideTour.template;
   if (!t) return null;
 
-  const highlights: any[] = Array.isArray(t.highlights) ? t.highlights : [];
-  const itinerary: any[]  = Array.isArray(t.itinerary) ? t.itinerary : [];
   const included: string[] = Array.isArray(t.included) ? t.included : [];
   const notIncluded: string[] = Array.isArray(t.notIncluded) ? t.notIncluded : [];
   const tags: string[] = Array.isArray(t.tags) ? t.tags : [];
+  const itinerary: any[] = Array.isArray(t.itinerary) ? t.itinerary : [];
+  const emoji = t.tourType === "MEDINA_SECRETS" ? "🕌" : t.tourType === "GASTRONOMIE" ? "🍽️" : t.tourType === "HISTOIRE_MONUMENTS" ? "🏛️" : t.tourType === "DESERT_NATURE" ? "🏜️" : t.tourType === "SHOPPING_ARTISANAT" ? "🛍️" : t.tourType === "COUCHER_SOLEIL" ? "🌅" : "📸";
 
   return (
-    <div className="bg-white rounded-2xl overflow-hidden border border-sand-300">
-      {/* Image */}
-      <div className="relative h-44 bg-gradient-to-br from-charcoal-800 to-sand-400 flex items-center justify-center">
+    <div className="bg-white rounded-2xl overflow-hidden border border-sand-300 shadow-sm">
+
+      {/* IMAGE */}
+      <div className="relative h-56">
         {t.coverImage
           ? <img src={t.coverImage} alt={t.title} className="w-full h-full object-cover" />
-          : <span className="text-5xl">🧭</span>}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-        {guideTour.isBestSeller && (
-          <span className="absolute top-3 left-3 bg-bronze-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-full">
-            🔥 BEST SELLER
-          </span>
-        )}
-        {guideTour.totalBookings >= 5 && (
-          <span className="absolute top-3 right-3 bg-black/50 backdrop-blur-sm text-white text-[10px] font-bold px-2.5 py-1 rounded-full">
-            🔥 Très demandé
-          </span>
-        )}
+          : <div className="w-full h-full bg-gradient-to-br from-sage-300/30 to-sand-300 flex items-center justify-center text-6xl">{emoji}</div>}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+
+        {/* TOP - like + best seller */}
+        <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
+          {guideTour.isBestSeller
+            ? <span className="bg-bronze-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow-sm">🔥 BEST SELLER</span>
+            : <span />}
+          <button className="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/30 hover:bg-white/30 transition-colors">
+            <span className="text-sm">🤍</span>
+          </button>
+        </div>
+
+        {/* BOTTOM - titre + stats inline */}
+        <div className="absolute bottom-3 left-3 right-3">
+          <div className="font-display text-xl text-white font-bold mb-2">{t.title}</div>
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="flex items-center gap-1 bg-white/20 backdrop-blur-sm text-white text-[10px] font-semibold px-2.5 py-1 rounded-full border border-white/30">
+              ⏱ {t.duration || "4h"}
+            </span>
+            <span className="flex items-center gap-1 bg-white/20 backdrop-blur-sm text-white text-[10px] font-semibold px-2.5 py-1 rounded-full border border-white/30">
+              👥 {t.groupSize || "1-6 pers."}
+            </span>
+            <span className="flex items-center gap-1 bg-white/20 backdrop-blur-sm text-white text-[10px] font-semibold px-2.5 py-1 rounded-full border border-white/30">
+              🚶 {t.difficulty || "Facile"}
+            </span>
+            {guideTour.totalBookings > 0 && (
+              <span className="flex items-center gap-1 bg-white/20 backdrop-blur-sm text-white text-[10px] font-semibold px-2.5 py-1 rounded-full border border-white/30">
+                ✓ {guideTour.totalBookings} visite{guideTour.totalBookings > 1 ? "s" : ""}
+              </span>
+            )}
+          </div>
+        </div>
       </div>
 
       <div className="p-4">
-        {/* Stats */}
-        <div className="flex gap-3 mb-2 flex-wrap">
-          {t.duration && <span className="text-xs text-charcoal-400 flex items-center gap-1"><Clock size={11} /> {t.duration}</span>}
-          {t.groupSize && <span className="text-xs text-charcoal-400">👥 {t.groupSize}</span>}
-          {t.difficulty && <span className="text-xs text-charcoal-400">🚶 {t.difficulty}</span>}
-          {t.bestMoment && <span className="text-xs text-charcoal-400">🌅 {t.bestMoment}</span>}
-        </div>
 
-        {/* Titre */}
-        <div className="font-display text-lg text-charcoal-800 mb-2">{t.title}</div>
-
-        {/* Tags */}
-        {tags.length > 0 && (
-          <div className="flex gap-1.5 flex-wrap mb-3">
-            {tags.map((tag: string) => (
-              <span key={tag} className="bg-sand-200 border border-sand-300 text-charcoal-500 text-[10px] font-600 px-2.5 py-1 rounded-full">{tag}</span>
-            ))}
-          </div>
-        )}
-
-        {/* Description */}
+        {/* DESCRIPTION */}
         {t.description && (
           <p className="text-xs text-charcoal-400 leading-relaxed mb-3 line-clamp-2">{t.description}</p>
         )}
 
-        {/* Prix + Boutons */}
-        <div className="flex items-end justify-between pt-3 border-t border-sand-200">
+        {/* PRIX */}
+        <div className="flex items-center justify-between pt-3 border-t border-sand-200 mb-3">
           <div>
-            <div className="text-[10px] text-charcoal-400">À partir de</div>
+            <div className="text-[10px] text-charcoal-400 font-medium">A partir de</div>
             <div className="font-display text-xl font-bold text-charcoal-800">
-              {guideTour.price} <span className="text-sm font-normal text-charcoal-400">MAD pour 2 pers.</span>
+              {guideTour.price} <span className="text-xs font-normal text-charcoal-400">MAD / 2 pers.</span>
             </div>
+            <div className="text-[10px] text-bronze-500 font-semibold mt-0.5">+15% / pers. supplementaire</div>
           </div>
-          <div className="flex gap-2">
-            <button
-              onClick={() => setOpen(!open)}
-              className={`px-3 py-2 rounded-full text-xs font-bold border transition-all
-                ${open ? "border-bronze-500 text-bronze-500" : "border-sand-300 text-charcoal-500"}`}
-            >
-              {open ? "Fermer ↑" : "Détails ↓"}
-            </button>
-            <a href={"/booking/" + guideId + "?tourId=" + t.id} className="px-4 py-2 rounded-full bg-sage-300 text-white text-xs font-bold hover:bg-sage-400 transition-colors no-underline">
-              Réserver
-            </a>
-          </div>
+          <a href={"/booking/" + guideId + "?tourId=" + t.id}
+            className="flex items-center gap-1.5 bg-sage-300 hover:bg-sage-400 text-white font-bold px-5 py-3 rounded-full text-sm no-underline transition-colors shadow-sm">
+            Reserver <span className="text-base">→</span>
+          </a>
         </div>
+
+        {/* BOUTON DETAILS */}
+        <button onClick={() => setOpen(!open)}
+          className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold transition-all border-2 ${
+            open
+              ? "border-sage-300 text-sage-300 bg-sage-300/5"
+              : "border-sage-300/40 text-sage-300 hover:border-sage-300 hover:bg-sage-300/5"
+          }`}>
+          {open ? "Masquer les details" : "Voir les details"}
+          <span className={`transition-transform text-sm ${open ? "rotate-180" : ""}`}>↓</span>
+        </button>
       </div>
 
-      {/* ACCORDÉON DÉTAILS */}
+      {/* ACCORDEON */}
       {open && (
-        <div className="bg-sand-100 border-t border-sand-200 p-4">
+        <div className="border-t-2 border-sage-300/20 p-4 bg-sand-100 flex flex-col gap-4">
 
-          {/* Itinéraire */}
           {itinerary.length > 0 && (
-            <div className="mb-4">
-              <div className="text-[10px] font-bold text-charcoal-400 uppercase tracking-wider mb-3">Programme</div>
-              <div className="flex flex-col">
-                {itinerary.map((step: any, i: number) => (
-                  <div key={i} className="flex gap-3 pb-3 relative">
-                    <div className="relative flex-shrink-0 pt-1">
-                      <div className="w-2.5 h-2.5 rounded-full bg-sage-300 z-10 relative" />
-                      {i < itinerary.length - 1 && (
-                        <div className="absolute left-1 top-3.5 w-0.5 bg-sage-300/30" style={{ height: "calc(100% + 4px)" }} />
-                      )}
-                    </div>
-                    {step.time && <div className="text-[11px] font-bold text-bronze-500 w-10 flex-shrink-0">{step.time}</div>}
-                    <div className="flex-1">
-                      <div className="text-xs font-bold text-charcoal-800">{step.title}</div>
-                      {step.desc && <div className="text-xs text-charcoal-400 mt-0.5 leading-relaxed">{step.desc}</div>}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Inclus / Non inclus */}
-          {(included.length > 0 || notIncluded.length > 0) && (
             <div>
-              <div className="flex gap-0 mb-3 border border-sand-300 rounded-xl overflow-hidden">
-                <button
-                  onClick={() => setInclTab("incl")}
-                  className={`flex-1 py-2 text-xs font-bold transition-all ${inclTab === "incl" ? "bg-sage-300 text-white" : "bg-white text-charcoal-400"}`}
-                >
-                  ✓ Inclus
-                </button>
-                <button
-                  onClick={() => setInclTab("excl")}
-                  className={`flex-1 py-2 text-xs font-bold transition-all ${inclTab === "excl" ? "bg-red-400 text-white" : "bg-white text-charcoal-400"}`}
-                >
-                  ✕ Non inclus
-                </button>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                {(inclTab === "incl" ? included : notIncluded).map((item: string) => (
-                  <div key={item} className="flex items-center gap-2 text-xs text-charcoal-500">
-                    <span className={inclTab === "incl" ? "text-sage-300 font-bold" : "text-red-400 font-bold"}>
-                      {inclTab === "incl" ? "✓" : "✕"}
-                    </span>
-                    {item}
+              <div className="text-[10px] font-bold text-charcoal-800 uppercase tracking-widest mb-3">Programme</div>
+              {itinerary.map((step: any, i: number) => (
+                <div key={i} className="flex gap-3 mb-3 last:mb-0">
+                  <div className="flex flex-col items-center flex-shrink-0">
+                    <div className="w-7 h-7 rounded-full bg-sage-300 flex items-center justify-center text-white text-xs font-bold">{i+1}</div>
+                    {i < itinerary.length-1 && <div className="w-0.5 flex-1 bg-sage-300/30 my-1" />}
                   </div>
-                ))}
-              </div>
+                  <div className="flex-1 pb-2">
+                    {step.time && <div className="text-[10px] font-bold text-bronze-500 mb-0.5">{step.time}</div>}
+                    <div className="text-sm font-bold text-charcoal-800">{step.title}</div>
+                    {step.desc && <div className="text-xs text-charcoal-400 mt-0.5 leading-relaxed">{step.desc}</div>}
+                  </div>
+                </div>
+              ))}
             </div>
           )}
 
-          {/* Tips du guide */}
-          {guideTour.tips && (
-            <div className="mt-4 bg-bronze-50 border border-bronze-500 rounded-xl p-3">
-              <div className="text-[10px] font-bold text-bronze-500 uppercase tracking-wider mb-1">💡 Conseil du guide</div>
-              <p className="text-xs text-charcoal-500 leading-relaxed">{guideTour.tips}</p>
+          {(included.length > 0 || notIncluded.length > 0) && (
+            <div className="grid grid-cols-2 gap-3">
+              {included.length > 0 && (
+                <div className="bg-white rounded-xl p-3 border border-sage-300/20">
+                  <div className="text-[10px] font-bold text-sage-300 uppercase tracking-widest mb-2">Inclus</div>
+                  {included.map((item:string) => (
+                    <div key={item} className="flex items-start gap-1.5 mb-1.5">
+                      <span className="text-sage-300 text-xs mt-0.5 flex-shrink-0 font-bold">✓</span>
+                      <span className="text-xs text-charcoal-600">{item}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {notIncluded.length > 0 && (
+                <div className="bg-white rounded-xl p-3 border border-red-100">
+                  <div className="text-[10px] font-bold text-red-400 uppercase tracking-widest mb-2">Non inclus</div>
+                  {notIncluded.map((item:string) => (
+                    <div key={item} className="flex items-start gap-1.5 mb-1.5">
+                      <span className="text-red-400 text-xs mt-0.5 flex-shrink-0 font-bold">✗</span>
+                      <span className="text-xs text-charcoal-600">{item}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
+
         </div>
       )}
     </div>
