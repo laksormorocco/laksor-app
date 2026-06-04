@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { guideId, supabaseId, date, duration, persons, totalPrice, notes, paymentMethod, startTime } = body;
+    const { guideId, supabaseId, date, duration, persons, totalPrice, notes, paymentMethod, startTime, transport } = body;
 
     if (!guideId || !supabaseId) return NextResponse.json({ error: "Données manquantes" }, { status: 400 });
 
@@ -58,6 +58,8 @@ export async function POST(req: Request) {
         `⏱ Durée: ${duree}
 ` +
         (startTime ? `🕐 Heure souhaitée: ${startTime}
+` : "") +
+        (transport ? `🚗 Transport aller-retour hôtel/riad: +300 MAD
 ` : "") +
         `👥 Personnes: ${persons}
 ` +
