@@ -2,6 +2,10 @@
 import { useState, useEffect } from "react";
 import { createClient } from "@supabase/supabase-js";
 import Link from "next/link";
+import {
+  CalendarCheck, MapPin, Clock, Users, Star,
+  WhatsappLogo, X, Compass, SignOut, House
+} from "@phosphor-icons/react";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || "",
@@ -19,8 +23,7 @@ export default function TouristDashboard() {
       if (!session) { window.location.href = "/auth/login"; return; }
       setUser(session.user);
       await fetch("/api/auth/sync", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ supabaseId: session.user.id, email: session.user.email, name: session.user.user_metadata?.full_name || session.user.email, avatar: session.user.user_metadata?.avatar_url || null })
       });
       const res = await fetch("/api/tourist/bookings?supabaseId=" + session.user.id);
@@ -38,167 +41,213 @@ export default function TouristDashboard() {
 
   const upcoming = bookings.filter(b => b.status === "PENDING" || b.status === "CONFIRMED");
   const past = bookings.filter(b => b.status === "COMPLETED" || b.status === "CANCELLED");
-
-  function statusBadge(s: string) {
-    const map: any = {
-      CONFIRMED: { bg: "#DCFCE7", color: "#166534", label: "Confirme" },
-      PENDING: { bg: "#FEF3C7", color: "#92400E", label: "En attente" },
-      CANCELLED: { bg: "#FEE2E2", color: "#ef4444", label: "Annule" },
-      COMPLETED: { bg: "#F1F5F9", color: "#475569", label: "Termine" },
-    };
-    return map[s] || map.PENDING;
-  }
-
   const can72h = (date: string) => new Date(date).getTime() - Date.now() > 72 * 60 * 60 * 1000;
 
-  return (
-    <div style={{ background: "#F7F7F7", minHeight: "100vh", fontFamily: "Inter, -apple-system, sans-serif", paddingBottom: 40 }}>
+  function StatusBadge({ status }: { status: string }) {
+    const map: Record<string, string> = {
+      CONFIRMED: "bg-sage-300/15 text-sage-300 border-sage-300/30",
+      PENDING: "bg-amber-50 text-amber-600 border-amber-300/30",
+      CANCELLED: "bg-red-50 text-red-400 border-red-300/30",
+      COMPLETED: "bg-sand-200 text-charcoal-400 border-sand-300",
+    };
+    const labels: Record<string, string> = { CONFIRMED: "Confirme", PENDING: "En attente", CANCELLED: "Annule", COMPLETED: "Termine" };
+    return <span className={`inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${map[status] || map.PENDING}`}>{labels[status] || status}</span>;
+  }
 
-      <div style={{ background: "#fff", borderBottom: "1px solid #EBEBEB", position: "sticky", top: 0, zIndex: 100 }}>
-        <div style={{ padding: "16px" }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <div style={{ position: "relative" }}>
-                <div style={{ width: 44, height: 44, borderRadius: "50%", overflow: "hidden", background: "#E2E8F0", border: "2px solid #E2E8F0" }}>
-                  {user?.user_metadata?.avatar_url && <img src={user.user_metadata.avatar_url} style={{ width: "100%", height: "100%", objectFit: "cover" }} />}
-                </div>
-                <div style={{ position: "absolute", bottom: 0, right: 0, width: 12, height: 12, background: "#22c55e", borderRadius: "50%", border: "2px solid #fff" }} />
-              </div>
-              <div>
-                <div style={{ fontSize: 12, color: "#94A3B8" }}>Bonjour,</div>
-                <div style={{ fontWeight: 700, fontSize: 16, color: "#222" }}>{user?.user_metadata?.full_name || "Voyageur"} 👋</div>
-              </div>
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center bg-sand-200">
+      <div className="w-10 h-10 border-4 border-bronze-500 border-t-transparent rounded-full animate-spin" />
+    </div>
+  );
+
+  return (
+    <div className="bg-sand-200 min-h-screen pb-8">
+
+      {/* HEADER */}
+      <div className="sticky top-0 z-30 bg-white border-b border-sand-300 px-4 py-3 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <div className="w-10 h-10 rounded-full overflow-hidden bg-sand-300 border-2 border-sand-300">
+              {user?.user_metadata?.avatar_url
+                ? <img src={user.user_metadata.avatar_url} className="w-full h-full object-cover" />
+                : <div className="w-full h-full flex items-center justify-center text-sm font-bold text-charcoal-500">{user?.user_metadata?.full_name?.[0]}</div>
+              }
             </div>
-            <Link href="/" style={{ width: 40, height: 40, background: "#F7F7F7", borderRadius: 12, border: "1px solid #EBEBEB", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, textDecoration: "none" }}>🏠</Link>
+            <div className="absolute bottom-0 right-0 w-3 h-3 bg-sage-300 rounded-full border-2 border-white" />
+          </div>
+          <div>
+            <div className="text-[10px] text-charcoal-400">Bonjour,</div>
+            <div className="text-sm font-bold text-charcoal-800">{user?.user_metadata?.full_name || "Voyageur"}</div>
           </div>
         </div>
-        <div style={{ display: "flex", borderTop: "1px solid #EBEBEB" }}>
-          {[["upcoming", "Reservations actives"], ["past", "Historique"]].map(([id, label]) => (
-            <button key={id} onClick={() => setTab(id)} style={{ flex: 1, padding: "12px 0", fontSize: 13, fontWeight: tab === id ? 700 : 500, color: tab === id ? "#123EAB" : "#94A3B8", background: "none", border: "none", borderBottom: "2px solid " + (tab === id ? "#123EAB" : "transparent"), cursor: "pointer", fontFamily: "inherit" }}>
-              {label}
-            </button>
-          ))}
+        <div className="flex items-center gap-2">
+          <Link href="/" className="w-9 h-9 bg-sand-200 rounded-xl border border-sand-300 flex items-center justify-center no-underline">
+            <House size={16} className="text-charcoal-600" />
+          </Link>
+          <Link href="/logout" className="w-9 h-9 bg-sand-200 rounded-xl border border-sand-300 flex items-center justify-center no-underline">
+            <SignOut size={16} className="text-charcoal-600" />
+          </Link>
         </div>
       </div>
 
-      <div style={{ padding: "16px" }}>
+      {/* TABS */}
+      <div className="bg-white border-b border-sand-300 flex">
+        {[["upcoming", "Reservations actives"], ["past", "Historique"]].map(([id, label]) => (
+          <button key={id} onClick={() => setTab(id)}
+            className={`flex-1 py-3 text-xs font-bold border-b-2 transition-colors
+              ${tab === id ? "border-bronze-500 text-bronze-500" : "border-transparent text-charcoal-400"}`}>
+            {label} {id === "upcoming" && upcoming.length > 0 && <span className="ml-1 bg-bronze-500 text-white text-[9px] px-1.5 py-0.5 rounded-full">{upcoming.length}</span>}
+          </button>
+        ))}
+      </div>
 
-        {loading && <div style={{ textAlign: "center", padding: 60, color: "#94A3B8" }}><div style={{ fontSize: 40, marginBottom: 12 }}>⏳</div>Chargement...</div>}
+      <div className="px-4 pt-4 max-w-lg mx-auto flex flex-col gap-3">
 
-        {!loading && tab === "upcoming" && (
-          <>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 20 }}>
-              <div style={{ background: "#fff", borderRadius: 16, padding: 16, border: "1px solid #EBEBEB" }}>
-                <div style={{ fontSize: 28, marginBottom: 8 }}>📋</div>
-                <div style={{ fontSize: 24, fontWeight: 800, color: "#123EAB" }}>{upcoming.length}</div>
-                <div style={{ fontSize: 12, color: "#94A3B8" }}>Reservations actives</div>
-              </div>
-              <div style={{ background: "#fff", borderRadius: 16, padding: 16, border: "1px solid #EBEBEB" }}>
-                <div style={{ fontSize: 28, marginBottom: 8 }}>✅</div>
-                <div style={{ fontSize: 24, fontWeight: 800, color: "#22c55e" }}>{bookings.filter(b => b.status === "CONFIRMED").length}</div>
-                <div style={{ fontSize: 12, color: "#94A3B8" }}>Confirmees</div>
-              </div>
+        {/* STATS */}
+        <div className="grid grid-cols-3 gap-2">
+          {[
+            { label: "Actives", value: upcoming.length, color: "text-bronze-500" },
+            { label: "Confirmees", value: bookings.filter(b=>b.status==="CONFIRMED").length, color: "text-sage-300" },
+            { label: "Total", value: bookings.length, color: "text-charcoal-800" },
+          ].map(s => (
+            <div key={s.label} className="bg-white rounded-2xl border border-sand-300 p-3 text-center">
+              <div className={`font-display text-2xl font-bold ${s.color}`}>{s.value}</div>
+              <div className="text-[10px] text-charcoal-400 mt-1">{s.label}</div>
             </div>
+          ))}
+        </div>
 
+        {/* UPCOMING */}
+        {tab === "upcoming" && (
+          <>
             {upcoming.length === 0 ? (
-              <div style={{ background: "#fff", borderRadius: 20, padding: 48, textAlign: "center", border: "1px solid #EBEBEB" }}>
-                <div style={{ fontSize: 48, marginBottom: 16 }}>🧭</div>
-                <h2 style={{ color: "#123EAB", marginBottom: 8, fontSize: 18, fontWeight: 700 }}>Aucune reservation</h2>
-                <p style={{ color: "#94A3B8", marginBottom: 24, fontSize: 14 }}>Trouvez votre guide ideal</p>
-                <Link href="/search" style={{ background: "#F4C542", color: "#111", borderRadius: 30, padding: "14px 28px", fontSize: 14, fontWeight: 700, textDecoration: "none" }}>Trouver un guide</Link>
+              <div className="bg-white rounded-2xl border border-sand-300 p-10 text-center">
+                <Compass size={40} className="text-sand-300 mx-auto mb-3" />
+                <div className="text-sm font-bold text-charcoal-800 mb-1">Aucune reservation active</div>
+                <div className="text-xs text-charcoal-400 mb-4">Trouvez votre guide ideal au Maroc</div>
+                <Link href="/search" className="inline-block bg-bronze-500 text-white font-bold px-6 py-3 rounded-full text-sm no-underline">
+                  Explorer les guides
+                </Link>
               </div>
-            ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                {upcoming.map(b => {
-                  const s = statusBadge(b.status);
-                  return (
-                    <div key={b.id} style={{ background: "#fff", borderRadius: 20, padding: 18, border: "1px solid #EBEBEB" }}>
-                      <div style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 14 }}>
-                        <div style={{ width: 52, height: 52, borderRadius: 14, overflow: "hidden", background: "#E2E8F0", flexShrink: 0 }}>
-                          {b.guide?.avatar && <img src={b.guide.avatar} style={{ width: "100%", height: "100%", objectFit: "cover" }} />}
-                        </div>
-                        <div style={{ flex: 1 }}>
-                          <div style={{ fontWeight: 700, fontSize: 15, color: "#0F172A" }}>{b.guide?.displayName}</div>
-                          <div style={{ color: "#F59E0B", fontSize: 12 }}>📍 {b.guide?.city}</div>
-                        </div>
-                        <div style={{ background: s.bg, color: s.color, fontSize: 10, fontWeight: 700, padding: "4px 10px", borderRadius: 20 }}>{s.label}</div>
-                      </div>
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 14 }}>
-                        {[["Date", new Date(b.date).toLocaleDateString("fr-FR")], ["Duree", b.duration === "FULL_DAY" ? "8h" : "4h"], ["Pers.", String(b.persons)]].map(([k, v]) => (
-                          <div key={k} style={{ background: "#F8FAFC", borderRadius: 10, padding: 8, textAlign: "center" }}>
-                            <div style={{ fontSize: 9, color: "#94A3B8", textTransform: "uppercase" as const }}>{k}</div>
-                            <div style={{ fontSize: 13, fontWeight: 600, color: "#222", marginTop: 2 }}>{v}</div>
-                          </div>
-                        ))}
-                      </div>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-                        <div style={{ fontWeight: 800, fontSize: 18, color: "#22c55e" }}>{b.totalPrice} MAD</div>
-                      </div>
-                      <div style={{ display: "flex", gap: 8 }}>
-                        {b.status === "CONFIRMED" && b.guide?.phone ? (
-                          <a href={"https://wa.me/" + b.guide.phone.replace(/[^0-9]/g, "")} target="_blank" style={{ flex: 1, background: "#25D366", color: "#fff", borderRadius: 25, padding: "11px 0", fontSize: 13, fontWeight: 700, textDecoration: "none", textAlign: "center" }}>
-                            💬 WhatsApp guide
-                          </a>
-                        ) : (
-                          <div style={{ flex: 1, background: "#E2E8F0", color: "#94A3B8", borderRadius: 25, padding: "11px 0", fontSize: 13, fontWeight: 600, textAlign: "center", cursor: "not-allowed" }}>
-                            💬 Actif si confirme
-                          </div>
-                        )}
-                        {b.status === "PENDING" && can72h(b.date) && (
-                          <button onClick={() => cancelBooking(b.id)} style={{ background: "#FFF1F2", color: "#ef4444", border: "none", borderRadius: 25, padding: "11px 16px", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
-                            Annuler
-                          </button>
-                        )}
+            ) : upcoming.map(b => {
+              const bookingRef = b.notes?.match(/REF:([A-Z0-9-]+)/)?.[1] || "";
+              return (
+                <div key={b.id} className="bg-white rounded-2xl border border-sand-300 p-4">
+                  {/* Guide info */}
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-12 h-12 rounded-xl overflow-hidden bg-sand-300 flex-shrink-0">
+                      {b.guide?.avatar
+                        ? <img src={b.guide.avatar} className="w-full h-full object-cover" alt={b.guide.displayName} />
+                        : <div className="w-full h-full flex items-center justify-center font-bold text-charcoal-500 text-lg">{b.guide?.displayName?.[0]}</div>
+                      }
+                    </div>
+                    <div className="flex-1">
+                      <div className="text-sm font-bold text-charcoal-800">{b.guide?.displayName}</div>
+                      <div className="flex items-center gap-1 mt-0.5">
+                        <MapPin size={11} className="text-charcoal-400" />
+                        <span className="text-xs text-charcoal-400">{b.guide?.city}</span>
                       </div>
                     </div>
-                  );
-                })}
-              </div>
-            )}
+                    <StatusBadge status={b.status} />
+                  </div>
+
+                  {/* Details */}
+                  <div className="grid grid-cols-3 gap-2 mb-3">
+                    {[
+                      { Icon: CalendarCheck, label: "Date", value: new Date(b.date).toLocaleDateString("fr-FR", {day:"numeric",month:"short"}) },
+                      { Icon: Clock, label: "Duree", value: b.duration === "FULL_DAY" ? "8h" : "4h" },
+                      { Icon: Users, label: "Pers.", value: String(b.persons) },
+                    ].map(d => (
+                      <div key={d.label} className="bg-sand-200 rounded-xl p-2.5 text-center border border-sand-300">
+                        <d.Icon size={14} className="text-bronze-500 mx-auto mb-1" />
+                        <div className="text-[9px] text-charcoal-400 uppercase tracking-wide">{d.label}</div>
+                        <div className="text-xs font-bold text-charcoal-800 mt-0.5">{d.value}</div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Prix + ref */}
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="font-display text-xl font-bold text-charcoal-800">{Number(b.totalPrice)} <span className="text-xs font-normal text-charcoal-400">MAD</span></div>
+                    {bookingRef && <span className="text-[10px] text-charcoal-400 bg-sand-200 px-2 py-1 rounded-lg font-mono">{bookingRef}</span>}
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex gap-2">
+                    {b.status === "CONFIRMED" && b.guide?.phone ? (
+                      <a href={"https://wa.me/" + b.guide.phone.replace(/[^0-9]/g, "")}
+                        className="flex-1 flex items-center justify-center gap-2 bg-sage-300 hover:bg-sage-400 text-white font-bold py-2.5 rounded-full text-xs no-underline transition-colors">
+                        <WhatsappLogo size={14} weight="fill" />
+                        Contacter le guide
+                      </a>
+                    ) : (
+                      <div className="flex-1 flex items-center justify-center gap-2 bg-sand-200 text-charcoal-400 font-bold py-2.5 rounded-full text-xs">
+                        <WhatsappLogo size={14} />
+                        Disponible si confirme
+                      </div>
+                    )}
+                    {b.status === "PENDING" && can72h(b.date) && (
+                      <button onClick={() => cancelBooking(b.id)}
+                        className="flex items-center gap-1 bg-red-50 text-red-400 border border-red-200 rounded-full px-3 py-2 text-xs font-bold">
+                        <X size={12} weight="bold" />
+                        Annuler
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Lien confirmation */}
+                  <Link href={"/booking/confirmation/" + b.id}
+                    className="mt-2 block text-center text-[11px] text-bronze-500 font-semibold no-underline">
+                    Voir la confirmation →
+                  </Link>
+                </div>
+              );
+            })}
           </>
         )}
 
-        {!loading && tab === "past" && (
+        {/* PAST */}
+        {tab === "past" && (
           <>
             {past.length === 0 ? (
-              <div style={{ background: "#fff", borderRadius: 20, padding: 48, textAlign: "center", border: "1px solid #EBEBEB" }}>
-                <div style={{ fontSize: 48, marginBottom: 16 }}>📜</div>
-                <div style={{ color: "#94A3B8", fontSize: 14 }}>Aucun historique</div>
+              <div className="bg-white rounded-2xl border border-sand-300 p-10 text-center">
+                <div className="text-sm text-charcoal-400">Aucun historique</div>
               </div>
             ) : (
-              <div style={{ background: "#fff", borderRadius: 20, border: "1px solid #EBEBEB", overflow: "hidden" }}>
-                {past.map((b, i) => {
-                  const s = statusBadge(b.status);
-                  return (
-                    <div key={b.id} style={{ display: "flex", justifyContent: "space-between", padding: "16px", borderBottom: i < past.length - 1 ? "1px solid #F1F5F9" : "none", alignItems: "center" }}>
-                      <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-                        <div style={{ width: 44, height: 44, borderRadius: 12, overflow: "hidden", background: "#E2E8F0", flexShrink: 0 }}>
-                          {b.guide?.avatar && <img src={b.guide.avatar} style={{ width: "100%", height: "100%", objectFit: "cover" }} />}
-                        </div>
-                        <div>
-                          <div style={{ fontWeight: 600, fontSize: 14, color: "#222" }}>{b.guide?.displayName}</div>
-                          <div style={{ fontSize: 11, color: "#94A3B8" }}>{new Date(b.date).toLocaleDateString("fr-FR")} · {b.duration === "FULL_DAY" ? "8h" : "4h"}</div>
-                        </div>
-                      </div>
-                      <div style={{ textAlign: "right" }}>
-                        <div style={{ fontWeight: 700, fontSize: 14, color: "#22c55e" }}>{b.totalPrice} MAD</div>
-                        <div style={{ background: s.bg, color: s.color, fontSize: 9, fontWeight: 700, padding: "2px 7px", borderRadius: 10, marginTop: 3, display: "inline-block" }}>{s.label}</div>
-                      </div>
+              <div className="bg-white rounded-2xl border border-sand-300 overflow-hidden">
+                {past.map((b, i) => (
+                  <div key={b.id} className={`flex items-center gap-3 p-4 ${i < past.length-1 ? "border-b border-sand-200" : ""}`}>
+                    <div className="w-10 h-10 rounded-xl overflow-hidden bg-sand-300 flex-shrink-0">
+                      {b.guide?.avatar
+                        ? <img src={b.guide.avatar} className="w-full h-full object-cover" />
+                        : <div className="w-full h-full flex items-center justify-center font-bold text-charcoal-500">{b.guide?.displayName?.[0]}</div>
+                      }
                     </div>
-                  );
-                })}
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-semibold text-charcoal-800 truncate">{b.guide?.displayName}</div>
+                      <div className="text-xs text-charcoal-400">{new Date(b.date).toLocaleDateString("fr-FR")} · {b.duration === "FULL_DAY" ? "8h" : "4h"}</div>
+                    </div>
+                    <div className="text-right flex-shrink-0">
+                      <div className="text-sm font-bold text-charcoal-800">{Number(b.totalPrice)} MAD</div>
+                      <StatusBadge status={b.status} />
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
           </>
         )}
 
-        <div style={{ background: "linear-gradient(135deg,#123EAB,#1a4fd6)", borderRadius: 20, padding: 20, marginTop: 20, textAlign: "center" }}>
-          <div style={{ fontSize: 24, marginBottom: 8 }}>🧭</div>
-          <div style={{ fontWeight: 700, fontSize: 15, color: "#fff", marginBottom: 6 }}>Pret pour une nouvelle aventure ?</div>
-          <Link href="/search" style={{ background: "#F4C542", color: "#111", borderRadius: 30, padding: "12px 28px", fontSize: 14, fontWeight: 700, textDecoration: "none", display: "inline-block", marginTop: 8 }}>
+        {/* CTA */}
+        <div className="bg-charcoal-800 rounded-2xl p-5 text-center mt-2">
+          <Compass size={28} className="text-bronze-500 mx-auto mb-2" />
+          <div className="font-display text-base text-white mb-1">Pret pour une nouvelle aventure ?</div>
+          <div className="text-xs text-charcoal-400 mb-3">Explorez nos guides certifies au Maroc</div>
+          <Link href="/search" className="inline-block bg-bronze-500 hover:bg-bronze-600 text-white font-bold px-6 py-3 rounded-full text-sm no-underline transition-colors">
             Explorer les guides
           </Link>
         </div>
+
       </div>
     </div>
   );
