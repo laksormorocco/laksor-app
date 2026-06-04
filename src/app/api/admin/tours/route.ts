@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
   try {
     const body = await req.json();
-    const { id, isActive, title, description, duration, groupSize, difficulty, bestMoment, coverImage, tags, included, notIncluded } = body;
+    const { id, isActive, title, description, duration, groupSize, difficulty, bestMoment, coverImage, tags, included, notIncluded, itinerary } = body;
 
     const data: any = {};
     if (isActive !== undefined) data.isActive = isActive;
@@ -59,6 +59,7 @@ export async function PATCH(req: NextRequest) {
     if (tags)        data.tags        = tags.split(",").map((t: string) => t.trim()).filter(Boolean);
     if (included)    data.included    = included.split(",").map((t: string) => t.trim()).filter(Boolean);
     if (notIncluded) data.notIncluded = notIncluded.split(",").map((t: string) => t.trim()).filter(Boolean);
+    if (itinerary) data.itinerary = itinerary;
 
     const template = await prisma.tourTemplate.update({ where: { id }, data });
     return NextResponse.json({ template });
