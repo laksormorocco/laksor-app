@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { createClient } from "@supabase/supabase-js";
 import { useRouter, useParams } from "next/navigation";
+import { useExchangeRate } from "@/hooks/useExchangeRate";
 import CalendarPicker from "@/components/CalendarPicker";
 import {
   ArrowLeft, Users, Baby, Minus, Plus, Car,
@@ -60,6 +61,7 @@ export default function BookingPage() {
   const adjustedTotal = total + extraCost + transportCost + serviceFee;
   const deposit = Math.round(adjustedTotal * 0.3);
   const isPaid = payment === "deposit" || payment === "full";
+  const { convert } = useExchangeRate();
 
   async function handleConfirm() {
     if (!guestName.trim() || !guestContact.trim()) return alert("Renseignez vos coordonnées !");
@@ -350,7 +352,7 @@ export default function BookingPage() {
                 </div>
                 <div className="border-t border-sand-200 pt-2.5 flex justify-between">
                   <span className="font-bold text-charcoal-800">Total</span>
-                  <span className="font-display text-xl font-bold text-charcoal-800">{adjustedTotal} MAD</span>
+                  <span className="font-display text-xl font-bold text-charcoal-800">{convert(adjustedTotal)} <span className="text-xs font-normal text-charcoal-400">({adjustedTotal} MAD)</span></span>
                 </div>
                 {payment === "deposit" && (
                   <div className="text-[11px] text-bronze-500 font-semibold text-right">Acompte dû maintenant : {deposit} MAD</div>

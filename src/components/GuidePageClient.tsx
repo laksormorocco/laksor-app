@@ -1,4 +1,5 @@
 "use client";
+import { useExchangeRate } from "@/hooks/useExchangeRate";
 import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import BookingModal from "@/components/BookingModal";

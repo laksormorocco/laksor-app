@@ -1,4 +1,5 @@
 "use client";
+import { useExchangeRate } from "@/hooks/useExchangeRate";
 import { useState } from "react";
 import {
   MagnifyingGlass, MapPin, CalendarBlank, Users, Globe,
