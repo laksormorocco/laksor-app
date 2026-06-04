@@ -4,8 +4,9 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import {
   CheckCircle, CalendarCheck, Compass, TeaBag,
-  MapPin, Star, WhatsappLogo
+  MapPin, Star, WhatsappLogo, Car, Users
 } from "@phosphor-icons/react";
+import { useExchangeRate } from "@/hooks/useExchangeRate";
 
 export default function ConfirmationPage() {
   const params = useParams();
@@ -13,6 +14,9 @@ export default function ConfirmationPage() {
   const [booking, setBooking] = useState<any>(null);
   const [bookingRef, setBookingRef] = useState("");
   const [loading, setLoading] = useState(true);
+  const [whatsapp, setWhatsapp] = useState("");
+  const [waSaved, setWaSaved] = useState(false);
+  const { convert } = useExchangeRate();
 
   useEffect(() => {
     if (!bookingId) return;
@@ -27,7 +31,7 @@ export default function ConfirmationPage() {
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-sand-200">
-      <div className="text-4xl animate-pulse">...</div>
+      <div className="w-10 h-10 border-4 border-bronze-500 border-t-transparent rounded-full animate-spin" />
     </div>
   );
 
@@ -48,6 +52,8 @@ export default function ConfirmationPage() {
   const dateStr = new Date(booking.date).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
   const duration = booking.duration === "FULL_DAY" ? "Journee complete (8h)" : "Demi-journee (4h)";
   const paymentLabel = booking.paymentMethod === "deposit" ? "Acompte 30%" : booking.paymentMethod === "full" ? "100% en ligne" : "Cash le jour J";
+  const hasPhone = tourist?.email?.includes("@guest") === false && booking.notes?.includes("whatsapp");
+  const hasTransport = booking.notes?.includes("Transport") || false;
 
   return (
     <div className="min-h-screen bg-sand-200 flex flex-col">
@@ -58,6 +64,7 @@ export default function ConfirmationPage() {
       <div className="flex-1 flex items-start justify-center px-4 py-8">
         <div className="w-full max-w-sm flex flex-col gap-4">
 
+          {/* HERO */}
           <div className="bg-sage-300 rounded-3xl px-6 pt-8 pb-6 text-center">
             <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
               <CheckCircle size={36} weight="fill" className="text-white" />
@@ -67,19 +74,21 @@ export default function ConfirmationPage() {
             <p className="text-white/70 text-sm"><strong className="text-white">{guide?.displayName}</strong> vous attend avec impatience</p>
           </div>
 
+          {/* NUMERO */}
           <div className="bg-charcoal-800 rounded-2xl p-4 text-center">
             <div className="text-[10px] font-bold text-charcoal-400 uppercase tracking-widest mb-1">Numero de reservation</div>
             <div className="font-display text-2xl font-bold text-bronze-500 tracking-widest">{bookingRef}</div>
             <div className="text-[10px] text-charcoal-400 mt-1">Conservez ce numero pour tout suivi</div>
           </div>
 
+          {/* GUIDE */}
           <div className="bg-white rounded-2xl border border-sand-300 p-4">
             <div className="text-[10px] font-bold text-charcoal-800 uppercase tracking-widest mb-3">Votre guide</div>
             <div className="flex items-center gap-3 mb-3">
-              <div className="w-14 h-14 rounded-xl overflow-hidden bg-sand-300 flex-shrink-0">
+              <div className="w-16 h-16 rounded-xl overflow-hidden bg-sand-300 flex-shrink-0">
                 {guide?.avatar
                   ? <img src={guide.avatar} className="w-full h-full object-cover" alt={guide.displayName} />
-                  : <div className="w-full h-full flex items-center justify-center font-display text-xl font-bold text-charcoal-500">{guide?.displayName?.[0]}</div>
+                  : <div className="w-full h-full flex items-center justify-center font-display text-2xl font-bold text-charcoal-500">{guide?.displayName?.[0]}</div>
                 }
               </div>
               <div className="flex-1">
@@ -95,6 +104,9 @@ export default function ConfirmationPage() {
                     <span className="text-xs text-charcoal-400">({guide.totalReviews} avis)</span>
                   </div>
                 )}
+                {guide?.languages?.length > 0 && (
+                  <div className="text-xs text-charcoal-400 mt-1">{guide.languages.join(" · ")}</div>
+                )}
               </div>
             </div>
             {guide?.phone && (
@@ -106,6 +118,7 @@ export default function ConfirmationPage() {
             )}
           </div>
 
+          {/* DETAILS VISITE */}
           <div className="bg-white rounded-2xl border border-sand-300 p-4">
             <div className="text-[10px] font-bold text-charcoal-800 uppercase tracking-widest mb-3">Details de la visite</div>
             <div className="flex flex-col gap-2.5">
@@ -113,10 +126,22 @@ export default function ConfirmationPage() {
                 <CalendarCheck size={16} className="text-sage-300 flex-shrink-0" />
                 <span className="text-sm font-semibold text-charcoal-800 capitalize">{dateStr}</span>
               </div>
-              <div className="flex items-center gap-2">
-                <Compass size={16} className="text-bronze-500 flex-shrink-0" />
-                <span className="text-sm text-charcoal-800">{duration}</span>
-              </div>
+              {booking.slots?.length > 0 ? (
+                booking.slots.map((s: any, i: number) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <Compass size={16} className="text-bronze-500 flex-shrink-0" />
+                    <span className="text-sm text-charcoal-800">
+                      {new Date(s.date + "T00:00:00").toLocaleDateString("fr-FR", {weekday:"short", day:"numeric", month:"short"})} -
+                      {s.duration === "full" ? " Journee complete (8h)" : s.duration === "half_am" ? " Matin (4h)" : " Apres-midi (4h)"}
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <div className="flex items-center gap-2">
+                  <Compass size={16} className="text-bronze-500 flex-shrink-0" />
+                  <span className="text-sm text-charcoal-800">{duration}</span>
+                </div>
+              )}
               <div className="flex items-center gap-2">
                 <MapPin size={16} className="text-charcoal-400 flex-shrink-0" />
                 <span className="text-sm text-charcoal-400">{guide?.city} - Point de RDV communique 72h avant</span>
@@ -128,6 +153,7 @@ export default function ConfirmationPage() {
             </div>
           </div>
 
+          {/* PAIEMENT */}
           <div className="bg-white rounded-2xl border border-sand-300 p-4">
             <div className="text-[10px] font-bold text-charcoal-800 uppercase tracking-widest mb-3">Paiement</div>
             <div className="flex justify-between text-sm mb-2">
@@ -136,15 +162,19 @@ export default function ConfirmationPage() {
             </div>
             <div className="flex justify-between pt-2 border-t border-sand-200">
               <span className="font-bold text-charcoal-800">Total</span>
-              <span className="font-display text-2xl font-bold text-bronze-500">{total} <span className="text-sm font-normal text-charcoal-400">MAD</span></span>
+              <div className="text-right">
+                <div className="font-display text-2xl font-bold text-bronze-500">{convert(total)}</div>
+                <div className="text-[10px] text-charcoal-400">{total} MAD</div>
+              </div>
             </div>
             {isPaid && (
               <div className="text-right text-[11px] text-sage-300 font-semibold mt-1">
-                Acompte : {deposit} MAD - Reste le jour J : {total - deposit} MAD
+                Acompte : {convert(deposit)} - Reste le jour J : {convert(total - deposit)}
               </div>
             )}
           </div>
 
+          {/* THE BIENVENU */}
           {isPaid && (
             <div className="bg-amber-50 border border-bronze-500/30 rounded-2xl p-3 flex items-center gap-3">
               <TeaBag size={20} className="text-bronze-500 flex-shrink-0" weight="duotone" />
@@ -155,6 +185,43 @@ export default function ConfirmationPage() {
             </div>
           )}
 
+          {/* UPSELL TRANSPORT */}
+          {!hasTransport && (
+            <div className="bg-white rounded-2xl border border-bronze-500/30 p-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-bronze-500/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <Car size={20} className="text-bronze-500" />
+                </div>
+                <div className="flex-1">
+                  <div className="text-sm font-bold text-charcoal-800">Ajouter le transport ?</div>
+                  <div className="text-[10px] text-charcoal-400 mt-0.5">Prise en charge hotel/riad aller-retour · +300 MAD</div>
+                </div>
+              </div>
+              <a href={"https://wa.me/212657436342?text=Bonjour, je souhaite ajouter le transport a ma reservation " + bookingRef}
+                className="mt-3 w-full flex items-center justify-center gap-2 bg-bronze-500 hover:bg-bronze-600 text-white font-bold py-2.5 rounded-full text-sm no-underline transition-colors">
+                Ajouter via WhatsApp
+              </a>
+            </div>
+          )}
+
+          {/* WHATSAPP OPTIONNEL */}
+          {!waSaved && (
+            <div className="bg-white rounded-2xl border border-sand-300 p-4">
+              <div className="text-[10px] font-bold text-charcoal-800 uppercase tracking-widest mb-1">Ameliorez votre experience</div>
+              <div className="text-xs text-charcoal-400 mb-3">Partagez votre WhatsApp pour une meilleure communication concernant votre sejour</div>
+              <div className="flex gap-2">
+                <input value={whatsapp} onChange={e => setWhatsapp(e.target.value)}
+                  placeholder="+212 6XX XXX XXX"
+                  className="flex-1 border border-sand-300 rounded-xl px-3 py-2 text-sm text-charcoal-800 outline-none focus:border-bronze-500" />
+                <button onClick={() => { if (whatsapp.trim()) setWaSaved(true); }}
+                  className="bg-sage-300 text-white font-bold px-4 py-2 rounded-xl text-sm">
+                  OK
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* TIMELINE */}
           <div className="bg-white rounded-2xl border border-sand-300 p-4">
             <div className="text-[10px] font-bold text-charcoal-800 uppercase tracking-widest mb-4">Prochaines etapes</div>
             {[
@@ -181,6 +248,7 @@ export default function ConfirmationPage() {
             ))}
           </div>
 
+          {/* SUPPORT */}
           <div className="bg-charcoal-800 rounded-2xl p-5 text-center">
             <p className="font-display text-base text-bronze-500 mb-2">Merci de voyager avec Laksor</p>
             <p className="text-charcoal-400 text-xs leading-relaxed mb-3">
