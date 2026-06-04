@@ -138,7 +138,7 @@ export default function HomeHero() {
 
       {/* ── MODAL ── */}
       {open && (
-        <div className="fixed inset-0 z-50 bg-white flex flex-col">
+        <div className="fixed inset-x-0 top-0 bottom-16 z-50 bg-white flex flex-col">
 
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-sand-300">
@@ -314,7 +314,7 @@ export default function HomeHero() {
           </div>
 
           {/* Bottom */}
-          <div className="flex-shrink-0 bg-white border-t border-sand-300 px-4 py-4 flex items-center justify-between shadow-lg">
+          <div className="flex-shrink-0 bg-white border-t border-sand-300 px-4 py-4 flex items-center justify-between shadow-lg" style={{marginBottom:"64px"}}>
             <button onClick={clearAll} className="text-sm font-bold text-charcoal-800 underline">
               Tout effacer
             </button>
