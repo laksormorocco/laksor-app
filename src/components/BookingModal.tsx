@@ -102,9 +102,13 @@ export default function BookingModal({ guideName, halfDayPrice, fullDayPrice, gu
             Selectionnez vos dates <span style={{ color:"#94A3B8", fontWeight:400 }}>(plusieurs dates possibles)</span>
           </label>
           <CalendarPicker
-            blockedDates={bookedDates.map(b => b.date)}
-            pricePerDay={pricePerDay}
-            onSelectionChange={(dates, t) => { setSelectedDates(dates); setTotal(t); }}
+            blockedDates={bookedDates.map((b: any) => b.date)}
+            priceHalfDay={halfDayPrice}
+            priceFullDay={fullDayPrice}
+            onSelectionChange={(slots: any[], t: number) => {
+              setSelectedDates(slots.map((s: any) => s.date));
+              setTotal(t);
+            }}
           />
         </div>
 
