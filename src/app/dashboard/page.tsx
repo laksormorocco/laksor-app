@@ -9,19 +9,6 @@ const supabase = createClient(
 
 export default function DashboardRedirect() {
   useEffect(() => {
-    async function checkUser() {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        setTimeout(async () => {
-          const { data: { session: s2 } } = await supabase.auth.getSession();
-          if (!s2) { window.location.href = "/auth/login"; return; }
-          redirect(s2);
-        }, 1500);
-        return;
-      }
-      redirect(session);
-    }
-
     async function redirect(session: any) {
       const res = await fetch("/api/auth/me?supabaseId=" + session.user.id);
       const data = await res.json();
@@ -34,11 +21,32 @@ export default function DashboardRedirect() {
       }
     }
 
-    supabase.auth.onAuthStateChange((event, session) => {
-      if (session) redirect(session);
-    });
+    async function init() {
+      // Attendre que Supabase traite le token dans l'URL
+      await supabase.auth.getSession();
 
-    checkUser();
+      supabase.auth.onAuthStateChange(async (event, session) => {
+        if (session) {
+          await redirect(session);
+        }
+      });
+
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        await redirect(session);
+      } else {
+        setTimeout(async () => {
+          const { data: { session: s2 } } = await supabase.auth.getSession();
+          if (s2) {
+            await redirect(s2);
+          } else {
+            window.location.href = "/auth/login";
+          }
+        }, 2000);
+      }
+    }
+
+    init();
   }, []);
 
   return (
