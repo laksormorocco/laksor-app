@@ -22,28 +22,38 @@ export default function DashboardRedirect() {
     }
 
     async function init() {
-      // Attendre que Supabase traite le token dans l'URL
-      await supabase.auth.getSession();
-
-      supabase.auth.onAuthStateChange(async (event, session) => {
-        if (session) {
-          await redirect(session);
+      // Traiter le hash token de Supabase OAuth
+      if (window.location.hash && window.location.hash.includes("access_token")) {
+        const { data, error } = await supabase.auth.getSession();
+        if (data.session) {
+          await redirect(data.session);
+          return;
         }
-      });
+      }
 
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
         await redirect(session);
-      } else {
-        setTimeout(async () => {
-          const { data: { session: s2 } } = await supabase.auth.getSession();
-          if (s2) {
-            await redirect(s2);
-          } else {
-            window.location.href = "/auth/login";
-          }
-        }, 2000);
+        return;
       }
+
+      // Ecouter le changement auth (cas OAuth callback)
+      const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+        if (session) {
+          subscription.unsubscribe();
+          await redirect(session);
+        }
+      });
+
+      // Fallback apres 3s
+      setTimeout(async () => {
+        const { data: { session: s } } = await supabase.auth.getSession();
+        if (s) {
+          await redirect(s);
+        } else {
+          window.location.href = "/auth/login";
+        }
+      }, 3000);
     }
 
     init();
