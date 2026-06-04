@@ -104,7 +104,7 @@ export default function BookingModal({ guideName, halfDayPrice, fullDayPrice, gu
   const stepIndex = STEPS.indexOf(step);
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col justify-end">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setOpen(false)} />
 
       <div className="relative bg-sand-200 rounded-t-3xl w-full max-w-lg mx-auto max-h-[92vh] flex flex-col overflow-hidden shadow-2xl">
