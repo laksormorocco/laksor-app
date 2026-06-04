@@ -214,6 +214,43 @@ export default function AdminDashboard() {
               </div>
             )}
 
+
+          {/* TAUX DE CONVERSION */}
+          <div className="bg-white rounded-2xl border border-sand-300 p-4">
+            <div className="text-sm font-bold text-charcoal-800 mb-3">Taux de conversion</div>
+            <div className="flex items-center gap-3">
+              <div className="flex-1 bg-sand-200 rounded-full h-3 overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-bronze-500 to-amber-400 rounded-full"
+                  style={{width: (stats?.conversionRate || 0) + "%"}} />
+              </div>
+              <span className="font-display text-lg font-bold text-bronze-500">{stats?.conversionRate || 0}%</span>
+            </div>
+            <div className="flex justify-between mt-2 text-xs text-charcoal-400">
+              <span>{stats?.confirmedBookings || 0} confirmees</span>
+              <span>{stats?.cancelledBookings || 0} annulees</span>
+              <span>{stats?.totalBookings || 0} total</span>
+            </div>
+          </div>
+
+          {stats?.topGuides?.length > 0 && (
+            <div className="bg-white rounded-2xl border border-sand-300 p-4">
+              <div className="text-sm font-bold text-charcoal-800 mb-3">Top Guides par revenus</div>
+              {stats.topGuides.map((g: any, i: number) => (
+                <div key={g.guideId} className={`flex items-center gap-3 py-2.5 ${i < stats.topGuides.length-1 ? "border-b border-sand-200" : ""}`}>
+                  <div className="w-6 h-6 rounded-full bg-bronze-500/10 flex items-center justify-center text-xs font-bold text-bronze-500 flex-shrink-0">{i+1}</div>
+                  <div className="w-8 h-8 rounded-full overflow-hidden bg-sand-300 flex-shrink-0">
+                    {g.avatar ? <img src={g.avatar} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-xs font-bold text-charcoal-500">{g.displayName?.[0]}</div>}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-semibold text-charcoal-800 truncate">{g.displayName}</div>
+                    <div className="text-xs text-charcoal-400">{g.city} · {g.bookings} resa</div>
+                  </div>
+                  <div className="text-sm font-bold text-bronze-500">{g.revenue} MAD</div>
+                </div>
+              ))}
+            </div>
+          )}
+
             {stats?.recentBookings?.length > 0 && (
               <div className="bg-white rounded-2xl border border-sand-300 p-4">
                 <div className="flex items-center justify-between mb-3">
