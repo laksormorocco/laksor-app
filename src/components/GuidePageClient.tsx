@@ -445,7 +445,7 @@ export default function GuidePageClient({ guide }: { guide: any }) {
       </div>
 
       {/* ── FOOTER STICKY ── */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white/97 backdrop-blur-lg border-t border-sand-300 px-4 pt-3 pb-6 z-40">
+      {tab !== "tours" && <div className="fixed bottom-0 left-0 right-0 bg-white/97 backdrop-blur-lg border-t border-sand-300 px-4 pt-3 pb-6 z-40">
         <div className="flex items-center justify-between mb-3">
           <div>
             <div className="text-[10px] text-charcoal-400">À partir de</div>
@@ -462,7 +462,7 @@ export default function GuidePageClient({ guide }: { guide: any }) {
           </div>
           <a href={"/booking/" + guide.id} className="w-full bg-sage-300 hover:bg-sage-400 text-white font-bold py-4 rounded-full text-sm transition-colors flex items-center justify-center gap-2 no-underline">Verifier les disponibilites</a>
         </div>
-      </div>
+      </div>}
     </div>
   );
 }
