@@ -8,10 +8,10 @@ import {
 import PriceDisplay from "@/components/PriceDisplay";
 import { priceWithCommission } from "@/lib/pricing";
 
-const TABS = ["apropos", "tours", "avis", "photos"] as const;
+const TABS = ["tours", "apropos", "avis", "photos"] as const;
 type Tab = typeof TABS[number];
 const TAB_LABELS: Record<Tab, string> = {
-  apropos: "A propos", tours: "Tours", avis: "Avis", photos: "Photos",
+  tours: "Tours", apropos: "A propos", avis: "Avis", photos: "Photos",
 };
 
 const LANG_MAP: Record<string, [number, number]> = {
@@ -30,7 +30,7 @@ function getLangFlag(lang: string): string {
 }
 
 export default function GuidePageClient({ guide }: { guide: any }) {
-  const [tab, setTab] = useState<Tab>("apropos");
+  const [tab, setTab] = useState<Tab>("tours");
   const [liked, setLiked] = useState(false);
   const [showSticky, setShowSticky] = useState(false);
   const [stickyVisible, setStickyVisible] = useState(true);
@@ -156,6 +156,11 @@ export default function GuidePageClient({ guide }: { guide: any }) {
             <span className="flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold text-white" style={{ background: "#7D8F69" }}>
               <SealCheck size={11} weight="bold" /> Certifie
             </span>
+            {guide.languages?.slice(0,3).map((lang: string, i: number) => (
+              <span key={i} className="px-2 py-1 rounded-full text-sm" style={{ background: "rgba(255,255,255,0.2)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.25)" }}>
+                {getLangFlag(lang)}
+              </span>
+            ))}
           </div>
         </div>
       </div>
