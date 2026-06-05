@@ -4,6 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 import { useRouter, useParams } from "next/navigation";
 import { useExchangeRate } from "@/hooks/useExchangeRate";
 import { priceWithCommission } from "@/lib/pricing";
+import PriceDisplay from "@/components/PriceDisplay";
 import CalendarPicker from "@/components/CalendarPicker";
 import {
   ArrowLeft, Users, Baby, Minus, Plus, Car,
@@ -164,7 +165,7 @@ export default function BookingPage() {
             </>
           ) : (
             <>
-              <div className="font-display text-lg font-bold text-charcoal-800">{priceWithCommission(Number(guide?.halfDayPrice || 0))} <span className="text-xs font-normal text-charcoal-400">MAD</span></div>
+              <div className="font-display text-lg font-bold text-charcoal-800"><PriceDisplay mad={priceWithCommission(Number(guide?.halfDayPrice || 0))} size="lg" /></div>
               <div className="text-[10px] text-charcoal-400">pour 2 pers.</div>
             </>
           )}
@@ -246,7 +247,7 @@ export default function BookingPage() {
             {persons > 2 && (
               <div className="bg-amber-50 border border-bronze-500/20 rounded-xl px-3 py-2 flex items-center gap-2">
                 <span className="text-bronze-500 text-lg">⚠️</span>
-                <span className="text-xs text-bronze-500 font-semibold">+15% par personne au-delà de 2 · Supplément estimé : +{extraCost} MAD</span>
+                <span className="text-xs text-bronze-500 font-semibold">+15% par personne au-delà de 2 · Supplément estimé : +{convert(extraCost)}</span>
               </div>
             )}
             {selectedDates.length > 0 && (
@@ -255,12 +256,12 @@ export default function BookingPage() {
                 <div className="flex flex-col gap-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-charcoal-400">Creneaux ({selectedDates.length} jour{selectedDates.length>1?"s":""})</span>
-                    <span className="font-semibold text-charcoal-800">{total} MAD</span>
+                    <span className="font-semibold text-charcoal-800">{convert(total)}</span>
                   </div>
                   {persons > 2 && (
                     <div className="flex justify-between text-sm">
                       <span className="text-amber-600 text-xs font-semibold">+15% x {persons-2} pers. suppl. (base 2 pers.)</span>
-                      <span className="font-semibold text-amber-600">+{extraCost} MAD</span>
+                      <span className="font-semibold text-amber-600">+{convert(extraCost)}</span>
                     </div>
                   )}
                   {transport && (
@@ -275,7 +276,7 @@ export default function BookingPage() {
                   </div>
                   <div className="flex justify-between pt-2 border-t border-sand-300">
                     <span className="font-bold text-charcoal-800">Total</span>
-                    <span className="font-display text-xl font-bold text-bronze-500">{adjustedTotal} MAD</span>
+                    <span className="font-display text-xl font-bold text-bronze-500">{convert(adjustedTotal)}</span>
                   </div>
                 </div>
               </div>
@@ -377,7 +378,7 @@ export default function BookingPage() {
                 {extraCost > 0 && (
                   <div className="flex justify-between text-sm">
                     <span className="text-charcoal-400">+15% / pers. suppl. (au-delà de 2)</span>
-                    <span className="font-semibold text-charcoal-800">+{extraCost} MAD</span>
+                    <span className="font-semibold text-charcoal-800">+{convert(extraCost)}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-sm">
@@ -386,7 +387,7 @@ export default function BookingPage() {
                 </div>
                 <div className="border-t border-sand-200 pt-2.5 flex justify-between">
                   <span className="font-bold text-charcoal-800">Total</span>
-                  <span className="font-display text-xl font-bold text-charcoal-800">{convert(adjustedTotal)} <span className="text-xs font-normal text-charcoal-400">({adjustedTotal} MAD)</span></span>
+                  <span className="font-display text-xl font-bold text-charcoal-800">{convert(adjustedTotal)} <span className="text-xs font-normal text-charcoal-400">({convert(adjustedTotal)})</span></span>
                 </div>
                 {payment === "deposit" && (
                   <div className="text-[11px] text-bronze-500 font-semibold text-right">Acompte dû maintenant : {deposit} MAD</div>
