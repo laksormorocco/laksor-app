@@ -417,7 +417,7 @@ export default function AdminDashboard() {
                           className="bg-bronze-50 text-bronze-500 rounded-full px-3 py-1.5 text-xs font-bold border border-bronze-500">
                           Suspendre
                         </button>
-                        <button onClick={() => { setEditGuide(g); setEditGuideForm({ displayName: g.displayName, city: g.city, bio: g.bio||"", languages: (g.languages||[]).join(", "), halfDayPrice: g.halfDayPrice, fullDayPrice: g.fullDayPrice, yearsExp: g.yearsExp||0, phone: g.phone||"" }); }}
+                        <button onClick={() => { setEditGuide(g); setEditGuideForm({ displayName: g.displayName, city: g.city, bio: g.bio||"", languages: (g.languages||[]).join(", "), halfDayPrice: g.halfDayPrice, fullDayPrice: g.fullDayPrice, yearsExp: g.yearsExp||0, phone: g.phone||"", avatar: g.avatar||"", user: g.user }); }}
                           className="px-3 py-1.5 rounded-full text-xs font-bold bg-charcoal-800 text-white">
                           Modifier
                         </button>
@@ -554,7 +554,28 @@ export default function AdminDashboard() {
             {/* Formulaire création/édition tour */}
             {tourForm && (
               <div className="bg-white rounded-2xl border border-bronze-500 p-4">
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-4 mb-4">
+              <div className="relative w-16 h-16 rounded-2xl overflow-hidden bg-sand-200 flex-shrink-0">
+                {editGuideForm.avatar
+                  ? <img src={editGuideForm.avatar} className="w-full h-full object-cover" />
+                  : <div className="w-full h-full flex items-center justify-center font-bold text-charcoal-400">{editGuide.displayName?.[0]}</div>}
+                <label className="absolute inset-0 flex items-center justify-center bg-black/30 cursor-pointer">
+                  <span className="text-white text-lg">+</span>
+                  <input type="file" accept="image/*" className="hidden" onChange={async e => {
+                    const file = e.target.files?.[0];
+                    const fd = new FormData();
+                    if (!file) return;
+                    fd.append("file", file as Blob);
+                    fd.append("folder", "avatars");
+                    const res = await fetch("/api/upload", { method: "POST", body: fd });
+                    const { url } = await res.json();
+                    if (url) setEditGuideForm({...editGuideForm, avatar: url});
+                  }} />
+                </label>
+              </div>
+              <div className="flex-1 font-display text-base font-bold text-charcoal-800">{editGuide.displayName}</div>
+            </div>
+            <div className="flex items-center justify-between mb-4">
                   <div className="text-sm font-bold text-charcoal-800">
                     {tourForm.id ? "Modifier le tour" : "Créer le tour"} — {TOUR_TYPES.find(t=>t.type===tourForm.tourType)?.title}
                   </div>
@@ -895,6 +916,27 @@ export default function AdminDashboard() {
       {editGuide && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm" onClick={() => setEditGuide(null)}>
           <div className="bg-white rounded-t-3xl w-full max-w-lg p-5 max-h-[85vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center gap-4 mb-4">
+              <div className="relative w-16 h-16 rounded-2xl overflow-hidden bg-sand-200 flex-shrink-0">
+                {editGuideForm.avatar
+                  ? <img src={editGuideForm.avatar} className="w-full h-full object-cover" />
+                  : <div className="w-full h-full flex items-center justify-center font-bold text-charcoal-400">{editGuide.displayName?.[0]}</div>}
+                <label className="absolute inset-0 flex items-center justify-center bg-black/30 cursor-pointer">
+                  <span className="text-white text-lg">+</span>
+                  <input type="file" accept="image/*" className="hidden" onChange={async e => {
+                    const file = e.target.files?.[0];
+                    const fd = new FormData();
+                    if (!file) return;
+                    fd.append("file", file as Blob);
+                    fd.append("folder", "avatars");
+                    const res = await fetch("/api/upload", { method: "POST", body: fd });
+                    const { url } = await res.json();
+                    if (url) setEditGuideForm({...editGuideForm, avatar: url});
+                  }} />
+                </label>
+              </div>
+              <div className="flex-1 font-display text-base font-bold text-charcoal-800">{editGuide.displayName}</div>
+            </div>
             <div className="flex items-center justify-between mb-4">
               <div className="font-display text-base font-bold text-charcoal-800">Modifier — {editGuide.displayName}</div>
               <button onClick={() => setEditGuide(null)} className="w-8 h-8 rounded-full bg-sand-200 flex items-center justify-center text-charcoal-600">✕</button>
@@ -925,7 +967,7 @@ export default function AdminDashboard() {
                 await fetch("/api/admin/guides", {
                   method: "PATCH",
                   headers: {"Content-Type":"application/json"},
-                  body: JSON.stringify({ id: editGuide.id, ...editGuideForm, languages: langs })
+                  body: JSON.stringify({ id: editGuide.id, ...editGuideForm, languages: langs, avatar: editGuideForm.avatar || editGuide.avatar })
                 });
                 fetchGuides();
                 setEditGuide(null);
