@@ -383,7 +383,6 @@ export default function SearchClient({ guides }: { guides: Guide[] }) {
           </div>
         )}
       </div>
-    <BottomNav />
     </div>
   );
 }
