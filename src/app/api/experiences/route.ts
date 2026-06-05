@@ -2,13 +2,18 @@ import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const city = searchParams.get("city");
   const templates = await prisma.tourTemplate.findMany({
     where: { isActive: true },
     orderBy: { createdAt: "asc" },
     include: {
       guideTours: {
-        where: { isActive: true },
+        where: {
+          isActive: true,
+          ...(city ? { guide: { city } } : {})
+        },
         select: { price: true, guideId: true }
       }
     }

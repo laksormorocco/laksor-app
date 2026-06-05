@@ -14,13 +14,16 @@ export default function ExperiencesPage() {
   const [tours, setTours] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [openId, setOpenId] = useState<string|null>(null);
+  const [city, setCity] = useState<string|null>(null);
   const { convert } = useExchangeRate();
 
+  const CITIES = ["Marrakech", "Fès", "Essaouira", "Chefchaouen", "Agadir"];
+
   useEffect(() => {
-    fetch("/api/experiences")
+    fetch("/api/experiences" + (city ? "?city=" + city : ""))
       .then(r => r.json())
       .then(d => { setTours(d.tours || []); setLoading(false); });
-  }, []);
+  }, [city]);
 
   return (
     <div className="min-h-screen bg-sand-200">
@@ -38,6 +41,17 @@ export default function ExperiencesPage() {
         <div className="mb-5">
           <h1 className="font-display text-2xl font-bold text-charcoal-800 mb-1">Experiences au Maroc</h1>
           <p className="text-sm text-charcoal-400">Choisissez votre experience, nous vous trouvons le guide ideal</p>
+        </div>
+        <div className="flex gap-2 overflow-x-auto pb-2 mb-4">
+          <button onClick={() => setCity(null)} className={"flex-shrink-0 px-4 py-1.5 rounded-full text-xs font-bold border transition-colors " + (!city ? "bg-[#B88A44] text-white border-[#B88A44]" : "bg-white text-charcoal-600 border-sand-300")}>Toutes</button>
+          {CITIES.map(v => (
+            <button key={v} onClick={() => setCity(city === v ? null : v)} className={"flex-shrink-0 px-4 py-1.5 rounded-full text-xs font-bold border transition-colors " + (city === v ? "bg-[#B88A44] text-white border-[#B88A44]" : "bg-white text-charcoal-600 border-sand-300")}>{v}</button>
+          ))}
+        </div>
+        <div className="flex gap-2 overflow-x-auto pb-2 mb-4 scrollbar-hide">
+          {CITIES.map(c => (
+            <button key={c} onClick={() => setCity(city === c ? null : c)} className={"flex-shrink-0 px-4 py-1.5 rounded-full text-xs font-bold border transition-colors " + (city === c ? "bg-bronze-500 text-white border-bronze-500" : "bg-white text-charcoal-600 border-sand-300")}>{c}</button>
+          ))}
         </div>
 
         {loading ? (
