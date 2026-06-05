@@ -13,6 +13,7 @@ function toEur(mad: number): string {
 }
 
 import { LANG_FLAGS, flagEmoji } from "@/lib/langFlags";
+import { priceWithCommission } from "@/lib/pricing";
 
   const map: Record<string,string> = {
     FR:"🇫🇷", GB:"🇬🇧", ES:"🇪🇸", DE:"🇩🇪",

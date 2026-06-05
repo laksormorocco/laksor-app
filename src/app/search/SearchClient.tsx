@@ -1,4 +1,5 @@
 "use client";
+import { priceWithCommission } from "@/lib/pricing";
 import BottomNav from "@/components/BottomNav";
 import { useState, useMemo } from "react";
 import { MagnifyingGlass, MapPin, Star, Clock, SlidersHorizontal, X, ArrowLeft } from "@phosphor-icons/react";

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Clock, Users, ArrowRight, MagnifyingGlass } from "@phosphor-icons/react";
 import BottomNav from "@/components/BottomNav";
 import { useExchangeRate } from "@/hooks/useExchangeRate";
+import { priceWithCommission } from "@/lib/pricing";
 
 const EMOJI: Record<string,string> = {
   MEDINA_SECRETS:"🕌", GASTRONOMIE:"🍽️", HISTOIRE_MONUMENTS:"🏛️",
@@ -131,7 +132,7 @@ export default function ExperiencesPage() {
                         <>
                           <div className="text-[10px] text-charcoal-400">A partir de</div>
                           <div className="font-display text-lg font-bold text-charcoal-800">
-                            {convert(t.minPrice)} <span className="text-xs font-normal text-charcoal-400">/ 2 pers.</span>
+                            {convert(priceWithCommission(t.minPrice))} <span className="text-xs font-normal text-charcoal-400">/ 2 pers.</span>
                           </div>
                         </>
                       ) : (
