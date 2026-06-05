@@ -175,7 +175,7 @@ export default function CalendarPicker({
                   <span className={`mb-1 ${isSel ? "text-bronze-500" : "text-charcoal-400"}`}>{icon}</span>
                   <span className={`text-[11px] font-bold ${isSel ? "text-bronze-500" : "text-charcoal-600"}`}>{label}</span>
                   <span className="text-[10px] text-charcoal-400">{hours}</span>
-                  <span className={`text-[11px] font-bold mt-1 ${isSel ? "text-charcoal-800" : "text-charcoal-500"}`}>{price} MAD</span>
+                  <span className={`text-[11px] font-bold mt-1 ${isSel ? "text-charcoal-800" : "text-charcoal-500"}`}>{fmt(price)}</span>
                 </button>
               );
             })}
