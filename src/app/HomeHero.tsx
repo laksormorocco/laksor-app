@@ -114,7 +114,7 @@ export default function HomeHero() {
         ].map(t => (
           <button
             key={t.id}
-            onClick={() => t.id !== "experiences" && openModal(t.id as Mode)}
+            onClick={() => { if (t.id === "experiences") window.location.href = "/experiences"; else openModal(t.id as Mode); }}
             className={`relative flex flex-col items-center gap-1 px-5 pt-3 pb-3 text-xs font-semibold border-b-2 flex-shrink-0 transition-colors
               ${t.id === "guides"
                 ? "text-charcoal-800 border-charcoal-800"
@@ -125,7 +125,7 @@ export default function HomeHero() {
             </span>
             <span>{t.label}</span>
             {t.badge && (
-              <span className="absolute top-1.5 right-0 bg-charcoal-800 text-white text-[8px] font-black px-1 py-0.5 rounded">
+              <span className="absolute top-1.5 right-0 bg-bronze-500 text-white text-[8px] font-black px-1 py-0.5 rounded animate-pulse">
                 NEW
               </span>
             )}
