@@ -26,7 +26,9 @@ const CODES: Record<string, [number, number]> = {
 
 export function flagEmoji(lang: string): string {
   const code = LANG_FLAGS[lang];
-  if (!code || !CODES[code]) return lang;
-  const [a, b] = CODES[code];
-  return String.fromCodePoint(a) + String.fromCodePoint(b);
+  if (!code || !CODES[code]) return "["+lang+"]";
+  try {
+    const [a, b] = CODES[code];
+    return String.fromCodePoint(a) + String.fromCodePoint(b);
+  } catch { return "["+lang+"]" }
 }
