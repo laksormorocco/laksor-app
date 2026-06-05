@@ -191,7 +191,7 @@ export default function GuidePageClient({ guide }: { guide: any }) {
           <div>
             <div className="text-xs text-charcoal-400 font-medium">À partir de</div>
             <div className="font-display text-2xl font-bold text-charcoal-800 leading-tight">
-              {guide.halfDayPrice} MAD
+              {/* @ts-ignore */}<PriceDisplay mad={priceWithCommission(Number(guide.halfDayPrice))} size="lg" /> MAD
             </div>
             <div className="text-xs text-charcoal-400">/ 2 personnes</div>
           </div>
@@ -473,7 +473,7 @@ export default function GuidePageClient({ guide }: { guide: any }) {
           <div>
             <div className="text-[10px] text-charcoal-400">À partir de</div>
             <div className="font-display text-base font-bold text-charcoal-800 leading-tight">
-              {guide.halfDayPrice} <span className="text-sm font-normal text-charcoal-400">MAD / 2 pers.</span>
+              {/* @ts-ignore */}<PriceDisplay mad={priceWithCommission(Number(guide.halfDayPrice))} size="lg" /> <span className="text-sm font-normal text-charcoal-400">MAD / 2 pers.</span>
             </div>
             {guide.avgRating > 0 && (
               <div className="flex items-center gap-1 mt-0.5">
