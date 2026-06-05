@@ -139,8 +139,6 @@ export default function ExperiencesPage() {
           </div>
         )}
       </div>
-    </div>
-      {/* BOTTOM NAV */}
       <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-sand-300 z-50 flex">
         <a href="/" className="flex flex-col items-center gap-1 flex-1 py-3 no-underline text-charcoal-400">
           <span className="text-xs font-bold">Accueil</span>
