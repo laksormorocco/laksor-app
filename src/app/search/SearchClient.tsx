@@ -1,7 +1,6 @@
 "use client";
 import { useState, useMemo } from "react";
 import { MagnifyingGlass, MapPin, Star, Clock, SlidersHorizontal, X, ArrowLeft } from "@phosphor-icons/react";
-import BottomNav from "@/components/BottomNav";
 
 function toEur(mad: number) {
   return Math.round((mad * 1.25 + 25) * 0.092);
