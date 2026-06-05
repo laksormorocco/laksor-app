@@ -229,21 +229,16 @@ export default function SearchClient({ guides }: { guides: Guide[] }) {
           </button>
         </div>
 
-        {/* City pills */}
-        <div className="flex gap-2 px-4 pb-3 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
-          {CITIES.map(c => (
-            <button
-              key={c}
-              onClick={() => setCity(c === city ? "All" : c)}
-              className={`px-4 py-1.5 rounded-full text-xs font-bold flex-shrink-0 transition-all
-                ${city === c
-                  ? "bg-bronze-500 text-white shadow-sm"
-                  : "bg-white text-charcoal-500 border border-sand-300"}`}
-            >
-              {c === "All" ? "✦ Toutes" : c}
-            </button>
-          ))}
-        </div>
+      {/* City pills */}
+      <div className="flex gap-2 px-4 pb-3 overflow-x-auto" style={{scrollbarWidth:"none"}}>
+        {CITIES.map(c => (
+          <button key={c} onClick={() => setCity(c === city ? "All" : c)}
+            className={"flex-shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all " +
+              (c === city ? "bg-bronze-500 text-white shadow-sm" : "bg-white text-charcoal-500 border border-sand-300 hover:border-bronze-500")}>
+            {c === "All" ? "Toutes les villes" : c}
+          </button>
+        ))}
+      </div>
       </div>
 
       {/* ── FILTRES PANEL ── */}
