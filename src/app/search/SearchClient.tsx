@@ -197,13 +197,13 @@ export default function SearchClient({ guides }: { guides: Guide[] }) {
   }, [guides, city, lang, types, search, sort, maxPrice]);
 
   return (
-    <div className="bg-sand-200 min-h-screen pb-20">
+    <div className="bg-sand-200 min-h-screen pb-24">
 
       {/* ── HEADER STICKY ── */}
       <div className="sticky top-0 z-30 bg-white border-b border-sand-300">
 
         {/* Navbar */}
-        <div className="flex items-center gap-3 px-4 h-14">
+        <div className="flex items-center gap-3 px-4 h-16">
           <a href="/" className="w-9 h-9 rounded-full border border-sand-300 flex items-center justify-center text-charcoal-700 flex-shrink-0">
             <ArrowLeft size={16} weight="bold" />
           </a>
@@ -231,7 +231,7 @@ export default function SearchClient({ guides }: { guides: Guide[] }) {
         </div>
 
       {/* City pills */}
-      <div className="flex gap-2 px-4 pb-3 overflow-x-auto" style={{scrollbarWidth:"none"}}>
+      <div className="flex gap-2 px-4 py-2 overflow-x-auto" style={{scrollbarWidth:"none"}}>
         {CITIES.map(c => (
           <button key={c} onClick={() => setCity(c === city ? "All" : c)}
             className={"flex-shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all " +
