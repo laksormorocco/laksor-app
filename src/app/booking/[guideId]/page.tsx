@@ -164,7 +164,7 @@ export default function BookingPage() {
             </>
           ) : (
             <>
-              <div className="font-display text-lg font-bold text-charcoal-800">{guide?.halfDayPrice} <span className="text-xs font-normal text-charcoal-400">MAD</span></div>
+              <div className="font-display text-lg font-bold text-charcoal-800">{priceWithCommission(Number(guide?.halfDayPrice || 0))} <span className="text-xs font-normal text-charcoal-400">MAD</span></div>
               <div className="text-[10px] text-charcoal-400">pour 2 pers.</div>
             </>
           )}
@@ -185,8 +185,8 @@ export default function BookingPage() {
               </div>
               <CalendarPicker
                 blockedDates={bookedDates.map((b: any) => b.date)}
-                priceHalfDay={guide?.halfDayPrice || 350}
-                priceFullDay={guide?.fullDayPrice || 650}
+                priceHalfDay={priceWithCommission(guide?.halfDayPrice || 350)}
+                priceFullDay={priceWithCommission(guide?.fullDayPrice || 650)}
                 convert={convert}
                 onSelectionChange={(slots: any[], t: number) => {
                   setSelectedDates(slots.map((s: any) => s.date));
