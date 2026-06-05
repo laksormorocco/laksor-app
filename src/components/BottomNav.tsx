@@ -1,19 +1,19 @@
 "use client";
 import { usePathname } from "next/navigation";
-import { House, MagnifyingGlass, Sparkle, SquaresFour } from "@phosphor-icons/react";
+import { House, MagnifyingGlass, Sparkle, UserCircle } from "@phosphor-icons/react";
 
 export default function BottomNav() {
   const path = usePathname();
 
   const items = [
-    { href: "/", Icon: House, label: "Explorer" },
+    { href: "/", Icon: House, label: "Accueil" },
     { href: "/search", Icon: MagnifyingGlass, label: "Rechercher" },
     { href: "/experiences", Icon: Sparkle, label: "Experiences" },
-    { href: "/dashboard", Icon: SquaresFour, label: "Dashboard" },
+    { href: "/dashboard", Icon: UserCircle, label: "Profil" },
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-sand-200 z-50 flex pb-safe">
+    <nav className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-sand-200 z-50 flex">
       {items.map(({ href, Icon, label }) => {
         const active = path === href || (href !== "/" && path.startsWith(href));
         return (
