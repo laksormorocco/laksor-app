@@ -150,7 +150,7 @@ export default function ExperiencesPage() {
         ].map(item => (
           <a key={item.href} href={item.href}
             className={"flex flex-col items-center gap-1 flex-1 py-3 no-underline " + (item.active ? "text-bronze-500" : "text-charcoal-400")}>
-            <span className="text-lg">{item.icon}</span>
+            <span className="text-xs font-bold">{item.icon}</span>
             <span className="text-[9px] font-bold">{item.label}</span>
           </a>
         ))}
