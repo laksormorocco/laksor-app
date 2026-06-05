@@ -234,7 +234,7 @@ export default function BookingPage() {
                   <Car size={16} className="text-bronze-500" />
                   <div>
                     <div className="text-sm font-semibold text-charcoal-800">Prise en charge hôtel/riad</div>
-                    <div className="text-[10px] text-charcoal-400">+300 MAD aller-retour</div>
+                    <div className="text-[10px] text-charcoal-400">+{convert(300)} aller-retour</div>
                   </div>
                 </div>
                 <button onClick={() => setTransport(!transport)}
@@ -272,7 +272,7 @@ export default function BookingPage() {
                   )}
                   <div className="flex justify-between text-sm">
                     <span className="text-charcoal-400">Frais de service</span>
-                    <span className="font-semibold text-charcoal-800">+{serviceFee} MAD</span>
+                    <span className="font-semibold text-charcoal-800">+{convert(serviceFee)}</span>
                   </div>
                   <div className="flex justify-between pt-2 border-t border-sand-300">
                     <span className="font-bold text-charcoal-800">Total</span>
@@ -383,7 +383,7 @@ export default function BookingPage() {
                 )}
                 <div className="flex justify-between text-sm">
                   <span className="text-charcoal-400">Frais de service</span>
-                  <span className="font-semibold text-charcoal-800">+{serviceFee} MAD</span>
+                  <span className="font-semibold text-charcoal-800">+{convert(serviceFee)}</span>
                 </div>
                 <div className="border-t border-sand-200 pt-2.5 flex justify-between">
                   <span className="font-bold text-charcoal-800">Total</span>
