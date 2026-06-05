@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Clock, Users, ArrowRight, MagnifyingGlass } from "@phosphor-icons/react";
+import BottomNav from "@/components/BottomNav";
 import { useExchangeRate } from "@/hooks/useExchangeRate";
 
 const EMOJI: Record<string,string> = {
@@ -139,17 +140,7 @@ export default function ExperiencesPage() {
           </div>
         )}
       </div>
-      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-sand-300 z-50 flex">
-        <a href="/" className="flex flex-col items-center gap-1 flex-1 py-3 no-underline text-charcoal-400">
-          <span className="text-xs font-bold">Accueil</span>
-        </a>
-        <a href="/search" className="flex flex-col items-center gap-1 flex-1 py-3 no-underline text-charcoal-400">
-          <span className="text-xs font-bold">Rechercher</span>
-        </a>
-        <a href="/experiences" className="flex flex-col items-center gap-1 flex-1 py-3 no-underline text-bronze-500">
-          <span className="text-xs font-bold">Experiences</span>
-        </a>
-      </nav>
+      <BottomNav />
     </div>
   );
 }
