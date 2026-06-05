@@ -32,6 +32,8 @@ export default function GuidePageClient({ guide }: { guide: any }) {
   const [tab,        setTab]       = useState<Tab>("apropos");
   const [liked,      setLiked]     = useState(false);
   const [showSticky, setShowSticky] = useState(false);
+  const [stickyVisible, setStickyVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
   const tabsRef  = useRef<HTMLDivElement>(null);
   const touchX   = useRef<number>(0);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -47,6 +49,17 @@ export default function GuidePageClient({ guide }: { guide: any }) {
     obs.observe(el);
     return () => obs.disconnect();
   }, []);
+
+  // Hide sticky bar on scroll down
+  useEffect(() => {
+    const onScroll = () => {
+      const y = window.scrollY;
+      setStickyVisible(y < lastScrollY || y < 50);
+      setLastScrollY(y);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [lastScrollY]);
 
   // Swipe gauche/droite
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
@@ -166,7 +179,7 @@ export default function GuidePageClient({ guide }: { guide: any }) {
         </div>
 
         {/* Prix + CTA */}
-        {guide.tours?.filter((t:any)=>t.isActive).length === 0 && <div className="flex items-center justify-between mb-3">
+        {guide.tours?.filter((t:any)=>t.isActive).length === 0 && <div className="flex items-center justify-between mb-2">
           <div>
             <div className="text-xs text-charcoal-400 font-medium">À partir de</div>
             <div className="font-display text-2xl font-bold text-charcoal-800 leading-tight">
@@ -447,11 +460,11 @@ export default function GuidePageClient({ guide }: { guide: any }) {
       </div>
 
       {/* ── FOOTER STICKY ── */}
-      {tab !== "tours" && <div className="fixed bottom-0 left-0 right-0 bg-white/97 backdrop-blur-lg border-t border-sand-300 px-4 pt-3 pb-6 z-40">
-        <div className="flex items-center justify-between mb-3">
+      {tab !== "tours" && <div className={"fixed bottom-0 left-0 right-0 bg-white/97 backdrop-blur-lg border-t border-sand-300 px-4 pt-2 pb-4 z-40 transition-transform duration-300 " + (stickyVisible ? "translate-y-0" : "translate-y-full")}>
+        <div className="flex items-center justify-between mb-2">
           <div>
             <div className="text-[10px] text-charcoal-400">À partir de</div>
-            <div className="font-display text-xl font-bold text-charcoal-800 leading-tight">
+            <div className="font-display text-base font-bold text-charcoal-800 leading-tight">
               {guide.halfDayPrice} <span className="text-sm font-normal text-charcoal-400">MAD / 2 pers.</span>
             </div>
             {guide.avgRating > 0 && (
@@ -462,7 +475,7 @@ export default function GuidePageClient({ guide }: { guide: any }) {
               </div>
             )}
           </div>
-          <a href={"/booking/" + guide.id} className="w-full bg-sage-300 hover:bg-sage-400 text-white font-bold py-4 rounded-full text-sm transition-colors flex items-center justify-center gap-2 no-underline">Verifier les disponibilites</a>
+          <a href={"/booking/" + guide.id} className="w-full bg-sage-300 hover:bg-sage-400 text-white font-bold py-3 rounded-full text-sm transition-colors flex items-center justify-center gap-2 no-underline">Verifier les disponibilites</a>
         </div>
       </div>}
     </div>
