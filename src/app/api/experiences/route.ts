@@ -24,6 +24,8 @@ export async function GET() {
     difficulty: t.difficulty,
     coverImage: t.coverImage,
     tags: t.tags,
+    included: t.included,
+    notIncluded: t.notIncluded,
     guideCount: t.guideTours.length,
     minPrice: t.guideTours.length > 0 ? Math.min(...t.guideTours.map(g => Number(g.price))) : null,
   }));

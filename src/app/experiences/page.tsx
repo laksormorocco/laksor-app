@@ -12,6 +12,7 @@ const EMOJI: Record<string,string> = {
 export default function ExperiencesPage() {
   const [tours, setTours] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [openId, setOpenId] = useState<string|null>(null);
   const { convert } = useExchangeRate();
 
   useEffect(() => {
@@ -81,6 +82,40 @@ export default function ExperiencesPage() {
                   {t.description && (
                     <p className="text-xs text-charcoal-400 leading-relaxed mb-3 line-clamp-2">{t.description}</p>
                   )}
+                  {/* BOUTON DETAILS */}
+                  <button onClick={(e) => { e.preventDefault(); setOpenId(openId === t.id ? null : t.id); }}
+                    className="w-full flex items-center justify-center gap-1.5 py-2 border border-sand-300 rounded-xl text-xs font-bold text-charcoal-600 hover:border-sage-300 hover:text-sage-300 transition-colors mb-3">
+                    {openId === t.id ? "Masquer ↑" : "Voir details ↓"}
+                  </button>
+
+                  {/* ACCORDEON */}
+                  {openId === t.id && (
+                    <div className="mb-3 bg-sand-100 rounded-xl p-3 border border-sand-200">
+                      {t.included?.length > 0 && (
+                        <div className="mb-2">
+                          <div className="text-[9px] font-bold text-sage-300 uppercase tracking-widest mb-1">Inclus</div>
+                          {t.included.map((item:string) => (
+                            <div key={item} className="flex items-center gap-1.5 mb-1">
+                              <span className="text-sage-300 text-xs font-bold">✓</span>
+                              <span className="text-xs text-charcoal-600">{item}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      {t.notIncluded?.length > 0 && (
+                        <div>
+                          <div className="text-[9px] font-bold text-red-400 uppercase tracking-widest mb-1">Non inclus</div>
+                          {t.notIncluded.map((item:string) => (
+                            <div key={item} className="flex items-center gap-1.5 mb-1">
+                              <span className="text-red-400 text-xs font-bold">✗</span>
+                              <span className="text-xs text-charcoal-600">{item}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   <div className="flex items-center justify-between">
                     <div>
                       {t.minPrice ? (
