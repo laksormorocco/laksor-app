@@ -475,7 +475,7 @@ export default function GuidePageClient({ guide }: { guide: any }) {
               </div>
             )}
           </div>
-          <a href={"/booking/" + guide.id} className="w-full bg-sage-300 hover:bg-sage-400 text-white font-bold py-3 rounded-full text-sm transition-colors flex items-center justify-center gap-2 no-underline">Verifier les disponibilites</a>
+          <a href={"/booking/" + guide.id} className="bg-sage-300 hover:bg-sage-400 text-white font-bold px-5 py-2.5 rounded-full text-xs transition-colors flex items-center justify-center gap-1.5 no-underline flex-shrink-0">Reserver →</a>
         </div>
       </div>}
     </div>

@@ -162,7 +162,6 @@ function GuideCard({ g, idx }: { g: Guide; idx: number }) {
           </button>
         </div>
       </div>
-    <BottomNav />
     </div>
   );
 }
