@@ -63,6 +63,8 @@ export default function AdminDashboard() {
   const [crmLoading,   setCrmLoading]   = useState(false);
   const [crmPeriod,    setCrmPeriod]    = useState("");
   const [crmGuide,     setCrmGuide]     = useState("");
+  const [reminders,    setReminders]    = useState<any[]>([]);
+  const [remLoading,   setRemLoading]   = useState(false);
   const [tourists,     setTourists]     = useState<any[]>([]);
   const [touristSearch,setTouristSearch]= useState("");
   const [touristSel,   setTouristSel]   = useState<any>(null);
@@ -82,6 +84,13 @@ export default function AdminDashboard() {
   async function fetchGuides() {
     const res = await fetch("/api/admin/guides?status=" + guideTab.toUpperCase());
     setGuides((await res.json()).guides || []);
+  }
+
+  async function fetchReminders() {
+    setRemLoading(true);
+    const res = await fetch("/api/cron/reminders?secret=laksor-cron-2026");
+    if (res.ok) setReminders((await res.json()).results || []);
+    setRemLoading(false);
   }
 
   async function fetchTourists() {
@@ -222,6 +231,36 @@ export default function AdminDashboard() {
               </div>
             )}
 
+
+
+          {/* RAPPELS 72H */}
+          <div className="bg-white rounded-2xl border border-sand-300 p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="text-sm font-bold text-charcoal-800">Rappels 72h</div>
+              <button onClick={fetchReminders}
+                className="bg-bronze-500 text-white text-xs font-bold px-3 py-1.5 rounded-full">
+                {remLoading ? "..." : "Verifier"}
+              </button>
+            </div>
+            {reminders.length === 0 ? (
+              <div className="text-xs text-charcoal-400">Cliquez Verifier pour voir les rappels a envoyer</div>
+            ) : reminders.map((r, i) => (
+              <div key={i} className="flex items-center justify-between py-2 border-b border-sand-200 last:border-0">
+                <div>
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full mr-2 ${r.type === "guide" ? "bg-sage-300/15 text-sage-300" : "bg-bronze-500/15 text-bronze-500"}`}>
+                    {r.type === "guide" ? "Guide" : "Client"}
+                  </span>
+                  <span className="text-xs text-charcoal-800 font-semibold">{r.ref}</span>
+                  <div className="text-[10px] text-charcoal-400 mt-0.5">{r.date}</div>
+                </div>
+                <a href={"https://wa.me/" + r.phone.replace(/[^0-9]/g, "") + "?text=" + encodeURIComponent("Rappel Laksor - Ref: " + r.ref + " - Visite le " + r.date)}
+                  target="_blank"
+                  className="bg-sage-300 text-white text-[10px] font-bold px-3 py-1.5 rounded-full no-underline">
+                  Envoyer WA
+                </a>
+              </div>
+            ))}
+          </div>
 
           {/* TAUX DE CONVERSION */}
           <div className="bg-white rounded-2xl border border-sand-300 p-4">
