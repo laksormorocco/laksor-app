@@ -560,7 +560,7 @@ function TourCard({ guideTour, guideId }: { guideTour: any; guideId: string }) {
             </div>
             <div className="text-[10px] text-bronze-500 font-semibold mt-0.5">+15% / pers. supplementaire</div>
           </div>
-          <a href={"/booking/" + guideId + "?tourId=" + t.id}
+          <a href={"/booking/" + guideId + "?tourId=" + t.id + "&tourPrice=" + priceWithCommission(Number(guideTour.price))}
             className="flex items-center gap-1.5 bg-sage-300 hover:bg-sage-400 text-white font-bold px-5 py-3 rounded-full text-sm no-underline transition-colors shadow-sm">
             Reserver <span className="text-base">→</span>
           </a>
