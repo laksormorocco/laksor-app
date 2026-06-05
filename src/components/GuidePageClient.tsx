@@ -101,7 +101,13 @@ export default function GuidePageClient({ guide }: { guide: any }) {
 
       {/* ── STICKY TABS (appear on scroll) ── */}
       {showSticky && (
-        <div className="fixed top-0 left-0 right-0 z-50 shadow-md">
+        <div className="fixed top-0 left-0 right-0 z-50 bg-white shadow-md">
+          <div className="flex items-center h-12 px-4 border-b border-sand-300">
+            <Link href="/search" className="w-8 h-8 rounded-full border border-sand-200 flex items-center justify-center mr-2 no-underline flex-shrink-0">
+              <ArrowLeft size={14} weight="bold" className="text-charcoal-600" />
+            </Link>
+            <span className="font-display text-sm font-bold text-charcoal-800 truncate flex-1">{guide.displayName}</span>
+          </div>
           <TabBar sticky />
         </div>
       )}

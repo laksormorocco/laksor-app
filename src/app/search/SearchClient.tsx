@@ -1,4 +1,5 @@
 "use client";
+import BottomNav from "@/components/BottomNav";
 import { useState, useMemo } from "react";
 import { MagnifyingGlass, MapPin, Star, Clock, SlidersHorizontal, X, ArrowLeft } from "@phosphor-icons/react";
 
@@ -381,6 +382,7 @@ export default function SearchClient({ guides }: { guides: Guide[] }) {
           </div>
         )}
       </div>
+      <BottomNav />
     </div>
   );
 }
