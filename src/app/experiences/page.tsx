@@ -140,20 +140,17 @@ export default function ExperiencesPage() {
         )}
       </div>
     </div>
-
       {/* BOTTOM NAV */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white/97 backdrop-blur-lg border-t border-sand-300 z-50 flex">
-        {[
-          { href:"/", icon:"🏠", label:"Explorer" },
-          { href:"/search", icon:"🔍", label:"Rechercher" },
-          { href:"/experiences", icon:"✨", label:"Experiences", active:true },
-        ].map(item => (
-          <a key={item.href} href={item.href}
-            className={"flex flex-col items-center gap-1 flex-1 py-3 no-underline " + (item.active ? "text-bronze-500" : "text-charcoal-400")}>
-            <span className="text-xs font-bold">{item.icon}</span>
-            <span className="text-[9px] font-bold">{item.label}</span>
-          </a>
-        ))}
+      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-sand-300 z-50 flex">
+        <a href="/" className="flex flex-col items-center gap-1 flex-1 py-3 no-underline text-charcoal-400">
+          <span className="text-xs font-bold">Accueil</span>
+        </a>
+        <a href="/search" className="flex flex-col items-center gap-1 flex-1 py-3 no-underline text-charcoal-400">
+          <span className="text-xs font-bold">Rechercher</span>
+        </a>
+        <a href="/experiences" className="flex flex-col items-center gap-1 flex-1 py-3 no-underline text-bronze-500">
+          <span className="text-xs font-bold">Experiences</span>
+        </a>
       </nav>
     </div>
   );
