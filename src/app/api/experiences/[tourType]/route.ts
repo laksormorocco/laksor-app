@@ -6,7 +6,7 @@ export async function GET(req: Request, { params }: { params: { tourType: string
   const tourType = params.tourType.toUpperCase();
 
   const template = await prisma.tourTemplate.findFirst({
-    where: { tourType, isActive: true }
+    where: { tourType: tourType as any, isActive: true }
   });
 
   if (!template) return NextResponse.json({ error: "Tour introuvable" }, { status: 404 });
