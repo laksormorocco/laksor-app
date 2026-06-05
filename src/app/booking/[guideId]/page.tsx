@@ -267,7 +267,7 @@ export default function BookingPage() {
                   {transport && (
                     <div className="flex justify-between text-sm">
                       <span className="text-charcoal-400">Transport</span>
-                      <span className="font-semibold text-charcoal-800">+300 MAD</span>
+                      <span className="font-semibold text-charcoal-800">+{convert(300)}</span>
                     </div>
                   )}
                   <div className="flex justify-between text-sm">
@@ -369,7 +369,7 @@ export default function BookingPage() {
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-charcoal-400">Transport</span>
-                  <span className="font-semibold text-charcoal-800">{transport ? "+300 MAD" : "Non"}</span>
+                  <span className="font-semibold text-charcoal-800">{transport ? "+{convert(300)}" : "Non"}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-charcoal-400">Paiement</span>
