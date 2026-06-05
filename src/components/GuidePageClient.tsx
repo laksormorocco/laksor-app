@@ -143,11 +143,9 @@ export default function GuidePageClient({ guide }: { guide: any }) {
           </div>
           <h1 className="font-display text-3xl font-bold text-white mb-3 leading-tight">{guide.displayName}</h1>
           <div className="flex flex-wrap gap-2">
-            {guide.avgRating > 0 && (
-              <span className="flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold text-white" style={{ background: "rgba(246,241,232,0.18)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.25)" }}>
-                <Star size={11} weight="fill" className="text-amber-400" /> {Number(guide.avgRating).toFixed(1)} ({guide.totalReviews})
+            <span className="flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold text-white" style={{ background: "rgba(246,241,232,0.18)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.25)" }}>
+                <Star size={11} weight="fill" className="text-amber-400" /> {guide.avgRating > 0 ? Number(guide.avgRating).toFixed(1) : "Nouveau"} {guide.totalReviews > 0 ? "(" + guide.totalReviews + ")" : ""}
               </span>
-            )}
             {guide.yearsExp > 0 && (
               <span className="flex items-center gap-1 px-3 py-1 rounded-full text-xs text-white" style={{ background: "rgba(246,241,232,0.18)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.25)" }}>
                 <Clock size={11} /> {guide.yearsExp} ans

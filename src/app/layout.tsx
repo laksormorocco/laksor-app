@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     locale: "en_US",
     type: "website",
   },
-  other: { "theme-color": "#B88A44" },
+  other: { "theme-color": "#F6F1E8" },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
