@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { MapPin, Star, ArrowLeft, Users, Clock } from "@phosphor-icons/react";
 import { useExchangeRate } from "@/hooks/useExchangeRate";
+import PriceDisplay from "@/components/PriceDisplay";
 import { priceWithCommission } from "@/lib/pricing";
 
 export default function ExperienceGuidesPage() {

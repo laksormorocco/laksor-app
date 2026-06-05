@@ -1,5 +1,6 @@
 "use client";
 import { useExchangeRate } from "@/hooks/useExchangeRate";
+import PriceDisplay from "@/components/PriceDisplay";
 import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import {

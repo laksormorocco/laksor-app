@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Clock, Users, ArrowRight, MagnifyingGlass } from "@phosphor-icons/react";
 import BottomNav from "@/components/BottomNav";
 import { useExchangeRate } from "@/hooks/useExchangeRate";
+import PriceDisplay from "@/components/PriceDisplay";
 import { priceWithCommission } from "@/lib/pricing";
 
 const EMOJI: Record<string,string> = {
@@ -132,7 +133,7 @@ export default function ExperiencesPage() {
                         <>
                           <div className="text-[10px] text-charcoal-400">A partir de</div>
                           <div className="font-display text-lg font-bold text-charcoal-800">
-                            {convert(priceWithCommission(t.minPrice))} <span className="text-xs font-normal text-charcoal-400">/ 2 pers.</span>
+                            <PriceDisplay mad={priceWithCommission(t.minPrice)} size="md" /> <span className="text-xs font-normal text-charcoal-400">/ 2 pers.</span>
                           </div>
                         </>
                       ) : (
