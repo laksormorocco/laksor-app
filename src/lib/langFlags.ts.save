@@ -1,0 +1,32 @@
+export const LANG_FLAGS: Record<string, string> = {
+  "Francais": "FR",
+  "Anglais": "GB",
+  "Espagnol": "ES",
+  "Allemand": "DE",
+  "Italien": "IT",
+  "Arabe": "MA",
+  "Russe": "RU",
+  "Hebreu": "IL",
+  "Portugais": "PT",
+  "Chinois": "CN"
+};
+
+export function flagEmoji(lang: string): string {
+  const flags: Record<string, string> = {
+    "Francais": "FR FR",
+    "Anglais": "GB GB",
+    "Espagnol": "ES ES",
+    "Allemand": "DE DE",
+    "Italien": "IT IT",
+    "Arabe": "MA MA",
+    "Russe": "RU RU",
+    "Hebreu": "IL IL",
+    "Portugais": "PT PT",
+    "Chinois": "CN CN"
+  };
+  const code = flags[lang];
+  if (!code) return lang;
+  const [a, b] = code.split(" ");
+  return String.fromCodePoint(...[...a].map(c => 0x1F1A5 + c.charCodeAt(0))) +
+         String.fromCodePoint(...[...b].map(c => 0x1F1A5 + c.charCodeAt(0)));
+}
