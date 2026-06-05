@@ -12,11 +12,13 @@ function toEur(mad: number): string {
   return "€" + Math.round((mad * 1.25 + 25) * 0.092);
 }
 
-const LANG_FLAGS: Record<string, string> = {
-  "Français": "🇫🇷", "Anglais": "🇬🇧", "Espagnol": "🇪🇸",
-  "Allemand": "🇩🇪", "Italien": "🇮🇹", "Arabe": "🇲🇦",
-};
+import { LANG_FLAGS, flagEmoji } from "@/lib/langFlags";
 
+  const map: Record<string,string> = {
+    FR:"🇫🇷", GB:"🇬🇧", ES:"🇪🇸", DE:"🇩🇪",
+    IT:"🇮🇹", MA:"🇲🇦", RU:"🇷🇺", IL:"🇮🇱",
+    PT:"🇵🇹", CN:"🇨🇳"
+}
 const TABS = ["apropos", "tours", "avis", "photos"] as const;
 type Tab = typeof TABS[number];
 const TAB_LABELS: Record<Tab, string> = {
@@ -267,7 +269,7 @@ export default function GuidePageClient({ guide }: { guide: any }) {
                   <div className="flex flex-wrap gap-2">
                     {guide.languages.map((l: string) => (
                       <span key={l} className="flex items-center gap-1.5 bg-bronze-50 border border-bronze-500 text-bronze-500 text-xs font-bold px-3 py-1.5 rounded-full">
-                        {LANG_FLAGS[l] ?? "🏳️"} {l}
+                        {flagEmoji(LANG_FLAGS[l] || "")} {l}
                       </span>
                     ))}
                   </div>

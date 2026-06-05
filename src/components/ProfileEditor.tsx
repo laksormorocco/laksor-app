@@ -183,7 +183,7 @@ export default function ProfileEditor({ guide, guideId, onSaved }: { guide: any;
         {[
           {code:"Français",flag:"🇫🇷"},{code:"Anglais",flag:"🇬🇧"},{code:"Arabe",flag:"🇲🇦"},
           {code:"Espagnol",flag:"🇪🇸"},{code:"Allemand",flag:"🇩🇪"},{code:"Italien",flag:"🇮🇹"},
-          {code:"Russe",flag:"🇷🇺"},{code:"Hebreu",flag:"🇮🇱"}
+          {code:"Russe",flag:"🇷🇺"},{code:"Hebreu",flag:"🇮🇱"},{code:"Portugais",flag:"🇵🇹"},{code:"Chinois",flag:"🇨🇳"}
         ].map(l => {
           const selected = form.languages.split(",").map((x:string)=>x.trim()).includes(l.code);
           return (
