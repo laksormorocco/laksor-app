@@ -179,7 +179,27 @@ export default function ProfileEditor({ guide, guideId, onSaved }: { guide: any;
             className={inputCls + " resize-none"} />
         </Field>
         <Field label="Langues parlées">
-          <input value={form.languages} onChange={e=>update("languages",e.target.value)} placeholder="Français, Anglais, Arabe" className={inputCls} />
+      <div className="flex flex-wrap gap-2 mt-1">
+        {[
+          {code:"Français",flag:"🇫🇷"},{code:"Anglais",flag:"🇬🇧"},{code:"Arabe",flag:"🇲🇦"},
+          {code:"Espagnol",flag:"🇪🇸"},{code:"Allemand",flag:"🇩🇪"},{code:"Italien",flag:"🇮🇹"},
+          {code:"Russe",flag:"🇷🇺"},{code:"Hebreu",flag:"🇮🇱"}
+        ].map(l => {
+          const selected = form.languages.split(",").map((x:string)=>x.trim()).includes(l.code);
+          return (
+            <button key={l.code} type="button"
+              onClick={() => {
+                const langs = form.languages.split(",").map((x:string)=>x.trim()).filter(Boolean);
+                const newLangs = selected ? langs.filter((x:string)=>x!==l.code) : [...langs, l.code];
+                update("languages", newLangs.join(", "));
+              }}
+              className={"flex items-center gap-1.5 px-3 py-2 rounded-full text-sm border-2 transition-all " + (selected ? "border-sage-300 bg-sage-300/10 text-sage-300 font-bold" : "border-sand-300 text-charcoal-400 hover:border-bronze-500")}>
+              <span className="text-base">{l.flag}</span>
+              <span className="text-xs">{l.code}</span>
+            </button>
+          );
+        })}
+      </div>
           <div className="text-[10px] text-charcoal-300 mt-1">Séparées par virgule</div>
         </Field>
         <Field label="Spécialités">
