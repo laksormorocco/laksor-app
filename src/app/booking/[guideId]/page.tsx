@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { createClient } from "@supabase/supabase-js";
 import { useRouter, useParams } from "next/navigation";
 import { useExchangeRate } from "@/hooks/useExchangeRate";
+import { priceWithCommission } from "@/lib/pricing";
 import CalendarPicker from "@/components/CalendarPicker";
 import {
   ArrowLeft, Users, Baby, Minus, Plus, Car,
