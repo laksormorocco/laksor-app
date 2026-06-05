@@ -184,51 +184,6 @@ export default function AdminDashboard() {
   );
 
 
-      {/* MODAL EDIT GUIDE */}
-      {editGuide && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm" onClick={() => setEditGuide(null)}>
-          <div className="bg-white rounded-t-3xl w-full max-w-lg p-5 max-h-[85vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-            <div className="flex items-center justify-between mb-4">
-              <div className="font-display text-base font-bold text-charcoal-800">Modifier — {editGuide.displayName}</div>
-              <button onClick={() => setEditGuide(null)} className="w-8 h-8 rounded-full bg-sand-200 flex items-center justify-center text-charcoal-600">✕</button>
-            </div>
-            <div className="flex flex-col gap-3">
-              {[
-                { key:"displayName", label:"Nom affiché" },
-                { key:"city", label:"Ville" },
-                { key:"phone", label:"WhatsApp (avec indicatif)" },
-                { key:"halfDayPrice", label:"Prix demi-journée (MAD guide)" },
-                { key:"fullDayPrice", label:"Prix journée complète (MAD guide)" },
-                { key:"yearsExp", label:"Années d expérience" },
-                { key:"languages", label:"Langues (séparées par virgule)" },
-              ].map(f => (
-                <div key={f.key}>
-                  <div className="text-[10px] font-bold text-charcoal-400 uppercase tracking-widest mb-1">{f.label}</div>
-                  <input value={editGuideForm[f.key] || ""} onChange={e => setEditGuideForm({...editGuideForm, [f.key]: e.target.value})}
-                    className="w-full border border-sand-300 rounded-xl px-3 py-2.5 text-sm text-charcoal-800 outline-none focus:border-bronze-500" />
-                </div>
-              ))}
-              <div>
-                <div className="text-[10px] font-bold text-charcoal-400 uppercase tracking-widest mb-1">Bio</div>
-                <textarea value={editGuideForm.bio || ""} onChange={e => setEditGuideForm({...editGuideForm, bio: e.target.value})}
-                  rows={3} className="w-full border border-sand-300 rounded-xl px-3 py-2.5 text-sm text-charcoal-800 outline-none focus:border-bronze-500 resize-none" />
-              </div>
-              <button onClick={async () => {
-                const langs = editGuideForm.languages.split(",").map((l:string)=>l.trim()).filter(Boolean);
-                await fetch("/api/admin/guides", {
-                  method: "PATCH",
-                  headers: {"Content-Type":"application/json"},
-                  body: JSON.stringify({ id: editGuide.id, ...editGuideForm, languages: langs })
-                });
-                fetchGuides();
-                setEditGuide(null);
-              }} className="w-full bg-bronze-500 text-white font-bold py-3.5 rounded-full text-sm">
-                Sauvegarder
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
   return (
     <div className="bg-sand-200 min-h-screen pb-24">
@@ -936,6 +891,51 @@ export default function AdminDashboard() {
           </button>
         ))}
       </nav>
+      {/* MODAL EDIT GUIDE */}
+      {editGuide && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm" onClick={() => setEditGuide(null)}>
+          <div className="bg-white rounded-t-3xl w-full max-w-lg p-5 max-h-[85vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <div className="font-display text-base font-bold text-charcoal-800">Modifier — {editGuide.displayName}</div>
+              <button onClick={() => setEditGuide(null)} className="w-8 h-8 rounded-full bg-sand-200 flex items-center justify-center text-charcoal-600">✕</button>
+            </div>
+            <div className="flex flex-col gap-3">
+              {[
+                { key:"displayName", label:"Nom affiché" },
+                { key:"city", label:"Ville" },
+                { key:"phone", label:"WhatsApp (avec indicatif)" },
+                { key:"halfDayPrice", label:"Prix demi-journée (MAD guide)" },
+                { key:"fullDayPrice", label:"Prix journée complète (MAD guide)" },
+                { key:"yearsExp", label:"Années d expérience" },
+                { key:"languages", label:"Langues (séparées par virgule)" },
+              ].map(f => (
+                <div key={f.key}>
+                  <div className="text-[10px] font-bold text-charcoal-400 uppercase tracking-widest mb-1">{f.label}</div>
+                  <input value={editGuideForm[f.key] || ""} onChange={e => setEditGuideForm({...editGuideForm, [f.key]: e.target.value})}
+                    className="w-full border border-sand-300 rounded-xl px-3 py-2.5 text-sm text-charcoal-800 outline-none focus:border-bronze-500" />
+                </div>
+              ))}
+              <div>
+                <div className="text-[10px] font-bold text-charcoal-400 uppercase tracking-widest mb-1">Bio</div>
+                <textarea value={editGuideForm.bio || ""} onChange={e => setEditGuideForm({...editGuideForm, bio: e.target.value})}
+                  rows={3} className="w-full border border-sand-300 rounded-xl px-3 py-2.5 text-sm text-charcoal-800 outline-none focus:border-bronze-500 resize-none" />
+              </div>
+              <button onClick={async () => {
+                const langs = editGuideForm.languages.split(",").map((l:string)=>l.trim()).filter(Boolean);
+                await fetch("/api/admin/guides", {
+                  method: "PATCH",
+                  headers: {"Content-Type":"application/json"},
+                  body: JSON.stringify({ id: editGuide.id, ...editGuideForm, languages: langs })
+                });
+                fetchGuides();
+                setEditGuide(null);
+              }} className="w-full bg-bronze-500 text-white font-bold py-3.5 rounded-full text-sm">
+                Sauvegarder
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
