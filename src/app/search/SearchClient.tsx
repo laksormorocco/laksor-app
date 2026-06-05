@@ -203,7 +203,7 @@ export default function SearchClient({ guides }: { guides: Guide[] }) {
       <div className="sticky top-0 z-30 bg-white border-b border-sand-300">
 
         {/* Navbar */}
-        <div className="flex items-center gap-3 px-4 h-16">
+        <div className="flex items-center gap-3 px-4 pr-4 h-16">
           <a href="/" className="w-9 h-9 rounded-full border border-sand-300 flex items-center justify-center text-charcoal-700 flex-shrink-0">
             <ArrowLeft size={16} weight="bold" />
           </a>
