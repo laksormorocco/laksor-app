@@ -204,17 +204,14 @@ export default function AdminDashboard() {
               ].map(f => (
                 <div key={f.key}>
                   <div className="text-[10px] font-bold text-charcoal-400 uppercase tracking-widest mb-1">{f.label}</div>
-                  <input value={editGuideForm[f.key] || ""}
-                    onChange={e => setEditGuideForm({...editGuideForm, [f.key]: e.target.value})}
+                  <input value={editGuideForm[f.key] || ""} onChange={e => setEditGuideForm({...editGuideForm, [f.key]: e.target.value})}
                     className="w-full border border-sand-300 rounded-xl px-3 py-2.5 text-sm text-charcoal-800 outline-none focus:border-bronze-500" />
                 </div>
               ))}
               <div>
                 <div className="text-[10px] font-bold text-charcoal-400 uppercase tracking-widest mb-1">Bio</div>
-                <textarea value={editGuideForm.bio || ""}
-                  onChange={e => setEditGuideForm({...editGuideForm, bio: e.target.value})}
-                  rows={3}
-                  className="w-full border border-sand-300 rounded-xl px-3 py-2.5 text-sm text-charcoal-800 outline-none focus:border-bronze-500 resize-none" />
+                <textarea value={editGuideForm.bio || ""} onChange={e => setEditGuideForm({...editGuideForm, bio: e.target.value})}
+                  rows={3} className="w-full border border-sand-300 rounded-xl px-3 py-2.5 text-sm text-charcoal-800 outline-none focus:border-bronze-500 resize-none" />
               </div>
               <button onClick={async () => {
                 const langs = editGuideForm.languages.split(",").map((l:string)=>l.trim()).filter(Boolean);
