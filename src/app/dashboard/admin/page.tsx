@@ -460,10 +460,20 @@ export default function AdminDashboard() {
                       </>
                     )}
                     {guideTab === "approved" && (
-                      <button onClick={() => updateGuide(g.id,"SUSPENDED")}
-                        className="bg-bronze-50 text-bronze-500 rounded-full px-3 py-1.5 text-xs font-bold border border-bronze-500">
-                        Suspendre
-                      </button>
+                      <>
+                        <button onClick={() => updateGuide(g.id,"SUSPENDED")}
+                          className="bg-bronze-50 text-bronze-500 rounded-full px-3 py-1.5 text-xs font-bold border border-bronze-500">
+                          Suspendre
+                        </button>
+                        <button onClick={() => { setEditGuide(g); setEditGuideForm({ displayName: g.displayName, city: g.city, bio: g.bio||"", languages: (g.languages||[]).join(", "), halfDayPrice: g.halfDayPrice, fullDayPrice: g.fullDayPrice, yearsExp: g.yearsExp||0, phone: g.phone||"" }); }}
+                          className="px-3 py-1.5 rounded-full text-xs font-bold bg-charcoal-800 text-white">
+                          Modifier
+                        </button>
+                        <a href={"/guide/"+g.id} target="_blank"
+                          className="px-3 py-1.5 rounded-full text-xs font-bold bg-sand-200 text-charcoal-600 border border-sand-300 no-underline">
+                          Voir profil
+                        </a>
+                      </>
                     )}
                     <button onClick={() => deleteGuide(g.id)}
                       className="bg-red-50 text-red-400 rounded-full px-3 py-1.5 text-xs font-bold border border-red-200 ml-auto">
