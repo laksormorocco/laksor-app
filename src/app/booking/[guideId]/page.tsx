@@ -161,7 +161,7 @@ export default function BookingPage() {
           {adjustedTotal > 0 ? (
             <>
               <div className="font-display text-lg font-bold text-charcoal-800">{convert(adjustedTotal)} <span className="text-xs font-normal text-charcoal-400">(~{adjustedTotal} MAD)</span></div>
-              {payment === "deposit" && <div className="text-[10px] text-bronze-500">Acompte : {deposit} MAD</div>}
+              {payment === "deposit" && <div className="text-[10px] text-bronze-500">Acompte : {convert(deposit)}</div>}
             </>
           ) : (
             <>
@@ -369,7 +369,7 @@ export default function BookingPage() {
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-charcoal-400">Transport</span>
-                  <span className="font-semibold text-charcoal-800">{transport ? "+{convert(300)}" : "Non"}</span>
+                  <span className="font-semibold text-charcoal-800">{transport ? "+" + convert(300) : "Non"}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-charcoal-400">Paiement</span>
