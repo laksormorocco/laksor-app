@@ -196,7 +196,7 @@ export default async function HomePage() {
       {/* JOIN */}
       <section className="mt-8 px-4 max-w-2xl mx-auto pb-4">
         <div className="relative rounded-3xl overflow-hidden" style={{background:"linear-gradient(135deg, #111111 0%, #2a1f0e 100%)"}}>
-          <div className="absolute inset-0 opacity-10" style={{backgroundImage:"url(https://images.unsplash.com/photo-1560365163-3e8d64e762ef?w=800&q=60)", backgroundSize:"cover", backgroundPosition:"center"}} />
+          <div className="absolute inset-0 opacity-10" style={{backgroundImage:"url(https://images.unsplash.com/photo-1647878501041-1609141a7fb1?q=80&w=1971&auto=format&fit=crop)", backgroundSize:"cover", backgroundPosition:"center"}} />
           <div className="relative p-6">
             <div className="inline-flex items-center gap-1.5 bg-bronze-500/20 border border-bronze-500/30 rounded-full px-3 py-1 mb-4">
               <span className="text-bronze-500 text-[10px] font-bold uppercase tracking-widest">Devenez partenaire</span>
