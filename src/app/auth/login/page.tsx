@@ -1,87 +1,175 @@
-import LoginButton from "@/components/LoginButton";
+"use client";
+import { useState } from "react";
+import { createBrowserClient } from "@supabase/ssr";
 import Link from "next/link";
-import { ArrowLeft, Lock, MapPin, ChatCircle, ShieldCheck } from "@phosphor-icons/react/dist/ssr";
+import { ArrowLeft, ArrowRight, EnvelopeSimple, Lock, Eye, EyeSlash, X } from "@phosphor-icons/react";
+import LoginButton from "@/components/LoginButton";
 
 export default function LoginPage() {
-  return (
-    <div className="min-h-screen bg-sand-200 flex flex-col max-w-lg mx-auto">
+  const [step, setStep] = useState<"email"|"password"|"signup">("email");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPw, setShowPw] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
-      {/* ── COVER ── */}
-      <div className="relative h-64 overflow-hidden flex-shrink-0">
-        <div className="absolute inset-0"
-          style={{ backgroundImage: "url(https://images.unsplash.com/photo-1539020140153-e479b8c22e70?w=800&q=80)", backgroundSize: "cover", backgroundPosition: "center" }} />
-        <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.55) 100%)" }} />
-        <Link href="/" className="absolute top-4 left-4 w-9 h-9 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center text-white no-underline z-10">
-          <ArrowLeft size={16} weight="bold" />
-        </Link>
-        <div className="relative z-10 flex flex-col items-center justify-end h-full pb-8 px-6 text-center">
-          <div className="w-16 h-16 rounded-2xl bg-bronze-500 flex items-center justify-center mb-4 text-3xl" style={{ boxShadow: "0 8px 24px rgba(184,138,68,0.4)" }}>🧭</div>
-          <h1 className="font-display text-2xl font-semibold text-white mb-1 leading-tight">
-            Découvrez le Maroc<br/>avec ceux qui y vivent
-          </h1>
-          <p className="text-sm text-white/70">Guides locaux certifiés · Expériences authentiques</p>
-        </div>
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
+
+  async function checkEmail() {
+    if (!email) return;
+    setLoading(true);
+    setError("");
+    // Verifier si compte existe
+    const { data } = await supabase.auth.signInWithOtp({ email, options: { shouldCreateUser: false } });
+    setLoading(false);
+    setStep("password");
+  }
+
+  async function handleLogin() {
+    setLoading(true);
+    setError("");
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) {
+      if (error.message.includes("Invalid")) setError("Mot de passe incorrect");
+      else setError(error.message);
+    } else window.location.href = "/dashboard";
+    setLoading(false);
+  }
+
+  async function handleSignup() {
+    setLoading(true);
+    setError("");
+    const { error } = await supabase.auth.signUp({ email, password });
+    if (error) setError(error.message);
+    else setSuccess("Verifiez votre email pour confirmer votre compte !");
+    setLoading(false);
+  }
+
+  return (
+    <div className="min-h-screen bg-white flex flex-col max-w-lg mx-auto">
+
+      {/* HEADER */}
+      <div className="flex items-center justify-between px-6 py-4 border-b border-sand-200">
+        {step !== "email" ? (
+          <button onClick={() => { setStep("email"); setError(""); setPassword(""); }}
+            className="w-9 h-9 rounded-full border border-sand-200 flex items-center justify-center">
+            <ArrowLeft size={16} weight="bold" className="text-charcoal-800" />
+          </button>
+        ) : (
+          <Link href="/" className="w-9 h-9 rounded-full border border-sand-200 flex items-center justify-center no-underline">
+            <X size={16} weight="bold" className="text-charcoal-800" />
+          </Link>
+        )}
+        <span className="font-display text-sm font-bold text-charcoal-800">
+          {step === "email" ? "Connexion ou inscription" : step === "password" ? "Connexion" : "Creer un compte"}
+        </span>
+        <div className="w-9" />
       </div>
 
-      {/* ── CARD ── */}
-      <div className="flex-1 px-4 -mt-5 pb-10">
-        <div className="bg-white rounded-3xl p-6 border border-sand-300" style={{ boxShadow: "0 2px 16px rgba(0,0,0,0.06)" }}>
+      {/* CONTENT */}
+      <div className="flex-1 px-6 pt-8">
 
-          {/* Social proof */}
-          <div className="flex items-center justify-center gap-3 bg-sand-200 rounded-2xl px-4 py-3 mb-5">
-            <div className="flex">
-              {["M","J","S"].map((l,i) => (
-                <div key={i} className="w-7 h-7 rounded-full bg-sand-300 border-2 border-white flex items-center justify-center text-xs font-bold text-charcoal-500 -mr-2">{l}</div>
-              ))}
+        {/* STEP EMAIL */}
+        {step === "email" && (
+          <div className="flex flex-col gap-5">
+            <div>
+              <h2 className="font-display text-2xl font-bold text-charcoal-800 mb-1">Bienvenue</h2>
+              <p className="text-sm text-charcoal-400">Connectez-vous ou creez un compte</p>
             </div>
-            <span className="text-xs font-semibold text-charcoal-500 ml-3"><strong className="text-charcoal-800">1.2k+</strong> voyageurs nous font confiance</span>
+
+            <div className="relative">
+              <input type="email" value={email} onChange={e => setEmail(e.target.value)}
+                placeholder="Email"
+                onKeyDown={e => e.key === "Enter" && checkEmail()}
+                className="w-full border border-sand-300 rounded-2xl px-4 py-4 text-sm text-charcoal-800 outline-none focus:border-charcoal-800 transition-colors" />
+            </div>
+
+            <button onClick={checkEmail} disabled={!email || loading}
+              className="w-full bg-charcoal-800 text-white font-bold py-4 rounded-2xl text-sm flex items-center justify-center gap-2 disabled:opacity-40">
+              {loading ? "..." : "Continuer"} {!loading && <ArrowRight size={14} weight="bold" />}
+            </button>
+
+            <div className="flex items-center gap-3">
+              <div className="flex-1 h-px bg-sand-200" />
+              <span className="text-xs text-charcoal-400">ou</span>
+              <div className="flex-1 h-px bg-sand-200" />
+            </div>
+
+            <LoginButton />
+
+            <p className="text-center text-[11px] text-charcoal-300 leading-relaxed">
+              En continuant, vous acceptez les <span className="underline">CGU</span> et la <span className="underline">Politique de confidentialite</span> de Laksor.
+            </p>
           </div>
+        )}
 
-          {/* Google button */}
-          <LoginButton />
-
-          {/* Divider */}
-          <div className="flex items-center gap-3 my-4">
-            <div className="flex-1 h-px bg-sand-300" />
-            <div className="flex items-center gap-1 text-[10px] text-charcoal-300">
-              <Lock size={10} weight="fill" />
-              <span>Connexion sécurisée par Google OAuth</span>
+        {/* STEP PASSWORD */}
+        {step === "password" && (
+          <div className="flex flex-col gap-5">
+            <div>
+              <h2 className="font-display text-2xl font-bold text-charcoal-800 mb-1">Bon retour !</h2>
+              <p className="text-sm text-charcoal-400">{email}</p>
             </div>
-            <div className="flex-1 h-px bg-sand-300" />
+
+            <div className="relative">
+              <input type={showPw ? "text" : "password"} value={password} onChange={e => setPassword(e.target.value)}
+                placeholder="Mot de passe"
+                onKeyDown={e => e.key === "Enter" && handleLogin()}
+                className="w-full border border-sand-300 rounded-2xl px-4 py-4 pr-12 text-sm text-charcoal-800 outline-none focus:border-charcoal-800 transition-colors" />
+              <button onClick={() => setShowPw(!showPw)} className="absolute right-4 top-1/2 -translate-y-1/2 text-charcoal-400">
+                {showPw ? <EyeSlash size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
+
+            {error && <div className="text-xs text-red-500 bg-red-50 rounded-xl px-4 py-3">{error}</div>}
+
+            <button onClick={handleLogin} disabled={!password || loading}
+              className="w-full bg-charcoal-800 text-white font-bold py-4 rounded-2xl text-sm disabled:opacity-40">
+              {loading ? "..." : "Se connecter"}
+            </button>
+
+            <button onClick={() => setStep("signup")}
+              className="text-sm text-charcoal-600 underline text-center">
+              Pas encore de compte ? S inscrire
+            </button>
           </div>
+        )}
 
-          {/* Mini cards */}
-          <div className="grid grid-cols-3 gap-2 mb-5">
-            <div className="bg-sand-200 border border-sand-300 rounded-2xl p-3 text-center">
-              <MapPin size={20} weight="duotone" className="text-bronze-500 mx-auto mb-1" />
-              <div className="text-[11px] font-bold text-charcoal-800 leading-tight">Guides vérifiés</div>
-              <div className="text-[9px] text-charcoal-400 mt-0.5">Certifiés Ministère</div>
+        {/* STEP SIGNUP */}
+        {step === "signup" && (
+          <div className="flex flex-col gap-5">
+            <div>
+              <h2 className="font-display text-2xl font-bold text-charcoal-800 mb-1">Creer un compte</h2>
+              <p className="text-sm text-charcoal-400">{email}</p>
             </div>
-            <div className="bg-sand-200 border border-sand-300 rounded-2xl p-3 text-center">
-              <ChatCircle size={20} weight="duotone" className="text-bronze-500 mx-auto mb-1" />
-              <div className="text-[11px] font-bold text-charcoal-800 leading-tight">Chat direct</div>
-              <div className="text-[9px] text-charcoal-400 mt-0.5">WhatsApp inclus</div>
+
+            <div className="relative">
+              <input type={showPw ? "text" : "password"} value={password} onChange={e => setPassword(e.target.value)}
+                placeholder="Choisir un mot de passe"
+                className="w-full border border-sand-300 rounded-2xl px-4 py-4 pr-12 text-sm text-charcoal-800 outline-none focus:border-charcoal-800 transition-colors" />
+              <button onClick={() => setShowPw(!showPw)} className="absolute right-4 top-1/2 -translate-y-1/2 text-charcoal-400">
+                {showPw ? <EyeSlash size={18} /> : <Eye size={18} />}
+              </button>
             </div>
-            <div className="bg-sand-200 border border-sand-300 rounded-2xl p-3 text-center">
-              <ShieldCheck size={20} weight="duotone" className="text-bronze-500 mx-auto mb-1" />
-              <div className="text-[11px] font-bold text-charcoal-800 leading-tight">Résa protégée</div>
-              <div className="text-[9px] text-charcoal-400 mt-0.5">Annulation 72h</div>
+
+            {error && <div className="text-xs text-red-500 bg-red-50 rounded-xl px-4 py-3">{error}</div>}
+            {success && <div className="text-xs text-sage-300 bg-sage-300/10 rounded-xl px-4 py-3 text-center">{success}</div>}
+
+            <button onClick={handleSignup} disabled={!password || loading || !!success}
+              className="w-full bg-bronze-500 text-white font-bold py-4 rounded-2xl text-sm disabled:opacity-40" style={{boxShadow:"0 4px 14px rgba(184,138,68,0.3)"}}>
+              {loading ? "..." : "Creer mon compte"}
+            </button>
+
+            <div className="bg-sand-100 rounded-2xl p-4 border border-sand-300">
+              <p className="text-[11px] text-charcoal-400 leading-relaxed">Vous etes guide ou chauffeur ?</p>
+              <Link href="/auth/register" className="text-xs font-bold text-bronze-500 no-underline">Candidater comme guide →</Link>
             </div>
           </div>
-
-          {/* Devenir guide CTA */}
-          <div className="bg-charcoal-800 rounded-2xl p-4 mb-4 text-center">
-            <div className="text-xs text-charcoal-300 mb-2">Vous êtes guide ou chauffeur ?</div>
-            <Link href="/auth/register"
-              className="inline-flex items-center gap-2 bg-bronze-500 text-white text-sm font-bold px-5 py-2.5 rounded-full no-underline hover:bg-bronze-600 transition-colors">
-              Devenir guide →
-            </Link>
-          </div>
-
-          <p className="text-center text-[10px] text-charcoal-300">
-            En vous connectant, vous acceptez nos <span className="underline cursor-pointer">CGU</span>
-          </p>
-        </div>
+        )}
       </div>
     </div>
   );
