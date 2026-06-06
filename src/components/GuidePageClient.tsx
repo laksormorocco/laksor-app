@@ -380,6 +380,11 @@ function TourCard({ guideTour, guideId }: { guideTour: any; guideId: string }) {
           {guideTour.isBestSeller
             ? <span className="bg-bronze-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-full">🔥 BEST SELLER</span>
             : <span />}
+          {t.transportRequired && (
+            <span className="bg-white/90 backdrop-blur-sm text-charcoal-800 text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
+              🚗 Transport necessaire
+            </span>
+          )}
           <button className="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/30">
             <span className="text-sm">🤍</span>
           </button>

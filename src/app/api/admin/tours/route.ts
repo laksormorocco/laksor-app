@@ -61,6 +61,7 @@ export async function PATCH(req: NextRequest) {
     if (included)    data.included    = included.split(",").map((t: string) => t.trim()).filter(Boolean);
     if (notIncluded) data.notIncluded = notIncluded.split(",").map((t: string) => t.trim()).filter(Boolean);
     if (itinerary) data.itinerary = itinerary;
+    if (body.transportRequired !== undefined) data.transportRequired = body.transportRequired;
 
     const template = await prisma.tourTemplate.update({ where: { id }, data });
     return NextResponse.json({ template });
