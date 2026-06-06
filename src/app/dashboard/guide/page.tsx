@@ -17,7 +17,7 @@ const supabase = createClient(
 const TABS = [
   { id:"home",         Icon: House,        label:"Dashboard"    },
   { id:"reservations", Icon: CalendarCheck, label:"Réservations" },
-  { id:"demandes",     Icon: Target,        label:"Demandes"     },
+  { id: "experiences", Icon: Sparkle, label: "Experiences" },
   { id:"stats",        Icon: ChartBar,      label:"Stats"        },
   { id:"profil",       Icon: User,          label:"Profil"       },
   { id:"services",     Icon: MapTrifold,    label:"Services"    },
