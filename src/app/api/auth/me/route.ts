@@ -5,10 +5,10 @@ export const dynamic = "force-dynamic";
 export async function GET(req: Request) {
   const url = new URL(req.url);
   const email = url.searchParams.get("email");
-  if (!email) return NextResponse.json({ role: "TOURIST" });
+  const supabaseId = url.searchParams.get("supabaseId");
 
   const user = await prisma.user.findUnique({
-    where: { email },
+    where: supabaseId ? { supabaseId } : { email: email! },
     include: { guideProfile: { select: { id: true } } }
   });
 
