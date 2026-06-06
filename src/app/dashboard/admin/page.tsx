@@ -64,6 +64,7 @@ export default function AdminDashboard() {
   const [crmPeriod,    setCrmPeriod]    = useState("");
   const [crmGuide,     setCrmGuide]     = useState("");
   const [reminders,    setReminders]    = useState<any[]>([]);
+  const [allExperiences, setAllExperiences] = useState<any[]>([]);
   const [editGuide,    setEditGuide]    = useState<any>(null);
   const [editGuideForm, setEditGuideForm] = useState<any>({});
   const [remLoading,   setRemLoading]   = useState(false);
@@ -86,6 +87,11 @@ export default function AdminDashboard() {
   async function fetchGuides() {
     const res = await fetch("/api/admin/guides?status=" + guideTab.toUpperCase());
     setGuides((await res.json()).guides || []);
+  }
+
+  async function fetchAllExperiences() {
+    const res = await fetch("/api/admin/experiences");
+    if (res.ok) setAllExperiences((await res.json()).experiences || []);
   }
 
   async function fetchReminders() {
@@ -500,6 +506,55 @@ export default function AdminDashboard() {
         )}
 
         {/* ══ TOURS ══ */}
+        
+        {active === "experiences" && (
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center justify-between mb-2">
+              <div className="text-sm font-bold text-charcoal-800">Experiences guides ({allExperiences.length})</div>
+              <button onClick={fetchAllExperiences} className="text-xs text-bronze-500 font-bold">Actualiser</button>
+            </div>
+            {allExperiences.length === 0 ? (
+              <div className="bg-white rounded-2xl p-8 text-center border border-sand-300">
+                <div className="text-3xl mb-2">🧭</div>
+                <div className="text-sm text-charcoal-400">Aucune experience soumise</div>
+              </div>
+            ) : allExperiences.map((exp: any) => (
+              <div key={exp.id} className="bg-white rounded-2xl border border-sand-300 p-4">
+                <div className="flex items-start gap-3 mb-3">
+                  {exp.photos?.[0] ? (
+                    <img src={exp.photos[0]} className="w-14 h-14 rounded-xl object-cover flex-shrink-0" />
+                  ) : (
+                    <div className="w-14 h-14 rounded-xl bg-sand-200 flex items-center justify-center text-2xl flex-shrink-0">🧭</div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-bold text-charcoal-800">{exp.title}</div>
+                    <div className="text-xs text-charcoal-400">{exp.guide?.displayName} · {exp.guide?.city}</div>
+                    <div className="text-xs text-charcoal-400">{exp.duration} · {exp.groupSize} · {exp.price} MAD</div>
+                    <span className={"text-[10px] font-bold px-2 py-0.5 rounded-full mt-1 inline-block " + (exp.status === "APPROVED" ? "bg-sage-300/15 text-sage-300" : exp.status === "PENDING" ? "bg-bronze-500/15 text-bronze-500" : "bg-red-100 text-red-400")}>
+                      {exp.status === "APPROVED" ? "Approuvee" : exp.status === "PENDING" ? "En attente" : "Refusee"}
+                    </span>
+                  </div>
+                </div>
+                {exp.description && <p className="text-xs text-charcoal-400 mb-3 line-clamp-2">{exp.description}</p>}
+                <div className="flex gap-2">
+                  <button onClick={async () => {
+                    await fetch("/api/admin/experiences", { method: "PATCH", headers: {"Content-Type":"application/json"}, body: JSON.stringify({ id: exp.id, status: "APPROVED" }) });
+                    fetchAllExperiences();
+                  }} className="flex-1 bg-sage-300 text-white text-xs font-bold py-2.5 rounded-full">
+                    Approuver
+                  </button>
+                  <button onClick={async () => {
+                    await fetch("/api/admin/experiences", { method: "PATCH", headers: {"Content-Type":"application/json"}, body: JSON.stringify({ id: exp.id, status: "REFUSED" }) });
+                    fetchAllExperiences();
+                  }} className="flex-1 bg-red-50 text-red-400 border border-red-200 text-xs font-bold py-2.5 rounded-full">
+                    Refuser
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
         {active === "tours" && (
           <div className="flex flex-col gap-3">
             <div className="text-sm font-bold text-charcoal-800">Templates de tours ({templates.length}/7)</div>
