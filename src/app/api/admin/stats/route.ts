@@ -28,9 +28,9 @@ export async function GET() {
     }
   });
 
-  const recentGuides = await prisma.guideProfile.findMany({ where: { status: "PENDING", displayName: { not: null } },
+  const recentGuides = await prisma.guideProfile.findMany({
+    where: { status: "PENDING", displayName: { not: null } },
     take: 5,
-    where: { status: "PENDING" },
     orderBy: { createdAt: "desc" },
     include: { user: { select: { id:true, email:true } } }
   });
