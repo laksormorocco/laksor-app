@@ -19,11 +19,10 @@ export async function GET(req: Request) {
       halfDayPrice: true,
       fullDayPrice: true,
       yearsExp: true,
-      tours: { where: { isActive: true }, select: { id: true, isActive: true, price: true, template: { select: { id: true, title: true, description: true, duration: true, tourType: true, tags: true, included: true, groupSize: true } } } },
-      experiences: { where: { isActive: true, status: "APPROVED" }, select: { id: true, title: true, description: true, duration: true, groupSize: true, difficulty: true, price: true, photos: true, tags: true, included: true, notIncluded: true, itinerary: true, transportRequired: true, meetingPoint: true } }
+      tours: { where: { isActive: true }, select: { id: true, isActive: true, price: true, template: { select: { id: true, title: true, description: true, duration: true, tourType: true, tags: true, included: true, groupSize: true } } } }
     }
   });
 
   if (!guide) return NextResponse.json({ error: "Guide non trouve" }, { status: 404 });
-  return NextResponse.json({ guide });
+  return NextResponse.json({ guide: { ...guide, experiences } });
 }
