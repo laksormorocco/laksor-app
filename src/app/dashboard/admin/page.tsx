@@ -43,7 +43,7 @@ function statusBadge(status: string) {
 }
 
 export default function AdminDashboard() {
-  const [auth,     setAuth]     = useState(false);
+  const [auth,     setAuth]     = useState(() => typeof window !== "undefined" && sessionStorage.getItem("laksor_admin") === "true");
   const [pwd,      setPwd]      = useState("");
   const [active,   setActive]   = useState("overview");
   const [stats,    setStats]    = useState<any>(null);
@@ -183,7 +183,7 @@ export default function AdminDashboard() {
         <input type="password" value={pwd} onChange={e=>setPwd(e.target.value)}
           onKeyDown={e=>e.key==="Enter"&&setPwd(p=>{if(p===PASSWORD){setAuth(true);return p;}alert("Mot de passe incorrect");return p;})}
           placeholder="Mot de passe" className={inputCls + " mb-4"} />
-        <button onClick={() => { if (pwd === PASSWORD) setAuth(true); else alert("Mot de passe incorrect"); }}
+        <button onClick={() => { if (pwd === PASSWORD) { setAuth(true); sessionStorage.setItem("laksor_admin", "true"); } else alert("Mot de passe incorrect"); }}
           className="w-full bg-bronze-500 text-white rounded-full py-3.5 text-sm font-bold hover:bg-bronze-600 transition-colors">
           Accéder
         </button>
