@@ -297,10 +297,10 @@ export default function AdminDashboard() {
                 <div key={g.guideId} className={`flex items-center gap-3 py-2.5 ${i < stats.topGuides.length-1 ? "border-b border-sand-200" : ""}`}>
                   <div className="w-6 h-6 rounded-full bg-bronze-500/10 flex items-center justify-center text-xs font-bold text-bronze-500 flex-shrink-0">{i+1}</div>
                   <div className="w-8 h-8 rounded-full overflow-hidden bg-sand-300 flex-shrink-0">
-                    {g.avatar ? <img src={g.avatar} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-xs font-bold text-charcoal-500">{g.displayName?.[0]}</div>}
+                    {g.avatar ? <img src={g.avatar} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-xs font-bold text-charcoal-500">{g?.displayName?.[0]}</div>}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm font-semibold text-charcoal-800 truncate">{g.displayName}</div>
+                    <div className="text-sm font-semibold text-charcoal-800 truncate">{g?.displayName}</div>
                     <div className="text-xs text-charcoal-400">{g.city} · {g.bookings} resa</div>
                   </div>
                   <div className="text-sm font-bold text-bronze-500">{g.revenue} MAD</div>
@@ -343,7 +343,7 @@ export default function AdminDashboard() {
                         {g.avatar ? <img src={g.avatar} className="w-full h-full object-cover" /> : g.displayName?.[0]}
                       </div>
                       <div className="flex-1">
-                        <div className="text-sm font-bold text-charcoal-800">{g.displayName}</div>
+                        <div className="text-sm font-bold text-charcoal-800">{g?.displayName}</div>
                         <div className="text-xs text-charcoal-400">📍 {g.city}</div>
                       </div>
                     </div>
@@ -387,7 +387,7 @@ export default function AdminDashboard() {
                       {g.avatar ? <img src={g.avatar} className="w-full h-full object-cover" /> : g.displayName?.[0]}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm font-bold text-charcoal-800">{g.displayName}</div>
+                      <div className="text-sm font-bold text-charcoal-800">{g?.displayName}</div>
                       <div className="text-xs text-charcoal-400">📍 {g.city} · {g.halfDayPrice}/{g.fullDayPrice} MAD</div>
                       {g.user?.email && <div className="text-xs text-bronze-500 truncate">{g.user.email}</div>}
                     </div>
