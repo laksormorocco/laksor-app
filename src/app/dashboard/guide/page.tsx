@@ -156,97 +156,6 @@ export default function GuideDashboard() {
   );
 
 
-      {expForm && (
-        <div className="fixed inset-x-0 top-0 bottom-16 z-50 bg-white flex flex-col">
-          <div className="flex items-center justify-between px-4 py-3 border-b border-sand-200">
-            <button onClick={() => setExpForm(null)} className="w-9 h-9 rounded-full border border-sand-200 flex items-center justify-center">
-              <ArrowLeft size={16} weight="bold" className="text-charcoal-600" />
-            </button>
-            <span className="font-display text-sm font-bold text-charcoal-800">{expForm.id ? "Modifier" : "Nouvelle experience"}</span>
-            <div className="w-9" />
-          </div>
-          <div className="flex-1 overflow-y-auto px-4 py-5 flex flex-col gap-4">
-            <div>
-              <div className="text-xs font-bold text-charcoal-800 mb-2">Photos</div>
-              <div className="flex gap-2 overflow-x-auto pb-1">
-                {(expForm.photos || []).map((url: string, i: number) => (
-                  <div key={i} className="relative flex-shrink-0">
-                    <img src={url} className="w-20 h-20 rounded-xl object-cover" />
-                    <button onClick={() => setExpForm({...expForm, photos: expForm.photos.filter((_: any, j: number) => j !== i)})}
-                      className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center">x</button>
-                  </div>
-                ))}
-                <label className="w-20 h-20 rounded-xl border-2 border-dashed border-sand-300 flex flex-col items-center justify-center cursor-pointer flex-shrink-0 text-charcoal-400">
-                  <span className="text-2xl">+</span>
-                  <span className="text-[10px]">Photo</span>
-                  <input type="file" accept="image/*" className="hidden" onChange={async e => {
-                    const file = e.target.files?.[0];
-                    if (!file) return;
-                    const fd = new FormData();
-                    fd.append("file", file as Blob);
-                    fd.append("folder", "experiences");
-                    const res = await fetch("/api/upload", { method: "POST", body: fd });
-                    const { url } = await res.json();
-                    if (url) setExpForm({...expForm, photos: [...(expForm.photos||[]), url]});
-                  }} />
-                </label>
-              </div>
-            </div>
-            {([
-              { key:"title", label:"Titre *", ph:"Journee a Agafay..." },
-              { key:"description", label:"Description", ph:"Decrivez votre experience...", area:true },
-              { key:"price", label:"Prix (MAD)", ph:"500" },
-              { key:"city", label:"Ville", ph:"Marrakech" },
-              { key:"meetingPoint", label:"Point de RDV", ph:"Place Jemaa el-Fna..." },
-              { key:"duration", label:"Duree", ph:"4h" },
-              { key:"groupSize", label:"Groupe", ph:"1-6 pers." },
-              { key:"difficulty", label:"Niveau", ph:"Facile" },
-              { key:"tags", label:"Tags (virgule)", ph:"Desert, Aventure" },
-              { key:"included", label:"Inclus (virgule)", ph:"Guide, Transport" },
-              { key:"notIncluded", label:"Non inclus (virgule)", ph:"Repas, Entrees" },
-            ] as any[]).map((f: any) => (
-              <div key={f.key}>
-                <div className="text-xs font-bold text-charcoal-400 mb-1">{f.label}</div>
-                {f.area ? (
-                  <textarea value={expForm[f.key] || ""} onChange={e => setExpForm({...expForm, [f.key]: e.target.value})}
-                    placeholder={f.ph} rows={3} className="w-full border border-sand-300 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-bronze-500 resize-none" />
-                ) : (
-                  <input value={expForm[f.key] || ""} onChange={e => setExpForm({...expForm, [f.key]: e.target.value})}
-                    placeholder={f.ph} className="w-full border border-sand-300 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-bronze-500" />
-                )}
-              </div>
-            ))}
-            <div className="flex items-center justify-between bg-sand-100 rounded-xl px-4 py-3">
-              <div>
-                <div className="text-xs font-bold text-charcoal-800">Transport necessaire</div>
-                <div className="text-[10px] text-charcoal-400">Prevenir le client qu il aura besoin de transport</div>
-              </div>
-              <button onClick={() => setExpForm({...expForm, transportRequired: !expForm.transportRequired})}
-                className={"w-12 h-6 rounded-full relative transition-colors " + (expForm.transportRequired ? "bg-sage-300" : "bg-sand-300")}>
-                <div className={"w-5 h-5 bg-white rounded-full absolute top-0.5 transition-all shadow-sm " + (expForm.transportRequired ? "left-6" : "left-0.5")} />
-              </button>
-            </div>
-            <button onClick={async () => {
-              const data = {
-                ...expForm,
-                guideId,
-                included: expForm.included ? expForm.included.split(",").map((s: string) => s.trim()).filter(Boolean) : [],
-                notIncluded: expForm.notIncluded ? expForm.notIncluded.split(",").map((s: string) => s.trim()).filter(Boolean) : [],
-                tags: expForm.tags ? expForm.tags.split(",").map((s: string) => s.trim()).filter(Boolean) : [],
-                price: Number(expForm.price) || 0,
-              };
-              const method = expForm.id ? "PATCH" : "POST";
-              const res = await fetch("/api/guide/experiences", { method, headers: {"Content-Type":"application/json"}, body: JSON.stringify(data) });
-              if (res.ok) { fetchExperiences(guideId); setExpForm(null); }
-            }}
-              className="w-full text-white font-bold py-4 rounded-full text-sm"
-              style={{background:"linear-gradient(135deg, #B88A44, #9A7238)", boxShadow:"0 4px 14px rgba(184,138,68,0.3)"}}>
-              {expForm.id ? "Mettre a jour" : "Publier l experience"}
-            </button>
-          </div>
-        </div>
-      )}
-
   return (
     <div className="bg-sand-200 min-h-screen pb-24">
 
@@ -670,6 +579,97 @@ export default function GuideDashboard() {
           </button>
         ))}
       </nav>
+
+      {expForm && (
+        <div className="fixed inset-x-0 top-0 bottom-16 z-50 bg-white flex flex-col">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-sand-200">
+            <button onClick={() => setExpForm(null)} className="w-9 h-9 rounded-full border border-sand-200 flex items-center justify-center">
+              <ArrowLeft size={16} weight="bold" className="text-charcoal-600" />
+            </button>
+            <span className="font-display text-sm font-bold text-charcoal-800">{expForm.id ? "Modifier" : "Nouvelle experience"}</span>
+            <div className="w-9" />
+          </div>
+          <div className="flex-1 overflow-y-auto px-4 py-5 flex flex-col gap-4">
+            <div>
+              <div className="text-xs font-bold text-charcoal-800 mb-2">Photos</div>
+              <div className="flex gap-2 overflow-x-auto pb-1">
+                {(expForm.photos || []).map((url: string, i: number) => (
+                  <div key={i} className="relative flex-shrink-0">
+                    <img src={url} className="w-20 h-20 rounded-xl object-cover" />
+                    <button onClick={() => setExpForm({...expForm, photos: expForm.photos.filter((_: any, j: number) => j !== i)})}
+                      className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center">x</button>
+                  </div>
+                ))}
+                <label className="w-20 h-20 rounded-xl border-2 border-dashed border-sand-300 flex flex-col items-center justify-center cursor-pointer flex-shrink-0 text-charcoal-400">
+                  <span className="text-2xl">+</span>
+                  <span className="text-[10px]">Photo</span>
+                  <input type="file" accept="image/*" className="hidden" onChange={async e => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    const fd = new FormData();
+                    fd.append("file", file as Blob);
+                    fd.append("folder", "experiences");
+                    const res = await fetch("/api/upload", { method: "POST", body: fd });
+                    const { url } = await res.json();
+                    if (url) setExpForm({...expForm, photos: [...(expForm.photos||[]), url]});
+                  }} />
+                </label>
+              </div>
+            </div>
+            {([
+              { key:"title", label:"Titre *", ph:"Journee a Agafay..." },
+              { key:"description", label:"Description", ph:"Decrivez votre experience...", area:true },
+              { key:"price", label:"Prix (MAD)", ph:"500" },
+              { key:"city", label:"Ville", ph:"Marrakech" },
+              { key:"meetingPoint", label:"Point de RDV", ph:"Place Jemaa el-Fna..." },
+              { key:"duration", label:"Duree", ph:"4h" },
+              { key:"groupSize", label:"Groupe", ph:"1-6 pers." },
+              { key:"difficulty", label:"Niveau", ph:"Facile" },
+              { key:"tags", label:"Tags (virgule)", ph:"Desert, Aventure" },
+              { key:"included", label:"Inclus (virgule)", ph:"Guide, Transport" },
+              { key:"notIncluded", label:"Non inclus (virgule)", ph:"Repas, Entrees" },
+            ] as any[]).map((f: any) => (
+              <div key={f.key}>
+                <div className="text-xs font-bold text-charcoal-400 mb-1">{f.label}</div>
+                {f.area ? (
+                  <textarea value={expForm[f.key] || ""} onChange={e => setExpForm({...expForm, [f.key]: e.target.value})}
+                    placeholder={f.ph} rows={3} className="w-full border border-sand-300 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-bronze-500 resize-none" />
+                ) : (
+                  <input value={expForm[f.key] || ""} onChange={e => setExpForm({...expForm, [f.key]: e.target.value})}
+                    placeholder={f.ph} className="w-full border border-sand-300 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-bronze-500" />
+                )}
+              </div>
+            ))}
+            <div className="flex items-center justify-between bg-sand-100 rounded-xl px-4 py-3">
+              <div>
+                <div className="text-xs font-bold text-charcoal-800">Transport necessaire</div>
+                <div className="text-[10px] text-charcoal-400">Prevenir le client qu il aura besoin de transport</div>
+              </div>
+              <button onClick={() => setExpForm({...expForm, transportRequired: !expForm.transportRequired})}
+                className={"w-12 h-6 rounded-full relative transition-colors " + (expForm.transportRequired ? "bg-sage-300" : "bg-sand-300")}>
+                <div className={"w-5 h-5 bg-white rounded-full absolute top-0.5 transition-all shadow-sm " + (expForm.transportRequired ? "left-6" : "left-0.5")} />
+              </button>
+            </div>
+            <button onClick={async () => {
+              const data = {
+                ...expForm,
+                guideId,
+                included: expForm.included ? expForm.included.split(",").map((s: string) => s.trim()).filter(Boolean) : [],
+                notIncluded: expForm.notIncluded ? expForm.notIncluded.split(",").map((s: string) => s.trim()).filter(Boolean) : [],
+                tags: expForm.tags ? expForm.tags.split(",").map((s: string) => s.trim()).filter(Boolean) : [],
+                price: Number(expForm.price) || 0,
+              };
+              const method = expForm.id ? "PATCH" : "POST";
+              const res = await fetch("/api/guide/experiences", { method, headers: {"Content-Type":"application/json"}, body: JSON.stringify(data) });
+              if (res.ok) { fetchExperiences(guideId); setExpForm(null); }
+            }}
+              className="w-full text-white font-bold py-4 rounded-full text-sm"
+              style={{background:"linear-gradient(135deg, #B88A44, #9A7238)", boxShadow:"0 4px 14px rgba(184,138,68,0.3)"}}>
+              {expForm.id ? "Mettre a jour" : "Publier l experience"}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
