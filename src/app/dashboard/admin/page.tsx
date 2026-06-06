@@ -614,7 +614,7 @@ export default function AdminDashboard() {
               <div className="relative w-16 h-16 rounded-2xl overflow-hidden bg-sand-200 flex-shrink-0">
                 {editGuideForm.avatar
                   ? <img src={editGuideForm.avatar} className="w-full h-full object-cover" />
-                  : <div className="w-full h-full flex items-center justify-center font-bold text-charcoal-400">{editGuide.displayName?.[0]}</div>}
+                  : <div className="w-full h-full flex items-center justify-center font-bold text-charcoal-400">{editGuide?.displayName?.[0]}</div>}
                 <label className="absolute inset-0 flex items-center justify-center bg-black/30 cursor-pointer">
                   <span className="text-white text-lg">+</span>
                   <input type="file" accept="image/*" className="hidden" onChange={async e => {
@@ -976,7 +976,7 @@ export default function AdminDashboard() {
               <div className="relative w-16 h-16 rounded-2xl overflow-hidden bg-sand-200 flex-shrink-0">
                 {editGuideForm.avatar
                   ? <img src={editGuideForm.avatar} className="w-full h-full object-cover" />
-                  : <div className="w-full h-full flex items-center justify-center font-bold text-charcoal-400">{editGuide.displayName?.[0]}</div>}
+                  : <div className="w-full h-full flex items-center justify-center font-bold text-charcoal-400">{editGuide?.displayName?.[0]}</div>}
                 <label className="absolute inset-0 flex items-center justify-center bg-black/30 cursor-pointer">
                   <span className="text-white text-lg">+</span>
                   <input type="file" accept="image/*" className="hidden" onChange={async e => {
