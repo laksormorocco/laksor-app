@@ -35,5 +35,30 @@ export async function GET(req: Request) {
     minPrice: t.guideTours.length > 0 ? Math.min(...t.guideTours.map(g => Number(g.price))) : null,
   }));
 
-  return NextResponse.json({ tours });
+  const guideExperiences = await prisma.guideExperience.findMany({
+    where: { isActive: true, status: "APPROVED" },
+    include: { guide: { select: { id: true, displayName: true, city: true } } }
+  });
+
+  const experiences = guideExperiences.map(exp => ({
+    id: exp.id,
+    tourType: "CUSTOM",
+    title: exp.title,
+    description: exp.description,
+    duration: exp.duration,
+    groupSize: exp.groupSize,
+    difficulty: exp.difficulty,
+    coverImage: exp.photos?.[0] || null,
+    tags: exp.tags,
+    guideCount: 1,
+    minPrice: exp.price,
+    included: exp.included,
+    notIncluded: exp.notIncluded,
+    isGuideExperience: true,
+    guideId: exp.guideId,
+    expId: exp.id,
+    guide: exp.guide,
+  }));
+
+  return NextResponse.json({ tours: [...tours, ...experiences] });
 }

@@ -108,7 +108,7 @@ export default function GuidePageClient({ guide }: { guide: any }) {
             (tab === t ? "text-bronze-500 border-bronze-500" : "text-charcoal-400 border-transparent")}>
           {TAB_LABELS[t]}
           {t === "avis" ? " (" + (guide.totalReviews || 0) + ")" : ""}
-          {t === "tours" ? " (" + activeTours.length + ")" : ""}
+          {t === "tours" ? " (" + totalTours + ")" : ""}
         </button>
       ))}
     </div>
