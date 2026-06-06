@@ -63,7 +63,7 @@ export default function BookingPage() {
 
   const persons = adults + children;
   const expBasePrice = isExperience && tourPriceParam ? tourPriceParam * persons : 0;
-  const extraCost = isExperience ? 0 : (persons > 2 ? Math.round(total * (persons - 2) * 0.15) : 0);
+  const extraCost = isExperience ? 0 : (persons > 4 ? Math.round(total * (persons - 4) * 0.15) : 0);
   const transportCost = transport ? 300 : 0;
   const serviceFee = 25;
   const adjustedTotal = isExperience ? expBasePrice + transportCost + serviceFee : total + extraCost + transportCost + serviceFee;
