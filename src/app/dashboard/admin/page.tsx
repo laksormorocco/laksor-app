@@ -652,17 +652,40 @@ export default function AdminDashboard() {
                   { key:"included",    label:"Inclus (virgule)",type:"input",    ph:"Guide officiel, Thé" },
                   { key:"notIncluded", label:"Non inclus (virgule)", type:"input", ph:"Transport, Repas" },
   { key:"itinerary_raw", label:"Itineraire (une etape par ligne: HH:MM | Titre | Description)", type:"textarea", ph:"09:00 | Depart medina | Rendez-vous place Jemaa el-Fna\n10:00 | Souks | Visite des souks authentiques" },
-                ].map(f => (
-                  <div key={f.key} className="mb-3">
-                    <label className="text-[10px] font-bold text-charcoal-400 uppercase tracking-wider block mb-1">{f.label}</label>
-                    {f.type === "textarea"
-                      ? <textarea value={tourForm[f.key]||""} onChange={e=>setTourForm({...tourForm,[f.key]:e.target.value})}
-                          placeholder={f.ph} rows={3} className={inputCls + " resize-none"} />
-                      : <input value={tourForm[f.key]||""} onChange={e=>setTourForm({...tourForm,[f.key]:e.target.value})}
-                          placeholder={f.ph} className={inputCls} />
-                    }
-                  </div>
-                ))}
+    ].map(f => (
+      <div key={f.key} className="mb-3">
+        <label className="text-[10px] font-bold text-charcoal-400 uppercase tracking-wider block mb-1">{f.label}</label>
+        {f.type === "image" ? (
+          <div>
+            {tourForm[f.key] && <img src={tourForm[f.key]} className="w-full h-32 object-cover rounded-xl mb-2" />}
+            <label className="flex items-center gap-2 cursor-pointer bg-sand-200 rounded-xl px-4 py-2 text-xs font-bold text-charcoal-600 w-full">
+              📷 Uploader une image
+              <input type="file" accept="image/*" className="hidden" onChange={async e => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                const fd = new FormData();
+                fd.append("file", file as Blob);
+                fd.append("folder", "tours");
+                const res = await fetch("/api/upload", { method: "POST", body: fd });
+                const { url } = await res.json();
+                if (url) setTourForm({...tourForm, [f.key]: url});
+              }} />
+            </label>
+          </div>
+        ) : f.type === "toggle" ? (
+          <button onClick={() => setTourForm({...tourForm, [f.key]: !tourForm[f.key]})}
+            className={"w-12 h-6 rounded-full relative transition-colors " + (tourForm[f.key] ? "bg-sage-300" : "bg-sand-300")}>
+            <div className={"w-5 h-5 bg-white rounded-full absolute top-0.5 transition-all shadow-sm " + (tourForm[f.key] ? "left-6" : "left-0.5")} />
+          </button>
+        ) : f.type === "textarea" ? (
+          <textarea value={tourForm[f.key] || ""} onChange={e=>setTourForm({...tourForm, [f.key]:e.target.value})}
+            placeholder={f.ph} rows={3} className={inputCls + " resize-none"} />
+        ) : (
+          <input value={tourForm[f.key] || ""} onChange={e=>setTourForm({...tourForm, [f.key]:e.target.value})}
+            placeholder={f.ph} className={inputCls} />
+        )}
+      </div>
+    ))}
 
                 <button onClick={saveTour} disabled={tourSaving}
                   className={`w-full py-3.5 rounded-2xl text-sm font-bold text-white transition-all
