@@ -1,4 +1,4 @@
- // prisma/schema.prisma
+// prisma/schema.prisma
 generator client {
   provider = "prisma-client-js"
 }
@@ -77,14 +77,14 @@ enum TourStatus {
 // ─── MODELS ───────────────────────────────────────────────────
 
 model User {
-  id           String   @id @default(cuid())
-  supabaseId   String   @unique
-  email        String   @unique
-  name         String?
-  avatar       String?
-  role         Role     @default(TOURIST)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id         String   @id @default(cuid())
+  supabaseId String   @unique
+  email      String   @unique
+  name       String?
+  avatar     String?
+  role       Role     @default(TOURIST)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   guideProfile   GuideProfile?
   bookings       Booking[]       @relation("TouristBookings")
@@ -95,17 +95,17 @@ model User {
 }
 
 model GuideProfile {
-  id            String      @id @default(cuid())
-  userId        String      @unique
-  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   displayName   String
-  bio           String      @db.Text
+  bio           String   @db.Text
   avatar        String?
   phone         String?
-  gallery       String[]    @default([])
+  gallery       String[] @default([])
   city          String
-  coveredCities String[]    @default([])
+  coveredCities String[] @default([])
 
   languages      String[]    @default([])
   visitTypes     VisitType[] @default([])
@@ -113,47 +113,48 @@ model GuideProfile {
   certifications String[]    @default([])
   yearsExp       Int         @default(0)
 
-  halfDayPrice  Float       @default(350)
-  fullDayPrice  Float       @default(650)
+  halfDayPrice Float @default(350)
+  fullDayPrice Float @default(650)
 
-  status        GuideStatus @default(PENDING)
-  avgRating     Float       @default(0)
-  totalReviews  Int         @default(0)
-  views         Int         @default(0)
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  status       GuideStatus @default(PENDING)
+  avgRating    Float       @default(0)
+  totalReviews Int         @default(0)
+  views        Int         @default(0)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
 
-  bookings       Booking[]
-  customRequests CustomRequest[]
-  availability   Availability[]
-  tours          GuideTour[]
-  customTours    CustomTour[]
+  bookings        Booking[]
+  customRequests  CustomRequest[]
+  availability    Availability[]
+  tours           GuideTour[]
+  customTours     CustomTour[]
+  GuideExperience GuideExperience[]
 
   @@map("guide_profiles")
 }
 
 model Booking {
-  id          String          @id @default(cuid())
-  touristId   String
-  tourist     User            @relation("TouristBookings", fields: [touristId], references: [id])
-  guideId     String
-  guide       GuideProfile    @relation(fields: [guideId], references: [id])
+  id        String       @id @default(cuid())
+  touristId String
+  tourist   User         @relation("TouristBookings", fields: [touristId], references: [id])
+  guideId   String
+  guide     GuideProfile @relation(fields: [guideId], references: [id])
 
-  date        DateTime
-  duration    BookingDuration
-  persons     Int             @default(1)
-  totalPrice  Float
-  status      BookingStatus   @default(PENDING)
+  date       DateTime
+  duration   BookingDuration
+  persons    Int             @default(1)
+  totalPrice Float
+  status     BookingStatus   @default(PENDING)
 
-  stripeSessionId String?     @unique
+  stripeSessionId String? @unique
   stripePaymentId String?
 
-  notes       String?         @db.Text
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
+  notes     String?  @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   review      Review?
-  commission  Float           @default(0)
+  commission  Float         @default(0)
   slots       BookingSlot[]
   tourBooking TourBooking?
 
@@ -172,11 +173,11 @@ model BookingSlot {
 }
 
 model Review {
-  id        String   @id @default(cuid())
-  bookingId String   @unique
-  booking   Booking  @relation(fields: [bookingId], references: [id])
+  id        String  @id @default(cuid())
+  bookingId String  @unique
+  booking   Booking @relation(fields: [bookingId], references: [id])
   authorId  String
-  author    User     @relation(fields: [authorId], references: [id])
+  author    User    @relation(fields: [authorId], references: [id])
   guideId   String
 
   rating    Int
@@ -191,19 +192,19 @@ model Availability {
   guideId String
   guide   GuideProfile @relation(fields: [guideId], references: [id], onDelete: Cascade)
 
-  date    DateTime
-  isFree  Boolean  @default(true)
+  date   DateTime
+  isFree Boolean  @default(true)
 
   @@unique([guideId, date])
   @@map("availabilities")
 }
 
 model CustomRequest {
-  id            String              @id @default(cuid())
-  touristId     String
-  tourist       User                @relation("TouristRequests", fields: [touristId], references: [id])
-  guideId       String
-  guide         GuideProfile        @relation(fields: [guideId], references: [id])
+  id        String       @id @default(cuid())
+  touristId String
+  tourist   User         @relation("TouristRequests", fields: [touristId], references: [id])
+  guideId   String
+  guide     GuideProfile @relation(fields: [guideId], references: [id])
 
   startDate     DateTime
   days          Int
@@ -220,99 +221,123 @@ model CustomRequest {
 // ─── TOURS ────────────────────────────────────────────────────
 
 model TourTemplate {
-  id          String    @id @default(cuid())
-  tourType    TourType  @unique
+  id          String   @id @default(cuid())
+  tourType    TourType @unique
   title       String
-  description String    @db.Text
-  duration    String    @default("4h")
-  groupSize   String    @default("1-6 pers.")
-  difficulty  String    @default("Facile")
-  bestMoment  String    @default("Matin")
+  description String   @db.Text
+  duration    String   @default("4h")
+  groupSize   String   @default("1-6 pers.")
+  difficulty  String   @default("Facile")
+  bestMoment  String   @default("Matin")
   coverImage  String?
 
-  highlights  Json      @default("[]")
-  itinerary   Json      @default("[]")
-  included    Json      @default("[]")
-  notIncluded Json      @default("[]")
-  tags        String[]  @default([])
+  highlights  Json     @default("[]")
+  itinerary   Json     @default("[]")
+  included    Json     @default("[]")
+  notIncluded Json     @default("[]")
+  tags        String[] @default([])
 
-  isActive    Boolean   @default(true)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  guideTours  GuideTour[]
+  guideTours GuideTour[]
 
   @@map("tour_templates")
 }
 
 model GuideTour {
-  id            String       @id @default(cuid())
-  guideId       String
-  guide         GuideProfile @relation(fields: [guideId], references: [id], onDelete: Cascade)
-  templateId    String
-  template      TourTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  id         String       @id @default(cuid())
+  guideId    String
+  guide      GuideProfile @relation(fields: [guideId], references: [id], onDelete: Cascade)
+  templateId String
+  template   TourTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
 
-  isActive      Boolean      @default(false)
-  price         Float        @default(0)
-  tips          String?      @db.Text
+  isActive Boolean @default(false)
+  price    Float   @default(0)
+  tips     String? @db.Text
 
-  totalBookings Int          @default(0)
-  isBestSeller  Boolean      @default(false)
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
+  totalBookings Int      @default(0)
+  isBestSeller  Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-  bookings      TourBooking[]
+  bookings TourBooking[]
 
   @@unique([guideId, templateId])
   @@map("guide_tours")
 }
 
 model CustomTour {
-  id            String       @id @default(cuid())
-  guideId       String
-  guide         GuideProfile @relation(fields: [guideId], references: [id], onDelete: Cascade)
+  id      String       @id @default(cuid())
+  guideId String
+  guide   GuideProfile @relation(fields: [guideId], references: [id], onDelete: Cascade)
 
-  status        TourStatus   @default(PENDING)
-  adminNote     String?      @db.Text
+  status    TourStatus @default(PENDING)
+  adminNote String?    @db.Text
 
-  title         String
-  description   String       @db.Text
-  price         Float        @default(0)
-  duration      String       @default("4h")
-  groupSize     String       @default("1-6 pers.")
-  difficulty    String       @default("Facile")
-  bestMoment    String       @default("Matin")
-  coverImage    String?
-  tags          String[]     @default([])
+  title       String
+  description String   @db.Text
+  price       Float    @default(0)
+  duration    String   @default("4h")
+  groupSize   String   @default("1-6 pers.")
+  difficulty  String   @default("Facile")
+  bestMoment  String   @default("Matin")
+  coverImage  String?
+  tags        String[] @default([])
 
-  highlights    Json         @default("[]")
-  itinerary     Json         @default("[]")
-  included      Json         @default("[]")
-  notIncluded   Json         @default("[]")
-  tips          String?      @db.Text
+  highlights  Json    @default("[]")
+  itinerary   Json    @default("[]")
+  included    Json    @default("[]")
+  notIncluded Json    @default("[]")
+  tips        String? @db.Text
 
-  isActive      Boolean      @default(false)
-  totalBookings Int          @default(0)
-  isBestSeller  Boolean      @default(false)
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
+  isActive      Boolean  @default(false)
+  totalBookings Int      @default(0)
+  isBestSeller  Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-  bookings      TourBooking[]
+  bookings TourBooking[]
 
   @@map("custom_tours")
 }
 
 model TourBooking {
-  id           String     @id @default(cuid())
-  bookingId    String     @unique
-  booking      Booking    @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  id        String  @id @default(cuid())
+  bookingId String  @unique
+  booking   Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
 
   guideTourId  String?
   guideTour    GuideTour?  @relation(fields: [guideTourId], references: [id])
   customTourId String?
   customTour   CustomTour? @relation(fields: [customTourId], references: [id])
 
-  createdAt    DateTime   @default(now())
+  createdAt DateTime @default(now())
 
   @@map("tour_bookings")
+}
+
+model GuideExperience {
+  id                String       @id @default(cuid())
+  guideId           String
+  guide             GuideProfile @relation(fields: [guideId], references: [id])
+  title             String
+  description       String
+  duration          String       @default("4h")
+  groupSize         String       @default("1-6 pers.")
+  difficulty        String       @default("Facile")
+  price             Int          @default(0)
+  city              String       @default("")
+  meetingPoint      String       @default("")
+  included          String[]     @default([])
+  notIncluded       String[]     @default([])
+  itinerary         Json[]       @default([])
+  photos            String[]     @default([])
+  tags              String[]     @default([])
+  transportRequired Boolean      @default(false)
+  status            String       @default("PENDING")
+  isActive          Boolean      @default(false)
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
 }
