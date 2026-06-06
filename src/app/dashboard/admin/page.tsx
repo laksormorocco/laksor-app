@@ -16,6 +16,7 @@ const TABS = [
   { id:"email",    Icon: EnvelopeSimple, label:"Email"     },
   { id:"crm",     Icon: UsersThree,    label:"CRM"       },
   { id:"tourists", Icon: UserCircle,    label:"Clients"   },
+  { id:"experiences", Icon: Sparkle, label:"Exp." },
 ];
 
 const TOUR_TYPES = [
