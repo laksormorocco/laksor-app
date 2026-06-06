@@ -29,6 +29,10 @@ export default function BookingPage() {
   const router = useRouter();
   const params = useParams();
   const guideId = params.guideId as string;
+  const searchParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
+  const expId = searchParams?.get("expId") || null;
+  const tourPriceParam = searchParams?.get("tourPrice") ? Number(searchParams.get("tourPrice")) : null;
+  const isExperience = !!expId;
 
   const [guide, setGuide] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -57,10 +61,11 @@ export default function BookingPage() {
   }, [guideId]);
 
   const persons = adults + children;
-  const extraCost = persons > 2 ? Math.round(total * (persons - 2) * 0.15) : 0;
+  const expBasePrice = isExperience && tourPriceParam ? tourPriceParam * persons : 0;
+  const extraCost = isExperience ? 0 : (persons > 2 ? Math.round(total * (persons - 2) * 0.15) : 0);
   const transportCost = transport ? 300 : 0;
-  const serviceFee = selectedDates.length > 0 ? 25 : 0;
-  const adjustedTotal = total + extraCost + transportCost + serviceFee;
+  const serviceFee = 25;
+  const adjustedTotal = isExperience ? expBasePrice + transportCost + serviceFee : total + extraCost + transportCost + serviceFee;
   const deposit = Math.round(adjustedTotal * 0.3);
   const isPaid = payment === "deposit" || payment === "full";
   const { convert } = useExchangeRate();
