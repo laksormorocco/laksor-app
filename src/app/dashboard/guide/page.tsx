@@ -5,7 +5,7 @@ import ProfileEditor from "@/components/ProfileEditor";
 import {
   House, CalendarCheck, Target, ChartBar, User,
   Bell, ArrowRight, Check, X, Clock, Users, Star,
-  Trophy, ChartLineUp, Eye, SignOut, MapTrifold, ToggleLeft, ToggleRight, Sparkle, ArrowLeft
+  Trophy, ChartLineUp, Eye, SignOut, MapTrifold, ToggleLeft, ToggleRight, Sparkle, ArrowLeft, IdentificationCard
 } from "@phosphor-icons/react";
 import { createClient } from "@supabase/supabase-js";
 
@@ -561,6 +561,68 @@ export default function GuideDashboard() {
         )}
 
         {active === "stats" && guideId && <GuideStats guideId={guideId} />}
+
+        {active === "documents" && (
+          <div className="flex flex-col gap-4">
+            <div className="text-sm font-bold text-charcoal-800">Verification d identite</div>
+            <div className="text-xs text-charcoal-400 -mt-2">Ces documents sont necessaires pour valider votre profil guide</div>
+
+            {[
+              { key: "guideCardUrl", label: "Carte guide officielle (recto)", icon: "🪪" },
+              { key: "guideCardBack", label: "Carte guide officielle (verso)", icon: "🪪" },
+              { key: "nationalIdUrl", label: "Carte nationale (recto)", icon: "🪪" },
+              { key: "nationalIdBack", label: "Carte nationale (verso)", icon: "🪪" },
+            ].map(doc => (
+              <div key={doc.key} className="bg-white rounded-2xl border border-sand-300 p-4">
+                <div className="text-xs font-bold text-charcoal-800 mb-3">{doc.icon} {doc.label}</div>
+                {guide?.[doc.key] ? (
+                  <div className="relative">
+                    <img src={guide[doc.key]} className="w-full h-40 object-cover rounded-xl" alt={doc.label} />
+                    <label className="absolute bottom-2 right-2 bg-white/90 text-xs font-bold px-3 py-1.5 rounded-full cursor-pointer border border-sand-300">
+                      Changer
+                      <input type="file" accept="image/*" className="hidden" onChange={async e => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        const fd = new FormData();
+                        fd.append("file", file as Blob);
+                        fd.append("folder", "documents");
+                        const res = await fetch("/api/upload", { method: "POST", body: fd });
+                        const { url } = await res.json();
+                        if (url) {
+                          await fetch("/api/guide/profile", { method: "PATCH", headers: {"Content-Type":"application/json"}, body: JSON.stringify({ guideId, [doc.key]: url }) });
+                          fetchData(guideId);
+                        }
+                      }} />
+                    </label>
+                  </div>
+                ) : (
+                  <label className="flex flex-col items-center justify-center h-36 border-2 border-dashed border-sand-300 rounded-xl cursor-pointer hover:border-bronze-500 transition-colors">
+                    <span className="text-3xl mb-2">📷</span>
+                    <span className="text-xs text-charcoal-400">Cliquez pour uploader</span>
+                    <input type="file" accept="image/*" className="hidden" onChange={async e => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      const fd = new FormData();
+                      fd.append("file", file as Blob);
+                      fd.append("folder", "documents");
+                      const res = await fetch("/api/upload", { method: "POST", body: fd });
+                      const { url } = await res.json();
+                      if (url) {
+                        await fetch("/api/guide/profile", { method: "PATCH", headers: {"Content-Type":"application/json"}, body: JSON.stringify({ guideId, [doc.key]: url }) });
+                        fetchData(guideId);
+                      }
+                    }} />
+                  </label>
+                )}
+              </div>
+            ))}
+
+            <div className={`rounded-2xl px-4 py-3 text-xs font-semibold text-center ${guide?.docsStatus === "APPROVED" ? "bg-sage-300/15 text-sage-300" : guide?.docsStatus === "REFUSED" ? "bg-red-50 text-red-400" : "bg-bronze-500/10 text-bronze-500"}`}>
+              {guide?.docsStatus === "APPROVED" ? "✅ Documents verifies" : guide?.docsStatus === "REFUSED" ? "❌ Documents refuses — contactez le support" : "⏳ Documents en attente de verification"}
+            </div>
+          </div>
+        )}
+
       {active === "profil" && guide && <ProfileEditor guide={guide} guideId={guideId} onSaved={() => fetchData(guideId)} />}
 
       </div>
