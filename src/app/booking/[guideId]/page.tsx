@@ -6,6 +6,7 @@ import { useExchangeRate } from "@/hooks/useExchangeRate";
 import { priceWithCommission } from "@/lib/pricing";
 import PriceDisplay from "@/components/PriceDisplay";
 import CalendarPicker from "@/components/CalendarPicker";
+import MiniCal from "@/components/MiniCal";
 import {
   ArrowLeft, Users, Baby, Minus, Plus, Car,
   CreditCard, Money, Lock, CalendarBlank,
@@ -190,10 +191,7 @@ export default function BookingPage() {
               {isExperience ? (
                 <div className="flex flex-col gap-3">
                   <div className="text-[10px] text-charcoal-400">💡 Prix : {convert(tourPriceParam || 0)} par personne</div>
-                  <input type="date"
-                    min={new Date().toISOString().split("T")[0]}
-                    onChange={e => { setSelectedDates([e.target.value]); setTotal((tourPriceParam || 0) * persons); }}
-                    className="w-full border border-sand-300 rounded-xl px-4 py-3 text-sm text-charcoal-800 outline-none focus:border-bronze-500" />
+                  <MiniCal value={selectedDates[0] || ""} onChange={v => { setSelectedDates([v]); setTotal((tourPriceParam || 0) * persons); }} />
                 </div>
               ) : (
                 <>
