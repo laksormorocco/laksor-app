@@ -712,6 +712,16 @@ export default function GuideDashboard() {
                 <div className={"w-5 h-5 bg-white rounded-full absolute top-0.5 transition-all shadow-sm " + (expForm.transportRequired ? "left-6" : "left-0.5")} />
               </button>
             </div>
+            {!expForm.pricePerPerson && (
+              <div>
+                <div className="text-xs font-bold text-charcoal-400 mb-1">Nombre de personnes inclus dans le prix</div>
+                <input type="number" value={expForm.maxPersons || 6}
+                  onChange={e => setExpForm({...expForm, maxPersons: Number(e.target.value)})}
+                  min={1} max={20}
+                  className="w-full border border-sand-300 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-bronze-500" />
+              </div>
+            )}
+
             <button onClick={async () => {
               const data = {
                 ...expForm,

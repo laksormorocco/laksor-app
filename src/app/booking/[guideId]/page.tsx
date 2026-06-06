@@ -62,7 +62,13 @@ export default function BookingPage() {
   }, [guideId]);
 
   const persons = adults + children;
-  const expBasePrice = isExperience && tourPriceParam ? tourPriceParam * persons : 0;
+  const expPricePerPerson = searchParams?.get("pricePerPerson") === "true";
+  const expMaxPersons = Number(searchParams?.get("maxPersons") || 1);
+  const expBasePrice = isExperience && tourPriceParam
+    ? (expPricePerPerson
+      ? tourPriceParam * persons
+      : tourPriceParam + (persons > expMaxPersons ? Math.round(tourPriceParam * (persons - expMaxPersons) * 0.15) : 0))
+    : 0;
   const extraCost = isExperience ? 0 : (persons > 4 ? Math.round(total * (persons - 4) * 0.15) : 0);
   const transportCost = transport ? 300 : 0;
   const serviceFee = 25;
