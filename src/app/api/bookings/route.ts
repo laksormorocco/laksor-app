@@ -40,7 +40,7 @@ export async function POST(req: Request) {
         totalPrice: totalPrice || price,
         commission,
         status: "CONFIRMED",
-        notes: (notes || "") + " | REF:" + bookingRef,
+    notes: (notes || "") + " | REF:" + bookingRef + " | CLIENT:" + (guestName || "") + " | CONTACT:" + (guestContact || ""),
         slots: {
           create: [{
             date: new Date(date),
