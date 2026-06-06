@@ -36,7 +36,17 @@ export default function LoginPage() {
     if (error) {
       if (error.message.includes("Invalid")) setError("Mot de passe incorrect");
       else setError(error.message);
-    } else window.location.href = "/dashboard";
+    } else {
+      // Verifier si guide ou touriste
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const res = await fetch("/api/auth/me?email=" + encodeURIComponent(user.email || ""));
+        const data = await res.json();
+        if (data.role === "GUIDE") window.location.href = "/dashboard/guide?id=" + data.guideId;
+        else if (data.role === "ADMIN") window.location.href = "/dashboard/admin";
+        else window.location.href = "/dashboard/tourist";
+      }
+    }
     setLoading(false);
   }
 
