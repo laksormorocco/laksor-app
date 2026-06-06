@@ -187,18 +187,29 @@ export default function BookingPage() {
                 <CalendarBlank size={14} className="text-bronze-500" />
                 <span className="text-[10px] font-bold text-charcoal-800 uppercase tracking-widest">Choisissez vos dates</span>
               </div>
-              <div className="text-[10px] text-charcoal-400 mb-2">💡 Tarifs affichés pour 2 personnes · +15% par personne supplémentaire
-              </div>
-              <CalendarPicker
-                blockedDates={bookedDates.map((b: any) => b.date)}
-                priceHalfDay={priceWithCommission(guide?.halfDayPrice || 350)}
-                priceFullDay={priceWithCommission(guide?.fullDayPrice || 650)}
-                convert={convert}
-                onSelectionChange={(slots: any[], t: number) => {
-                  setSelectedDates(slots.map((s: any) => s.date));
-                  setTotal(t);
-                }}
-              />
+              {isExperience ? (
+                <div className="flex flex-col gap-3">
+                  <div className="text-[10px] text-charcoal-400">💡 Prix : {convert(tourPriceParam || 0)} par personne</div>
+                  <input type="date"
+                    min={new Date().toISOString().split("T")[0]}
+                    onChange={e => { setSelectedDates([e.target.value]); setTotal((tourPriceParam || 0) * persons); }}
+                    className="w-full border border-sand-300 rounded-xl px-4 py-3 text-sm text-charcoal-800 outline-none focus:border-bronze-500" />
+                </div>
+              ) : (
+                <>
+                  <div className="text-[10px] text-charcoal-400 mb-2">💡 Tarifs affichés pour 2 personnes · +15% par personne supplémentaire</div>
+                  <CalendarPicker
+                    blockedDates={bookedDates.map((b: any) => b.date)}
+                    priceHalfDay={priceWithCommission(guide?.halfDayPrice || 350)}
+                    priceFullDay={priceWithCommission(guide?.fullDayPrice || 650)}
+                    convert={convert}
+                    onSelectionChange={(slots: any[], t: number) => {
+                      setSelectedDates(slots.map((s: any) => s.date));
+                      setTotal(t);
+                    }}
+                  />
+                </>
+              )}
             </div>
 
             <div className="bg-white rounded-2xl border border-sand-300 p-4">
