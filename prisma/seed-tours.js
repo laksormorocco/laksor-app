@@ -1,0 +1,116 @@
+const { PrismaClient } = require("@prisma/client");
+const p = new PrismaClient();
+
+async function main() {
+  const templates = [
+    {
+      tourType: "MEDINA_SECRETS",
+      title: "Medina & Secrets",
+      description: "Ruelles cachees, artisans, histoire. Decouvrez les tresors de la medina avec un guide certifie.",
+      duration: "4h",
+      groupSize: "1-6 pers.",
+      difficulty: "Facile",
+      bestMoment: "Matin",
+      coverImage: "https://images.unsplash.com/photo-1539020140153-e479b8c22e70?w=800&q=80",
+      tags: ["Medina", "Culture", "Souks", "Histoire"],
+      included: ["Guide officiel", "The marocain", "Visite des souks"],
+      notIncluded: ["Transport", "Repas", "Entrees monuments"],
+      isActive: true,
+    },
+    {
+      tourType: "GASTRONOMIE",
+      title: "Gastronomie & Cuisine",
+      description: "Epices, tajine, cuisine locale. Une immersion dans la gastronomie marocaine.",
+      duration: "4h",
+      groupSize: "1-8 pers.",
+      difficulty: "Facile",
+      bestMoment: "Matin",
+      coverImage: "https://images.unsplash.com/photo-1511690656952-34342bb7c2f2?w=800&q=80",
+      tags: ["Gastronomie", "Cuisine", "Epices", "Marche"],
+      included: ["Guide officiel", "Degustation", "The marocain"],
+      notIncluded: ["Transport", "Repas complet"],
+      isActive: true,
+    },
+    {
+      tourType: "HISTOIRE_MONUMENTS",
+      title: "Histoire & Monuments",
+      description: "Sites UNESCO, palais, medersas. Un voyage dans le temps au coeur du Maroc imperial.",
+      duration: "5h",
+      groupSize: "1-10 pers.",
+      difficulty: "Facile",
+      bestMoment: "Matin",
+      coverImage: "https://images.unsplash.com/photo-1548013146-72479768bada?w=800&q=80",
+      tags: ["Histoire", "Monuments", "UNESCO", "Palais"],
+      included: ["Guide officiel", "The marocain"],
+      notIncluded: ["Transport", "Entrees monuments", "Repas"],
+      isActive: true,
+    },
+    {
+      tourType: "DESERT_NATURE",
+      title: "Desert & Nature",
+      description: "Sahara, bivouac, chameaux. Une aventure inoubliable dans les grands espaces marocains.",
+      duration: "8h",
+      groupSize: "1-6 pers.",
+      difficulty: "Moyen",
+      bestMoment: "Matin",
+      coverImage: "https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=800&q=80",
+      tags: ["Desert", "Nature", "Aventure", "Sahara"],
+      included: ["Guide officiel", "Transport", "The marocain"],
+      notIncluded: ["Repas", "Nuit bivouac"],
+      isActive: true,
+    },
+    {
+      tourType: "SHOPPING_ARTISANAT",
+      title: "Shopping & Artisanat",
+      description: "Souks, cuir, poterie, tapis. Decouvrez l artisanat marocain avec un guide de confiance.",
+      duration: "4h",
+      groupSize: "1-8 pers.",
+      difficulty: "Facile",
+      bestMoment: "Apres-midi",
+      coverImage: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80",
+      tags: ["Shopping", "Artisanat", "Souks", "Cuir"],
+      included: ["Guide officiel", "Conseils achats"],
+      notIncluded: ["Achats", "Transport"],
+      isActive: true,
+    },
+    {
+      tourType: "COUCHER_SOLEIL",
+      title: "Coucher de Soleil",
+      description: "Rooftops, dunes, panoramas. Les plus beaux couchers de soleil du Maroc.",
+      duration: "3h",
+      groupSize: "1-6 pers.",
+      difficulty: "Facile",
+      bestMoment: "Soir",
+      coverImage: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
+      tags: ["Coucher de soleil", "Panorama", "Photo", "Romantique"],
+      included: ["Guide officiel", "The marocain"],
+      notIncluded: ["Transport", "Repas"],
+      isActive: true,
+    },
+    {
+      tourType: "PHOTO_INSTAGRAM",
+      title: "Tour Photo Instagram",
+      description: "Lieux instagrammables, shooting. Capturez les plus beaux spots du Maroc.",
+      duration: "4h",
+      groupSize: "1-4 pers.",
+      difficulty: "Facile",
+      bestMoment: "Matin",
+      coverImage: "https://images.unsplash.com/photo-1553522991-fd5deb8e3b50?w=800&q=80",
+      tags: ["Photo", "Instagram", "Spots", "Shooting"],
+      included: ["Guide officiel", "Conseils photo"],
+      notIncluded: ["Transport", "Materiel photo"],
+      isActive: true,
+    },
+  ];
+
+  for (const t of templates) {
+    await p.tourTemplate.upsert({
+      where: { tourType: t.tourType },
+      update: t,
+      create: t,
+    });
+    console.log("Created:", t.title);
+  }
+}
+
+main().catch(console.error).finally(() => p.$disconnect());
