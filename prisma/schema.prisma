@@ -112,6 +112,11 @@ model GuideProfile {
   specialties    String[]    @default([])
   certifications String[]    @default([])
   yearsExp       Int         @default(0)
+  guideCardUrl   String?
+  guideCardBack  String?
+  nationalIdUrl  String?
+  nationalIdBack String?
+  docsStatus     String  @default("PENDING")
 
   halfDayPrice Float @default(350)
   fullDayPrice Float @default(650)
