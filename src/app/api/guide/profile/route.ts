@@ -20,6 +20,10 @@ export async function PATCH(req: Request) {
         coveredCities: updateData.coveredCities || [],
         certifications: updateData.certifications || [],
         yearsExp: updateData.yearsExp || 0,
+    guideCardUrl: updateData.guideCardUrl,
+    guideCardBack: updateData.guideCardBack,
+    nationalIdUrl: updateData.nationalIdUrl,
+    nationalIdBack: updateData.nationalIdBack,
         avatar: updateData.avatar,
         gallery: updateData.gallery || [],
       }
