@@ -2,7 +2,11 @@
 import { useState, useEffect } from "react";
 import GuideStats from "@/components/GuideStats";
 import ProfileEditor from "@/components/ProfileEditor";
-import { House, CalendarCheck, Target, ChartBar, User, Bell, ArrowRight, Check, X, Clock, Users, Star, Trophy, ChartLineUp, Eye, SignOut, MapTrifold, ToggleLeft, ToggleRight, Sparkle } from "@phosphor-icons/react";
+import {
+  House, CalendarCheck, Target, ChartBar, User,
+  Bell, ArrowRight, Check, X, Clock, Users, Star,
+  Trophy, ChartLineUp, Eye, SignOut, MapTrifold, ToggleLeft, ToggleRight, Sparkle, ArrowLeft
+} from "@phosphor-icons/react";
 import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
@@ -17,7 +21,6 @@ const TABS = [
   { id:"stats",        Icon: ChartBar,      label:"Stats"        },
   { id:"profil",       Icon: User,          label:"Profil"       },
   { id:"services",     Icon: MapTrifold,    label:"Services"    },
-  { id: "experiences", Icon: Sparkle, label: "Experiences" },
 ];
 
 function statusBadge(status: string) {
@@ -73,19 +76,19 @@ export default function GuideDashboard() {
     setLoading(false);
   }
 
+  async function fetchExperiences(id: string) {
+    setExpLoading(true);
+    const res = await fetch("/api/guide/experiences?guideId=" + id);
+    if (res.ok) setExperiences((await res.json()).experiences || []);
+    setExpLoading(false);
+  }
+
   async function fetchTours(id: string) {
     setToursLoading(true);
     const res = await fetch("/api/guide/tours?guideId=" + id);
     const data = await res.json();
     setGuideTours(data.tours || []);
     setToursLoading(false);
-  }
-
-  async function fetchExperiences(id: string) {
-    setExpLoading(true);
-    const res = await fetch("/api/guide/experiences?guideId=" + id);
-    if (res.ok) setExperiences((await res.json()).experiences || []);
-    setExpLoading(false);
   }
 
   async function toggleTour(templateId: string, isActive: boolean, price?: string) {
@@ -153,19 +156,16 @@ export default function GuideDashboard() {
   );
 
 
-      {/* MODAL EXPERIENCE */}
       {expForm && (
         <div className="fixed inset-x-0 top-0 bottom-16 z-50 bg-white flex flex-col">
           <div className="flex items-center justify-between px-4 py-3 border-b border-sand-200">
             <button onClick={() => setExpForm(null)} className="w-9 h-9 rounded-full border border-sand-200 flex items-center justify-center">
-              <span className="text-charcoal-600 text-lg">←</span>
+              <ArrowLeft size={16} weight="bold" className="text-charcoal-600" />
             </button>
             <span className="font-display text-sm font-bold text-charcoal-800">{expForm.id ? "Modifier" : "Nouvelle experience"}</span>
             <div className="w-9" />
           </div>
           <div className="flex-1 overflow-y-auto px-4 py-5 flex flex-col gap-4">
-
-            {/* Photos */}
             <div>
               <div className="text-xs font-bold text-charcoal-800 mb-2">Photos</div>
               <div className="flex gap-2 overflow-x-auto pb-1">
@@ -173,7 +173,7 @@ export default function GuideDashboard() {
                   <div key={i} className="relative flex-shrink-0">
                     <img src={url} className="w-20 h-20 rounded-xl object-cover" />
                     <button onClick={() => setExpForm({...expForm, photos: expForm.photos.filter((_: any, j: number) => j !== i)})}
-                      className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center">✕</button>
+                      className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center">x</button>
                   </div>
                 ))}
                 <label className="w-20 h-20 rounded-xl border-2 border-dashed border-sand-300 flex flex-col items-center justify-center cursor-pointer flex-shrink-0 text-charcoal-400">
@@ -192,36 +192,30 @@ export default function GuideDashboard() {
                 </label>
               </div>
             </div>
-
-            {/* Champs principaux */}
-            {[
+            {([
               { key:"title", label:"Titre *", ph:"Journee a Agafay..." },
               { key:"description", label:"Description", ph:"Decrivez votre experience...", area:true },
-              { key:"price", label:"Prix (MAD, votre part)", ph:"500", type:"number" },
+              { key:"price", label:"Prix (MAD)", ph:"500" },
               { key:"city", label:"Ville", ph:"Marrakech" },
-              { key:"meetingPoint", label:"Point de rendez-vous", ph:"Place Jemaa el-Fna..." },
+              { key:"meetingPoint", label:"Point de RDV", ph:"Place Jemaa el-Fna..." },
               { key:"duration", label:"Duree", ph:"4h" },
-              { key:"groupSize", label:"Taille du groupe", ph:"1-6 pers." },
+              { key:"groupSize", label:"Groupe", ph:"1-6 pers." },
               { key:"difficulty", label:"Niveau", ph:"Facile" },
-              { key:"tags", label:"Tags (virgule)", ph:"Desert, Aventure, Nature" },
-              { key:"included", label:"Inclus (virgule)", ph:"Guide, Transport, Dejeuner" },
-              { key:"notIncluded", label:"Non inclus (virgule)", ph:"Boissons, Entrees" },
-            ].map(f => (
+              { key:"tags", label:"Tags (virgule)", ph:"Desert, Aventure" },
+              { key:"included", label:"Inclus (virgule)", ph:"Guide, Transport" },
+              { key:"notIncluded", label:"Non inclus (virgule)", ph:"Repas, Entrees" },
+            ] as any[]).map((f: any) => (
               <div key={f.key}>
                 <div className="text-xs font-bold text-charcoal-400 mb-1">{f.label}</div>
                 {f.area ? (
                   <textarea value={expForm[f.key] || ""} onChange={e => setExpForm({...expForm, [f.key]: e.target.value})}
-                    placeholder={f.ph} rows={3}
-                    className="w-full border border-sand-300 rounded-xl px-3 py-2.5 text-sm text-charcoal-800 outline-none focus:border-bronze-500 resize-none" />
+                    placeholder={f.ph} rows={3} className="w-full border border-sand-300 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-bronze-500 resize-none" />
                 ) : (
-                  <input value={expForm[f.key] || ""} type={f.type || "text"} onChange={e => setExpForm({...expForm, [f.key]: e.target.value})}
-                    placeholder={f.ph}
-                    className="w-full border border-sand-300 rounded-xl px-3 py-2.5 text-sm text-charcoal-800 outline-none focus:border-bronze-500" />
+                  <input value={expForm[f.key] || ""} onChange={e => setExpForm({...expForm, [f.key]: e.target.value})}
+                    placeholder={f.ph} className="w-full border border-sand-300 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-bronze-500" />
                 )}
               </div>
             ))}
-
-            {/* Transport */}
             <div className="flex items-center justify-between bg-sand-100 rounded-xl px-4 py-3">
               <div>
                 <div className="text-xs font-bold text-charcoal-800">Transport necessaire</div>
@@ -232,8 +226,6 @@ export default function GuideDashboard() {
                 <div className={"w-5 h-5 bg-white rounded-full absolute top-0.5 transition-all shadow-sm " + (expForm.transportRequired ? "left-6" : "left-0.5")} />
               </button>
             </div>
-
-            {/* Bouton sauvegarder */}
             <button onClick={async () => {
               const data = {
                 ...expForm,
@@ -251,7 +243,6 @@ export default function GuideDashboard() {
               style={{background:"linear-gradient(135deg, #B88A44, #9A7238)", boxShadow:"0 4px 14px rgba(184,138,68,0.3)"}}>
               {expForm.id ? "Mettre a jour" : "Publier l experience"}
             </button>
-
           </div>
         </div>
       )}
@@ -613,7 +604,7 @@ export default function GuideDashboard() {
         </div>
       )}
 
-
+      
         {active === "experiences" && (
           <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
@@ -621,12 +612,11 @@ export default function GuideDashboard() {
                 <div className="text-sm font-bold text-charcoal-800">Mes experiences ({experiences.length})</div>
                 <div className="text-xs text-charcoal-400 mt-0.5">Creez et gerez vos experiences personnalisees</div>
               </div>
-              <button onClick={() => setExpForm({ title:"", description:"", duration:"4h", groupSize:"1-6 pers.", difficulty:"Facile", price:"", city: guide?.city || "", meetingPoint:"", included:"", notIncluded:"", tags:"", transportRequired:false })}
+              <button onClick={() => setExpForm({ title:"", description:"", duration:"4h", groupSize:"1-6 pers.", difficulty:"Facile", price:"", city: guide?.city || "", meetingPoint:"", included:"", notIncluded:"", tags:"", photos:[], transportRequired:false })}
                 className="flex items-center gap-1.5 bg-bronze-500 text-white text-xs font-bold px-4 py-2.5 rounded-full">
                 + Nouvelle
               </button>
             </div>
-
             {expLoading ? (
               <div className="text-center py-8 text-charcoal-400 text-sm">Chargement...</div>
             ) : experiences.length === 0 ? (
@@ -647,22 +637,21 @@ export default function GuideDashboard() {
                     <div className="text-sm font-bold text-charcoal-800 truncate">{exp.title}</div>
                     <div className="text-xs text-charcoal-400 mt-0.5">{exp.duration} · {exp.groupSize}</div>
                     <div className="flex items-center gap-2 mt-1.5">
-                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${exp.status === "APPROVED" ? "bg-sage-300/15 text-sage-300" : exp.status === "PENDING" ? "bg-bronze-500/15 text-bronze-500" : "bg-red-100 text-red-400"}`}>
+                      <span className={"text-[10px] font-bold px-2 py-0.5 rounded-full " + (exp.status === "APPROVED" ? "bg-sage-300/15 text-sage-300" : exp.status === "PENDING" ? "bg-bronze-500/15 text-bronze-500" : "bg-red-100 text-red-400")}>
                         {exp.status === "APPROVED" ? "Active" : exp.status === "PENDING" ? "En attente" : "Refuse"}
                       </span>
                       <span className="text-xs font-bold text-charcoal-800">{exp.price} MAD</span>
                     </div>
                   </div>
                   <button onClick={() => setExpForm({...exp, included: (exp.included||[]).join(", "), notIncluded: (exp.notIncluded||[]).join(", "), tags: (exp.tags||[]).join(", ")})}
-                    className="text-xs text-bronze-500 font-bold flex-shrink-0">
-                    Modifier
-                  </button>
+                    className="text-xs text-bronze-500 font-bold flex-shrink-0">Modifier</button>
                 </div>
               </div>
             ))}
           </div>
         )}
-      {active === "stats" && guideId && <GuideStats guideId={guideId} />}
+
+        {active === "stats" && guideId && <GuideStats guideId={guideId} />}
       {active === "profil" && guide && <ProfileEditor guide={guide} guideId={guideId} onSaved={() => fetchData(guideId)} />}
 
       </div>
