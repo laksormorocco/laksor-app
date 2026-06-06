@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import {
   ChartBar, Compass, CalendarCheck, EnvelopeSimple, MapTrifold, UsersThree, UserCircle,
   Check, X, Trash, WhatsappLogo, PaperPlaneTilt, Plus, PencilSimple,
-  ToggleLeft, ToggleRight, SignOut
+  ToggleLeft, ToggleRight, SignOut, Sparkle
 } from "@phosphor-icons/react";
 
 const PASSWORD = "laksor2024";
