@@ -309,9 +309,10 @@ export default function GuidePageClient({ guide }: { guide: any }) {
               <div className="bg-white rounded-2xl p-10 text-center">
                 <p className="text-sm text-charcoal-400">Aucun tour disponible</p>
               </div>
-            ) : activeTours.map((gt: any) => (
-              <TourCard key={gt.id} guideTour={gt} guideId={guide.id} />
-            ))}
+            ) : allItems.map(item => item.type === "tour"
+              ? <TourCard key={item.id} guideTour={item.data} guideId={guide.id} />
+              : <ExperienceCard key={item.id} experience={item.data} guideId={guide.id} />
+            )}
           </div>
         )}
 
