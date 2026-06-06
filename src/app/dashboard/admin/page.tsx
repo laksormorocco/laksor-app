@@ -573,7 +573,7 @@ export default function AdminDashboard() {
                   }} />
                 </label>
               </div>
-              <div className="flex-1 font-display text-base font-bold text-charcoal-800">{editGuide.displayName}</div>
+              <div className="flex-1 font-display text-base font-bold text-charcoal-800">{editGuide?.displayName}</div>
             </div>
             <div className="flex items-center justify-between mb-4">
                   <div className="text-sm font-bold text-charcoal-800">
@@ -913,7 +913,7 @@ export default function AdminDashboard() {
         ))}
       </nav>
       {/* MODAL EDIT GUIDE */}
-      {editGuide && (
+      {editGuide && editGuide.displayName && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm" onClick={() => setEditGuide(null)}>
           <div className="bg-white rounded-t-3xl w-full max-w-lg p-5 max-h-[85vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
             <div className="flex items-center gap-4 mb-4">
@@ -935,7 +935,7 @@ export default function AdminDashboard() {
                   }} />
                 </label>
               </div>
-              <div className="flex-1 font-display text-base font-bold text-charcoal-800">{editGuide.displayName}</div>
+              <div className="flex-1 font-display text-base font-bold text-charcoal-800">{editGuide?.displayName}</div>
             </div>
             <div className="flex items-center justify-between mb-4">
               <div className="font-display text-base font-bold text-charcoal-800">Modifier — {editGuide.displayName}</div>
