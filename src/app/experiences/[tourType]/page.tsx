@@ -119,7 +119,7 @@ export default function ExperienceGuidesPage() {
                   <div className="text-right flex-shrink-0">
                     <div className="text-[10px] text-charcoal-400">Prix</div>
                     <div className="font-display text-lg font-bold text-charcoal-800">{convert(g.price)}</div>
-                    <div className="text-[10px] text-charcoal-400">/ 2 pers.</div>
+                    <div className="text-[10px] text-charcoal-400">/ 4 pers. max</div>
                   </div>
                 </div>
                 <a href={"/booking/" + g.guideId + "?tourId=" + g.templateId}

@@ -199,7 +199,7 @@ export default function GuidePageClient({ guide }: { guide: any }) {
             <p className="text-xs text-charcoal-400 mb-1">A partir de</p>
             <div className="flex items-baseline gap-2 flex-wrap mb-1">
               <PriceDisplay mad={price} size="xl" />
-              <span className="text-sm text-charcoal-400">/ 2 personnes</span>
+              <span className="text-sm text-charcoal-400">/ jusqu a 4 pers.</span>
             </div>
             <div className="flex flex-wrap gap-4 mt-3 pt-3 border-t border-sand-200">
               <span className="flex items-center gap-1 text-xs text-charcoal-400"><ArrowRight size={12} className="text-bronze-500" /> Annulation 72h</span>
@@ -369,7 +369,7 @@ export default function GuidePageClient({ guide }: { guide: any }) {
               <p className="text-xs text-charcoal-400">A partir de</p>
               <div className="flex items-baseline gap-1.5">
                 <PriceDisplay mad={price} size="lg" />
-                <span className="text-xs text-charcoal-400">/ 2 pers.</span>
+                <span className="text-xs text-charcoal-400">/ 4 pers. max</span>
               </div>
               {guide.avgRating > 0 && (
                 <div className="flex items-center gap-1 mt-0.5">
@@ -440,7 +440,7 @@ function TourCard({ guideTour, guideId }: { guideTour: any; guideId: string }) {
           <div>
             <div className="text-[10px] text-charcoal-400">A partir de</div>
             <PriceDisplay mad={priceWithCommission(Number(guideTour.price))} size="lg" />
-            <div className="text-[10px] text-charcoal-400">/ 2 pers. · +15% pers. suppl.</div>
+            <div className="text-[10px] text-charcoal-400">/ 4 pers. max · +15% pers. suppl.</div>
           </div>
           <a href={"/booking/" + guideId + "?tourId=" + t.id + "&tourPrice=" + priceWithCommission(Number(guideTour.price))}
             className="flex items-center gap-1.5 text-white font-semibold px-5 py-3 rounded-full text-sm no-underline"
@@ -545,7 +545,7 @@ function ExperienceCard({ experience: exp, guideId }: { experience: any; guideId
           <div>
             <div className="text-[10px] text-charcoal-400">A partir de</div>
             <PriceDisplay mad={priceWithCommission(Number(exp.price))} size="lg" />
-            <div className="text-[10px] text-charcoal-400">/ 2 pers. · +15% pers. suppl.</div>
+            <div className="text-[10px] text-charcoal-400">/ 4 pers. max · +15% pers. suppl.</div>
           </div>
           <a href={"/booking/" + guideId + "?expId=" + exp.id + "&tourPrice=" + priceWithCommission(Number(exp.price))}
             className="flex items-center gap-1.5 text-white font-semibold px-5 py-3 rounded-full text-sm no-underline"

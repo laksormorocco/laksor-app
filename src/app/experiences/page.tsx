@@ -133,7 +133,7 @@ export default function ExperiencesPage() {
                         <>
                           <div className="text-[10px] text-charcoal-400">A partir de</div>
                           <div className="font-display text-lg font-bold text-charcoal-800">
-                            <PriceDisplay mad={priceWithCommission(t.minPrice)} size="md" /> <span className="text-xs font-normal text-charcoal-400">/ 2 pers.</span>
+                            <PriceDisplay mad={priceWithCommission(t.minPrice)} size="md" /> <span className="text-xs font-normal text-charcoal-400">/ 4 pers. max</span>
                           </div>
                         </>
                       ) : (

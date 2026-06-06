@@ -153,7 +153,7 @@ function GuideCard({ g, idx }: { g: Guide; idx: number }) {
           <div>
             <div className="text-[9px] text-charcoal-400 uppercase tracking-wide whitespace-nowrap">À partir de</div>
             <div className="font-display text-xl font-bold text-charcoal-800 leading-none">€{eurPrice}</div>
-            <div className="text-[9px] text-charcoal-400 mt-0.5 whitespace-nowrap">/ 2 pers. · 4h</div>
+            <div className="text-[9px] text-charcoal-400 mt-0.5 whitespace-nowrap">/ 4 pers. max · 4h</div>
           </div>
           <button
             onClick={e => { e.stopPropagation(); window.location.href = `/guide/${g.id}`; }}
