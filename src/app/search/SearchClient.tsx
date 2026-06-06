@@ -2,7 +2,7 @@
 import { priceWithCommission } from "@/lib/pricing";
 import BottomNav from "@/components/BottomNav";
 import { useState, useMemo } from "react";
-import { MagnifyingGlass, MapPin, Star, Clock, SlidersHorizontal, X, ArrowLeft } from "@phosphor-icons/react";
+import { MagnifyingGlass, MapPin, Star, Clock, SlidersHorizontal, X, ArrowLeft, ShieldCheck, ArrowsCounterClockwise, ChatCircle, Car } from "@phosphor-icons/react";
 
 function toEur(mad: number) {
   return Math.round((mad * 1.25 + 25) * 0.092);
@@ -358,20 +358,21 @@ export default function SearchClient({ guides }: { guides: Guide[] }) {
 
         {/* Pourquoi Laksor */}
         {filtered.length > 0 && (
-          <div className="mt-6 bg-white rounded-2xl p-4 border border-sand-200">
-            <div className="text-[10px] font-bold text-charcoal-400 uppercase tracking-wider mb-3 text-center">
-              Pourquoi Laksor
-            </div>
+          <div className="mt-6 bg-white rounded-3xl p-5 border border-sand-200" style={{boxShadow:"0 2px 16px rgba(17,17,17,0.05)"}}>
+            <div className="text-[10px] font-bold text-charcoal-400 uppercase tracking-widest mb-4 text-center">Pourquoi Laksor</div>
             <div className="grid grid-cols-2 gap-3">
               {[
-                { icon: "🛡️", text: "Guides certifiés & vérifiés" },
-                { icon: "🔄", text: "Annulation gratuite 72h avant" },
-                { icon: "💬", text: "Support WhatsApp 7j/7" },
-                { icon: "🚗", text: "Transport en 1 clic" },
-              ].map(t => (
-                <div key={t.text} className="flex items-start gap-2">
-                  <span className="text-base flex-shrink-0">{t.icon}</span>
-                  <span className="text-xs text-charcoal-400 leading-relaxed">{t.text}</span>
+                { Icon: ShieldCheck, text: "Guides certifies", sub: "Verifies par nos equipes", color: "text-sage-300" },
+                { Icon: ArrowsCounterClockwise, text: "Annulation 72h", sub: "Remboursement garanti", color: "text-bronze-500" },
+                { Icon: ChatCircle, text: "Support WhatsApp", sub: "7j/7 disponible", color: "text-sage-300" },
+                { Icon: Car, text: "Transport inclus", sub: "En option sur chaque tour", color: "text-bronze-500" },
+              ].map(({Icon, text, sub, color}) => (
+                <div key={text} className="flex items-start gap-2.5 bg-sand-100 rounded-2xl p-3">
+                  <Icon size={18} weight="duotone" className={color + " flex-shrink-0 mt-0.5"} />
+                  <div>
+                    <div className="text-xs font-bold text-charcoal-800">{text}</div>
+                    <div className="text-[10px] text-charcoal-400 mt-0.5">{sub}</div>
+                  </div>
                 </div>
               ))}
             </div>
