@@ -50,10 +50,10 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white flex flex-col max-w-lg mx-auto">
+    <div className="min-h-screen bg-sand-200 flex flex-col max-w-lg mx-auto">
 
       {/* HEADER */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-sand-200">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-sand-300 bg-white">
         {step !== "email" ? (
           <button onClick={() => { setStep("email"); setError(""); setPassword(""); }}
             className="w-9 h-9 rounded-full border border-sand-200 flex items-center justify-center">
@@ -71,7 +71,7 @@ export default function LoginPage() {
       </div>
 
       {/* CONTENT */}
-      <div className="flex-1 px-6 pt-8">
+      <div className="flex-1 px-4 pt-6 pb-10">
 
         {/* STEP EMAIL */}
         {step === "email" && (
@@ -85,11 +85,11 @@ export default function LoginPage() {
               <input type="email" value={email} onChange={e => setEmail(e.target.value)}
                 placeholder="Email"
                 onKeyDown={e => e.key === "Enter" && checkEmail()}
-                className="w-full border border-sand-300 rounded-2xl px-4 py-4 text-sm text-charcoal-800 outline-none focus:border-charcoal-800 transition-colors" />
+                className="w-full border border-sand-300 rounded-2xl px-4 py-4 text-sm text-charcoal-800 outline-none focus:border-bronze-500 transition-colors" />
             </div>
 
             <button onClick={checkEmail} disabled={!email || loading}
-              className="w-full bg-charcoal-800 text-white font-bold py-4 rounded-2xl text-sm flex items-center justify-center gap-2 disabled:opacity-40">
+              className="w-full text-white font-bold py-4 rounded-2xl text-sm flex items-center justify-center gap-2 disabled:opacity-40" style={{background:"linear-gradient(135deg, #B88A44, #9A7238)", boxShadow:"0 4px 14px rgba(184,138,68,0.3)"}}>
               {loading ? "..." : "Continuer"} {!loading && <ArrowRight size={14} weight="bold" />}
             </button>
 
@@ -119,7 +119,7 @@ export default function LoginPage() {
               <input type={showPw ? "text" : "password"} value={password} onChange={e => setPassword(e.target.value)}
                 placeholder="Mot de passe"
                 onKeyDown={e => e.key === "Enter" && handleLogin()}
-                className="w-full border border-sand-300 rounded-2xl px-4 py-4 pr-12 text-sm text-charcoal-800 outline-none focus:border-charcoal-800 transition-colors" />
+                className="w-full border border-sand-300 rounded-2xl px-4 py-4 pr-12 text-sm text-charcoal-800 outline-none focus:border-bronze-500 transition-colors" />
               <button onClick={() => setShowPw(!showPw)} className="absolute right-4 top-1/2 -translate-y-1/2 text-charcoal-400">
                 {showPw ? <EyeSlash size={18} /> : <Eye size={18} />}
               </button>
@@ -128,7 +128,7 @@ export default function LoginPage() {
             {error && <div className="text-xs text-red-500 bg-red-50 rounded-xl px-4 py-3">{error}</div>}
 
             <button onClick={handleLogin} disabled={!password || loading}
-              className="w-full bg-charcoal-800 text-white font-bold py-4 rounded-2xl text-sm disabled:opacity-40">
+              className="w-full text-white font-bold py-4 rounded-2xl text-sm disabled:opacity-40" style={{background:"linear-gradient(135deg, #B88A44, #9A7238)", boxShadow:"0 4px 14px rgba(184,138,68,0.3)"}}>
               {loading ? "..." : "Se connecter"}
             </button>
 
@@ -150,7 +150,7 @@ export default function LoginPage() {
             <div className="relative">
               <input type={showPw ? "text" : "password"} value={password} onChange={e => setPassword(e.target.value)}
                 placeholder="Choisir un mot de passe"
-                className="w-full border border-sand-300 rounded-2xl px-4 py-4 pr-12 text-sm text-charcoal-800 outline-none focus:border-charcoal-800 transition-colors" />
+                className="w-full border border-sand-300 rounded-2xl px-4 py-4 pr-12 text-sm text-charcoal-800 outline-none focus:border-bronze-500 transition-colors" />
               <button onClick={() => setShowPw(!showPw)} className="absolute right-4 top-1/2 -translate-y-1/2 text-charcoal-400">
                 {showPw ? <EyeSlash size={18} /> : <Eye size={18} />}
               </button>
