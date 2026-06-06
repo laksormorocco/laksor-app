@@ -76,6 +76,7 @@ export default function AdminDashboard() {
   useEffect(() => { if (auth) { fetchAll(); fetchTemplates(); } }, [auth]);
   useEffect(() => { if (auth && active === "guides") fetchGuides(); }, [guideTab, active, auth]);
   useEffect(() => { if (auth && active === "crm") fetchCrm(); }, [active, auth, crmSearch, crmStatus, crmPeriod, crmGuide]);
+  useEffect(() => { if (auth && active === "experiences") fetchAllExperiences(); }, [active, auth]);
   useEffect(() => { if (auth && active === "tourists") fetchTourists(); }, [active, auth, touristSearch]);
 
   async function fetchAll() {
