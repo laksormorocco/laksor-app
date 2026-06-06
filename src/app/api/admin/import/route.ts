@@ -39,6 +39,7 @@ export async function POST(req: Request) {
           userId: user.id,
           displayName,
           city: g.ville || "",
+          bio: "",
           languages,
           status: "PENDING",
           halfDayPrice: 350,
