@@ -79,6 +79,25 @@ export default function GuidePageClient({ guide }: { guide: any }) {
 
   const reviews = guide.reviews || [];
   const activeTours = guide.tours?.filter((t: any) => t.isActive) || [];
+  const activeExperiences = guide.experiences || [];
+  const [sortBy, setSortBy] = useState<"price_asc"|"price_desc"|"popular">("popular");
+
+  const allItems = [
+    ...activeTours.map((gt: any) => ({
+      id: gt.id, type: "tour", title: gt.template?.title, price: gt.price,
+      duration: gt.template?.duration, bookings: gt.totalBookings || 0, data: gt
+    })),
+    ...activeExperiences.map((exp: any) => ({
+      id: exp.id, type: "experience", title: exp.title, price: exp.price,
+      duration: exp.duration, bookings: 0, data: exp
+    }))
+  ].sort((a, b) => {
+    if (sortBy === "price_asc") return a.price - b.price;
+    if (sortBy === "price_desc") return b.price - a.price;
+    return b.bookings - a.bookings;
+  });
+
+  const totalTours = allItems.length;
   const price = priceWithCommission(Number(guide.halfDayPrice) || 350);
 
   const TabBar = ({ sticky = false }: { sticky?: boolean }) => (
@@ -273,7 +292,20 @@ export default function GuidePageClient({ guide }: { guide: any }) {
 
         {tab === "tours" && (
           <div className="flex flex-col gap-4">
-            {activeTours.length === 0 ? (
+            <div className="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4" style={{scrollbarWidth:"none"}}>
+            {([
+              {id:"popular", label:"Populaire"},
+              {id:"price_asc", label:"Prix croissant"},
+              {id:"price_desc", label:"Prix décroissant"},
+            ] as {id:"price_asc"|"price_desc"|"popular", label:string}[]).map(s => (
+              <button key={s.id} onClick={() => setSortBy(s.id)}
+                className={"flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-bold border transition-all " + (sortBy === s.id ? "bg-charcoal-800 text-white border-charcoal-800" : "bg-white text-charcoal-400 border-sand-300")}>
+                {s.label}
+              </button>
+            ))}
+          </div>
+
+          {allItems.length === 0 ? (
               <div className="bg-white rounded-2xl p-10 text-center">
                 <p className="text-sm text-charcoal-400">Aucun tour disponible</p>
               </div>
@@ -424,6 +456,120 @@ function TourCard({ guideTour, guideId }: { guideTour: any; guideId: string }) {
 
       {open && (
         <div className="border-t-2 border-sage-300/20 p-4 bg-sand-100 flex flex-col gap-4">
+          {itinerary.length > 0 && (
+            <div>
+              <div className="text-[10px] font-bold text-charcoal-800 uppercase tracking-widest mb-3">Programme</div>
+              {itinerary.map((step: any, i: number) => (
+                <div key={i} className="flex gap-3 mb-3 last:mb-0">
+                  <div className="flex flex-col items-center flex-shrink-0">
+                    <div className="w-7 h-7 rounded-full bg-sage-300 flex items-center justify-center text-white text-xs font-bold">{i+1}</div>
+                    {i < itinerary.length-1 && <div className="w-0.5 flex-1 bg-sage-300/30 my-1" />}
+                  </div>
+                  <div className="flex-1 pb-2">
+                    {step.time && <div className="text-[10px] font-bold text-bronze-500 mb-0.5">{step.time}</div>}
+                    <div className="text-sm font-bold text-charcoal-800">{step.title}</div>
+                    {step.desc && <div className="text-xs text-charcoal-400 mt-0.5 leading-relaxed">{step.desc}</div>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+          {(included.length > 0 || notIncluded.length > 0) && (
+            <div className="grid grid-cols-2 gap-3">
+              {included.length > 0 && (
+                <div className="bg-white rounded-xl p-3 border border-sage-300/20">
+                  <div className="text-[10px] font-bold text-sage-300 uppercase tracking-widest mb-2">Inclus</div>
+                  {included.map((item: string) => (
+                    <div key={item} className="flex items-start gap-1.5 mb-1.5">
+                      <span className="text-sage-300 text-xs font-bold flex-shrink-0">✓</span>
+                      <span className="text-xs text-charcoal-600">{item}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {notIncluded.length > 0 && (
+                <div className="bg-white rounded-xl p-3 border border-red-100">
+                  <div className="text-[10px] font-bold text-red-400 uppercase tracking-widest mb-2">Non inclus</div>
+                  {notIncluded.map((item: string) => (
+                    <div key={item} className="flex items-start gap-1.5 mb-1.5">
+                      <span className="text-red-400 text-xs font-bold flex-shrink-0">✗</span>
+                      <span className="text-xs text-charcoal-600">{item}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── EXPERIENCE CARD ──
+function ExperienceCard({ experience: exp, guideId }: { experience: any; guideId: string }) {
+  const [open, setOpen] = useState(false);
+  const included: string[] = Array.isArray(exp.included) ? exp.included : [];
+  const notIncluded: string[] = Array.isArray(exp.notIncluded) ? exp.notIncluded : [];
+  const itinerary: any[] = Array.isArray(exp.itinerary) ? exp.itinerary : [];
+
+  return (
+    <div className="bg-white rounded-3xl overflow-hidden" style={{ boxShadow: "0 2px 16px rgba(17,17,17,0.06)" }}>
+      <div className="relative h-52">
+        {exp.photos?.[0]
+          ? <img src={exp.photos[0]} alt={exp.title} className="w-full h-full object-cover" />
+          : <div className="w-full h-full bg-gradient-to-br from-sage-300/20 to-sand-300 flex items-center justify-center text-6xl">🧭</div>}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent" />
+        <div className="absolute top-3 left-3 right-3 flex justify-between">
+          <span className="bg-bronze-500/90 text-white text-[10px] font-bold px-2.5 py-1 rounded-full">Experience</span>
+          {exp.transportRequired && (
+            <span className="bg-white/90 text-charcoal-800 text-[10px] font-bold px-2.5 py-1 rounded-full">🚗 Transport</span>
+          )}
+        </div>
+        <div className="absolute bottom-3 left-3 right-3">
+          <div className="font-display text-xl text-white font-bold mb-1.5">{exp.title}</div>
+          <div className="flex items-center gap-1.5 flex-wrap">
+            {[["⏱", exp.duration || "4h"], ["👥", exp.groupSize || "1-6"], ["🚶", exp.difficulty || "Facile"]].map(([icon, val], i) => (
+              <span key={i} className="text-white text-[10px] font-semibold px-2.5 py-0.5 rounded-full" style={{ background: "rgba(255,255,255,0.2)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.2)" }}>
+                {icon} {val}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="p-4">
+        {exp.description && <p className="text-xs text-charcoal-400 leading-relaxed mb-3 line-clamp-2">{exp.description}</p>}
+        <div className="flex items-center justify-between pt-3 border-t border-sand-200 mb-3">
+          <div>
+            <div className="text-[10px] text-charcoal-400">A partir de</div>
+            <PriceDisplay mad={priceWithCommission(Number(exp.price))} size="lg" />
+            <div className="text-[10px] text-charcoal-400">/ 2 pers. · +15% pers. suppl.</div>
+          </div>
+          <a href={"/booking/" + guideId + "?expId=" + exp.id + "&tourPrice=" + priceWithCommission(Number(exp.price))}
+            className="flex items-center gap-1.5 text-white font-semibold px-5 py-3 rounded-full text-sm no-underline"
+            style={{ background: "linear-gradient(135deg, #B88A44, #9A7238)", boxShadow: "0 4px 14px rgba(184,138,68,0.3)" }}>
+            Reserver <ArrowRight size={14} weight="bold" />
+          </a>
+        </div>
+        <button onClick={() => setOpen(!open)}
+          className={"w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold transition-all border-2 " + (open ? "border-sage-300 text-sage-300 bg-sage-300/5" : "border-sage-300/40 text-sage-300 hover:border-sage-300")}>
+          {open ? "Masquer les details" : "Voir les details"}
+          <span className={"transition-transform text-sm " + (open ? "rotate-180" : "")}>↓</span>
+        </button>
+      </div>
+
+      {open && (
+        <div className="border-t-2 border-sage-300/20 p-4 bg-sand-100 flex flex-col gap-4">
+          {exp.meetingPoint && (
+            <div className="flex items-start gap-2">
+              <span className="text-bronze-500 text-sm">📍</span>
+              <div>
+                <div className="text-[10px] font-bold text-charcoal-400 uppercase tracking-widest">Point de RDV</div>
+                <div className="text-xs text-charcoal-800">{exp.meetingPoint}</div>
+              </div>
+            </div>
+          )}
           {itinerary.length > 0 && (
             <div>
               <div className="text-[10px] font-bold text-charcoal-800 uppercase tracking-widest mb-3">Programme</div>
