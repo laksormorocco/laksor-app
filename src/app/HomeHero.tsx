@@ -261,8 +261,7 @@ export default function HomeHero() {
                 </div>
 
                 {/* FILTRES VEHICULE (privé seulement) */}
-                {tType === "private" && (
-                  <div className="flex gap-2 overflow-x-auto" style={{scrollbarWidth:"none"}}>
+                <div className="flex gap-2 overflow-x-auto" style={{scrollbarWidth:"none"}}>
                     {[{id:"ALL",e:"🚘",l:"Tous"},{id:"SEDAN",e:"🚗",l:"Berline"},{id:"MINIVAN",e:"🚐",l:"Minivan"},{id:"SUV_4X4",e:"🚙",l:"4x4"}].map(v => (
                       <button key={v.id} onClick={() => setTVehicle(v.id)}
                         className={"flex-shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold border transition-all " + (tVehicle === v.id ? "bg-charcoal-800 text-white border-charcoal-800" : "bg-white text-charcoal-500 border-sand-300")}>
@@ -270,7 +269,6 @@ export default function HomeHero() {
                       </button>
                     ))}
                   </div>
-                )}
 
                 {/* MAIN CARD */}
                 <div className="border-2 border-sand-300 rounded-2xl overflow-hidden bg-white">
@@ -329,7 +327,7 @@ export default function HomeHero() {
                   </div>
                   {acc === "date" && (
                     <div className="px-3 pb-3 border-b border-sand-100" style={{maxWidth: 320}}>
-                      <MiniCal value={tDate} onChange={v => { setTDate(v); }} />
+                      <MiniCal value={tDate} onChange={v => setTDate(v)} />
                       <div className="mt-2 flex gap-2 overflow-x-auto" style={{scrollbarWidth:"none"}}>
                         {["06:00","07:00","08:00","09:00","10:00","11:00","12:00","14:00","16:00","18:00","20:00"].map(h => (
                           <button key={h} onClick={() => setTHour(h)}
