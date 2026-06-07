@@ -55,8 +55,8 @@ export default function TouristDashboard() {
   }
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center bg-sand-200">
-      <div className="w-10 h-10 border-4 border-bronze-500 border-t-transparent rounded-full animate-spin" />
+    <div className="min-h-screen bg-sand-200 flex flex-col items-center justify-center gap-6"><img src="/logo7.png" alt="Laksor" style={{ height: 56, width: "auto", objectFit: "contain", maxWidth: 180 }} />
+      <div className="w-8 h-8 rounded-full animate-spin" style={{ borderWidth: 3, borderStyle: "solid", borderColor: "#B88A44 transparent transparent transparent" }} />
     </div>
   );
 
@@ -66,6 +66,7 @@ export default function TouristDashboard() {
       {/* HEADER */}
       <div className="sticky top-0 z-30 bg-white border-b border-sand-300 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
+          <img src="/logo7.png" alt="Laksor" style={{ height: 32, width: "auto", objectFit: "contain", maxWidth: 110 }} />
           <div className="relative">
             <div className="w-10 h-10 rounded-full overflow-hidden bg-sand-300 border-2 border-sand-300">
               {user?.user_metadata?.avatar_url
@@ -132,21 +133,7 @@ export default function TouristDashboard() {
           );
         })()}
 
-        {/* PROCHAINE VISITE */}
-        {(() => {
-          const next = upcoming.find(b => b.status === "CONFIRMED");
-          if (!next) return null;
-          const days = Math.ceil((new Date(next.date).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
-          return (
-            <div className="bg-gradient-to-br from-sage-300 to-sage-400 rounded-2xl p-4 text-white">
-              <div className="text-[10px] font-bold uppercase tracking-widest text-white/60 mb-1">Prochaine aventure</div>
-              <div className="font-display text-xl font-bold mb-1">Dans {days} jour{days > 1 ? "s" : ""} !</div>
-              <div className="text-sm text-white/80">Avec <strong className="text-white">{next.guide?.displayName}</strong> à {next.guide?.city}</div>
-              <div className="text-xs text-white/60 mt-1">{new Date(next.date).toLocaleDateString("fr-FR", {weekday:"long", day:"numeric", month:"long"})}</div>
-            </div>
-          );
-        })()}
-
+        
         {/* UPCOMING */}
         {tab === "upcoming" && (
           <>
@@ -224,6 +211,25 @@ export default function TouristDashboard() {
                       </button>
                     )}
                   </div>
+
+                  {/* TIMER */}
+                  {b.status === "CONFIRMED" && (() => {
+                    const msLeft = new Date(b.date).getTime() - Date.now();
+                    const days = Math.floor(msLeft / (1000*60*60*24));
+                    const hours = Math.floor((msLeft % (1000*60*60*24)) / (1000*60*60));
+                    if (msLeft <= 0) return null;
+                    return (
+                      <div className="mt-3 bg-sage-300/10 border border-sage-300/30 rounded-xl px-4 py-3 flex items-center justify-between">
+                        <div>
+                          <div className="text-[10px] font-bold text-sage-300 uppercase tracking-widest">Votre visite</div>
+                          <div className="font-display text-lg font-bold text-charcoal-800">
+                            {days > 0 ? `Dans ${days}j ${hours}h` : `Dans ${hours}h`}
+                          </div>
+                        </div>
+                        <div className="text-2xl">🗓</div>
+                      </div>
+                    );
+                  })()}
 
                   {/* Lien confirmation */}
                   <Link href={"/booking/confirmation/" + b.id}
