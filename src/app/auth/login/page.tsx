@@ -142,6 +142,14 @@ export default function LoginPage() {
               className="text-sm text-charcoal-600 underline text-center">
               Pas encore de compte ? S inscrire
             </button>
+            <button onClick={async () => {
+              if (!email) return setError("Entrez votre email d abord");
+              const {error} = await supabase.auth.resetPasswordForEmail(email, {redirectTo: window.location.origin + "/auth/callback"});
+              if (error) setError(error.message);
+              else setSuccess("Email envoye ! Verifiez votre boite mail.");
+            }} className="text-xs text-charcoal-400 underline text-center block w-full">
+              Mot de passe oublie ?
+            </button>
           </div>
         )}
 
