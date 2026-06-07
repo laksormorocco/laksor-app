@@ -461,7 +461,7 @@ export default function AdminDashboard() {
                           className="bg-bronze-50 text-bronze-500 rounded-full px-3 py-1.5 text-xs font-bold border border-bronze-500">
                           Suspendre
                         </button>
-                        <button onClick={() => { setEditGuide(g); setEditGuideForm({ displayName: g.displayName, city: g.city, bio: g.bio||"", languages: (g.languages||[]).join(", "), halfDayPrice: g.halfDayPrice, fullDayPrice: g.fullDayPrice, yearsExp: g.yearsExp||0, phone: g.phone||"", avatar: g.avatar||"", user: g.user }); }}
+                        <button onClick={() => { setEditGuide(g); setEditGuideForm({ displayName: g.displayName, city: g.city, bio: g.bio||"", languages: (g.languages||[]).join(", "), halfDayPrice: g.halfDayPrice, fullDayPrice: g.fullDayPrice, yearsExp: g.yearsExp||0, phone: g.phone||"", avatar: g.avatar||"", email: g.user?.email||"", userId: g.user?.id||"" }); }}
                           className="px-3 py-1.5 rounded-full text-xs font-bold bg-charcoal-800 text-white">
                           Modifier
                         </button>
