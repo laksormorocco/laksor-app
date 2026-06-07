@@ -19,6 +19,7 @@ export async function GET(req: Request) {
       halfDayPrice: true,
       fullDayPrice: true,
       yearsExp: true,
+      docsStatus: true,
       tours: {
         where: { isActive: true },
         select: {

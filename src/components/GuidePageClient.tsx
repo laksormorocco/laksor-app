@@ -3,7 +3,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import {
   ArrowLeft, Heart, ShareNetwork, MapPin, Star,
-  Clock, SealCheck, Eye, CalendarCheck, ArrowRight, Quotes
+  Clock, SealCheck, ShieldCheck, Eye, CalendarCheck, ArrowRight, Quotes
 } from "@phosphor-icons/react";
 import PriceDisplay from "@/components/PriceDisplay";
 import { priceWithCommission } from "@/lib/pricing";
@@ -173,6 +173,11 @@ export default function GuidePageClient({ guide }: { guide: any }) {
             <span className="flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold text-white" style={{ background: "#7D8F69" }}>
               <SealCheck size={11} weight="bold" /> Certifie
             </span>
+            {guide.docsStatus === "APPROVED" && (
+              <span className="flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold" style={{ background: "linear-gradient(135deg, #B88A44, #9A7238)", color: "#fff", boxShadow: "0 2px 8px rgba(184,138,68,0.4)" }}>
+                <ShieldCheck size={12} weight="fill" /> ID Verifie
+              </span>
+            )}
             {guide.languages?.slice(0,3).map((lang: string, i: number) => (
               <span key={i} className="px-2 py-1 rounded-full text-sm" style={{ background: "rgba(255,255,255,0.2)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.25)" }}>
                 {getLangFlag(lang)}

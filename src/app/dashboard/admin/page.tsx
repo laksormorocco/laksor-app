@@ -1091,6 +1091,45 @@ export default function AdminDashboard() {
               }} className="w-full bg-bronze-500 text-white font-bold py-3.5 rounded-full text-sm">
                 Sauvegarder
               </button>
+              {/* DOCUMENTS */}
+              {(editGuide?.guideCardUrl || editGuide?.nationalIdUrl) && (
+                <div className="bg-sand-100 rounded-2xl p-3 border border-sand-300">
+                  <div className="text-xs font-bold text-charcoal-800 mb-3">Documents soumis</div>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { key:"guideCardUrl", label:"Carte guide (recto)" },
+                      { key:"guideCardBack", label:"Carte guide (verso)" },
+                      { key:"nationalIdUrl", label:"CIN (recto)" },
+                      { key:"nationalIdBack", label:"CIN (verso)" },
+                    ].map(doc => editGuide[doc.key] && (
+                      <div key={doc.key}>
+                        <div className="text-[10px] text-charcoal-400 mb-1">{doc.label}</div>
+                        <a href={editGuide[doc.key]} target="_blank" className="no-underline">
+                          <img src={editGuide[doc.key]} className="w-full h-20 object-cover rounded-xl border border-sand-300" />
+                        </a>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex gap-2 mt-3">
+                    <button onClick={async () => {
+                      await fetch("/api/admin/guides", { method:"PATCH", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ id: editGuide.id, docsStatus: "APPROVED" }) });
+                      fetchGuides(); setEditGuide(null);
+                    }} className="flex-1 bg-sage-300 text-white text-xs font-bold py-2.5 rounded-full">
+                      ✅ Valider documents
+                    </button>
+                    <button onClick={async () => {
+                      await fetch("/api/admin/guides", { method:"PATCH", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ id: editGuide.id, docsStatus: "REFUSED" }) });
+                      fetchGuides(); setEditGuide(null);
+                    }} className="flex-1 bg-red-50 text-red-400 border border-red-200 text-xs font-bold py-2.5 rounded-full">
+                      ❌ Refuser
+                    </button>
+                  </div>
+                  <div className={"text-[10px] text-center mt-2 font-bold " + (editGuide.docsStatus === "APPROVED" ? "text-sage-300" : editGuide.docsStatus === "REFUSED" ? "text-red-400" : "text-bronze-500")}>
+                    Statut : {editGuide.docsStatus === "APPROVED" ? "Documents validés" : editGuide.docsStatus === "REFUSED" ? "Documents refusés" : "En attente"}
+                  </div>
+                </div>
+              )}
+
               {editGuideForm.email && (
                 <button onClick={async () => {
                   const res = await fetch("/api/admin/invite", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ email: editGuideForm.email, name: editGuideForm.displayName }) });
