@@ -91,6 +91,9 @@ model User {
   customRequests CustomRequest[] @relation("TouristRequests")
   reviews        Review[]
 
+  transportBookings TransportBooking[] @relation("TransportBookingUser")
+  Transporter       Transporter?
+
   @@map("users")
 }
 
@@ -116,7 +119,7 @@ model GuideProfile {
   guideCardBack  String?
   nationalIdUrl  String?
   nationalIdBack String?
-  docsStatus     String  @default("PENDING")
+  docsStatus     String      @default("PENDING")
 
   halfDayPrice Float @default(350)
   fullDayPrice Float @default(650)
@@ -345,4 +348,63 @@ model GuideExperience {
   isActive          Boolean      @default(false)
   createdAt         DateTime     @default(now())
   updatedAt         DateTime     @updatedAt
+}
+
+model Transporter {
+  id          String             @id @default(cuid())
+  userId      String             @unique
+  user        User               @relation(fields: [userId], references: [id])
+  displayName String
+  phone       String?
+  city        String             @default("")
+  bio         String?            @db.Text
+  avatar      String?
+  status      String             @default("PENDING")
+  vehicles    Vehicle[]
+  bookings    TransportBooking[]
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+}
+
+model Vehicle {
+  id            String             @id @default(cuid())
+  transporterId String
+  transporter   Transporter        @relation(fields: [transporterId], references: [id])
+  type          String             @default("SEDAN")
+  brand         String?
+  model         String?
+  year          Int?
+  color         String?
+  capacity      Int                @default(4)
+  hasAC         Boolean            @default(true)
+  hasWifi       Boolean            @default(false)
+  hasWater      Boolean            @default(false)
+  photos        String[]           @default([])
+  pricePerKm    Float?
+  fixedPrice    Float?
+  isActive      Boolean            @default(true)
+  bookings      TransportBooking[]
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+}
+
+model TransportBooking {
+  id            String      @id @default(cuid())
+  transporterId String
+  transporter   Transporter @relation(fields: [transporterId], references: [id])
+  vehicleId     String
+  vehicle       Vehicle     @relation(fields: [vehicleId], references: [id])
+  userId        String?
+  user          User?       @relation("TransportBookingUser", fields: [userId], references: [id])
+  origin        String
+  destination   String
+  date          DateTime
+  persons       Int         @default(1)
+  totalPrice    Float
+  status        String      @default("PENDING")
+  guestName     String?
+  guestContact  String?
+  notes         String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 }

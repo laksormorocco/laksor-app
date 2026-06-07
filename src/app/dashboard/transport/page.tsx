@@ -1,147 +1,267 @@
 "use client";
 import { useState, useEffect } from "react";
-import Link from "next/link";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@supabase/supabase-js";
+import { Car, Plus, Pencil, Trash, SignOut, MapPin, Users, CurrencyDollar, CheckCircle, Clock, X, GasPump, WifiHigh, Drop } from "@phosphor-icons/react";
+import BottomNav from "@/components/BottomNav";
 
-const TABS = [
-  { id:"home", icon:"🏠", label:"Accueil" },
-  { id:"reservations", icon:"📋", label:"Réservations" },
-  { id:"stats", icon:"📈", label:"Stats" },
-  { id:"profil", icon:"👤", label:"Profil" },
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL || "",
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ""
+);
+
+const VEHICLE_TYPES = [
+  { id: "SEDAN", label: "Berline", emoji: "🚗" },
+  { id: "MINIVAN", label: "Minivan", emoji: "🚐" },
+  { id: "SUV_4X4", label: "4x4 / SUV", emoji: "🚙" },
+  { id: "BUS", label: "Bus", emoji: "🚌" },
 ];
 
-export default function TransportDashboard() {
-  const [active, setActive] = useState("home");
-  const [transport, setTransport] = useState<any>(null);
-  const [bookings, setBookings] = useState<any[]>([]);
-  const [totalRevenue, setTotalRevenue] = useState(0);
+export default function TransporterDashboard() {
   const [loading, setLoading] = useState(true);
-  const [transportId, setTransportId] = useState("");
+  const [transporter, setTransporter] = useState<any>(null);
+  const [vehicles, setVehicles] = useState<any[]>([]);
+  const [showVehicleForm, setShowVehicleForm] = useState(false);
+  const [editVehicle, setEditVehicle] = useState<any>(null);
+  const [vehicleForm, setVehicleForm] = useState<any>({
+    type: "SEDAN", brand: "", model: "", year: "", color: "",
+    capacity: 4, hasAC: true, hasWifi: false, hasWater: false,
+    pricePerKm: "", fixedPrice: ""
+  });
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    const id = new URLSearchParams(window.location.search).get("id") || "";
-    setTransportId(id);
-    if (id) fetchData(id);
-    else setLoading(false);
+    async function init() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) { window.location.href = "/auth/login"; return; }
+      const res = await fetch("/api/auth/me?email=" + encodeURIComponent(session.user.email || ""));
+      const data = await res.json();
+      if (data.transporterId) {
+        fetchTransporter(data.transporterId);
+      } else {
+        setLoading(false);
+      }
+    }
+    init();
   }, []);
 
-  async function fetchData(id: string) {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/transport/dashboard?transportId=" + id);
+  async function fetchTransporter(id: string) {
+    const res = await fetch("/api/transport?id=" + id);
+    if (res.ok) {
       const data = await res.json();
-      if (data.transport) {
-        setTransport(data.transport);
-        setBookings(data.transport.bookings || []);
-        setTotalRevenue(data.totalRevenue || 0);
-      }
-    } catch(e) { console.error(e); }
+      setTransporter(data.transporter);
+      setVehicles(data.transporter?.vehicles || []);
+    }
     setLoading(false);
   }
 
-  async function updateBooking(bookingId: string, status: string) {
-    await fetch("/api/guide/booking", { // Reusing guide booking API as it's generic enough or update it
-      method: "PATCH",
-      headers: {"Content-Type":"application/json"},
-      body: JSON.stringify({ bookingId, status })
+  async function saveVehicle() {
+    setSaving(true);
+    const method = editVehicle ? "PATCH" : "POST";
+    const body = editVehicle
+      ? { id: editVehicle.id, ...vehicleForm }
+      : { transporterId: transporter?.id, ...vehicleForm };
+    const res = await fetch("/api/transport/vehicles", {
+      method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body)
     });
-    if (transportId) fetchData(transportId);
+    if (res.ok) {
+      const data = await res.json();
+      if (editVehicle) {
+        setVehicles(vehicles.map(v => v.id === editVehicle.id ? data.vehicle : v));
+      } else {
+        setVehicles([...vehicles, data.vehicle]);
+      }
+      setShowVehicleForm(false);
+      setEditVehicle(null);
+    }
+    setSaving(false);
   }
 
-  const pending = bookings.filter(b => b.status === "PENDING");
-  const confirmed = bookings.filter(b => b.status === "CONFIRMED");
+  async function deleteVehicle(id: string) {
+    await fetch("/api/transport/vehicles?id=" + id, { method: "DELETE" });
+    setVehicles(vehicles.filter(v => v.id !== id));
+  }
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center bg-[var(--sand)]">
-      <div className="text-center">
-        <div className="text-4xl mb-3 animate-bounce">⏳</div>
-        <div className="text-[var(--muted)] font-bold uppercase tracking-widest text-[10px]">Chargement...</div>
-      </div>
-    </div>
-  );
-
-  if (!transportId) return (
-    <div className="min-h-screen flex items-center justify-center bg-[var(--sand)] p-4">
-      <div className="bg-white rounded-[28px] p-8 text-center max-w-[360px] w-full border border-[var(--sand-dark)] shadow-xl">
-        <div className="text-5xl mb-4">🔐</div>
-        <h2 className="text-[var(--bronze)] font-serif font-bold text-xl mb-2">Accès Transport</h2>
-        <p className="text-[var(--soft)] text-sm mb-6 leading-relaxed">Connectez-vous pour accéder à votre espace professionnel.</p>
-        <Link href="/auth/login" className="btn-bronze w-full py-4 text-sm shadow-lg">Se connecter</Link>
-      </div>
+    <div className="min-h-screen bg-sand-200 flex flex-col items-center justify-center gap-6">
+      <img src="/logo7.png" alt="Laksor" style={{ height: 56, width: "auto", objectFit: "contain", maxWidth: 180 }} />
+      <div className="w-8 h-8 rounded-full animate-spin" style={{ borderWidth: 3, borderStyle: "solid", borderColor: "#B88A44 transparent transparent transparent" }} />
     </div>
   );
 
   return (
-    <div className="bg-[var(--sand)] min-h-screen flex flex-col pb-24">
-      <header className="bg-white p-4 border-b border-[var(--sand-dark)] sticky top-0 z-50">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-full overflow-hidden bg-[var(--sand)] border-2 border-[var(--sand-dark)]">
-              {transport?.avatar ? <img src={transport.avatar} className="w-full h-full object-cover"/> : <div className="w-full h-full flex items-center justify-center font-bold text-[var(--bronze)]">{transport?.displayName?.[0]}</div>}
-            </div>
-            <div>
-              <div className="text-[10px] text-[var(--muted)] font-bold uppercase tracking-wider">Transporteur,</div>
-              <div className="font-serif font-bold text-base text-[var(--charcoal)] leading-none">{transport?.displayName || "Chauffeur"} ✦</div>
+    <div className="min-h-screen bg-sand-100 pb-24">
+      {/* HEADER */}
+      <div className="bg-white border-b border-sand-200 px-4 py-3 flex items-center justify-between sticky top-0 z-30">
+        <img src="/logo7.png" alt="Laksor" style={{ height: 36, width: "auto", objectFit: "contain", maxWidth: 130 }} />
+        <div className="flex items-center gap-2">
+          {transporter && (
+            <span className={"text-[10px] font-bold px-2.5 py-1 rounded-full " + (transporter.status === "APPROVED" ? "bg-sage-300/15 text-sage-300" : "bg-bronze-500/15 text-bronze-500")}>
+              {transporter.status === "APPROVED" ? "✅ Approuvé" : "⏳ En attente"}
+            </span>
+          )}
+          <button onClick={async () => { await supabase.auth.signOut(); window.location.href = "/"; }}
+            className="w-9 h-9 rounded-full border border-sand-300 flex items-center justify-center">
+            <SignOut size={16} className="text-charcoal-400" />
+          </button>
+        </div>
+      </div>
+
+      <div className="px-4 py-5 flex flex-col gap-4">
+
+        {/* PROFIL */}
+        {transporter ? (
+          <div className="bg-white rounded-2xl border border-sand-300 p-4">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-full bg-bronze-500/15 flex items-center justify-center">
+                <Car size={22} className="text-bronze-500" />
+              </div>
+              <div>
+                <div className="font-display text-sm font-bold text-charcoal-800">{transporter.displayName}</div>
+                <div className="text-xs text-charcoal-400 flex items-center gap-1">
+                  <MapPin size={10} /> {transporter.city || "Ville non définie"}
+                </div>
+              </div>
             </div>
           </div>
-          <Link href="/" className="w-10 h-10 bg-[var(--sand)] rounded-xl border border-[var(--sand-dark)] flex items-center justify-center shadow-sm">🏠</Link>
-        </div>
-      </header>
-
-      <main className="p-4 max-w-lg mx-auto w-full flex-1">
-        {active === "home" && (
-          <div className="flex flex-col gap-4">
-            <div className="bg-[var(--bronze-g)] rounded-[28px] p-6 text-white shadow-xl">
-              <div className="text-[10px] opacity-70 font-bold uppercase tracking-widest mb-1">Revenus cumulés</div>
-              <div className="text-3xl font-serif font-bold">{totalRevenue} MAD</div>
-            </div>
-
-            {pending.length > 0 && (
-              <div className="bg-white rounded-[28px] p-5 border border-[var(--sand-dark)] shadow-sm">
-                <h2 className="text-sm font-bold uppercase tracking-wider mb-4">Réservations en attente</h2>
-                {pending.map((b:any) => (
-                  <div key={b.id} className="border border-[var(--sand-dark)] rounded-2xl p-4 bg-[var(--sand)]/30 mb-3">
-                    <div className="flex justify-between mb-4">
-                      <div className="font-bold">{b.tourist?.name}</div>
-                      <div className="text-[var(--sage)] font-bold">{b.totalPrice} MAD</div>
-                    </div>
-                    <div className="flex gap-2">
-                      <button onClick={()=>updateBooking(b.id,"CONFIRMED")} className="btn-bronze flex-1 py-2 text-xs">Accepter</button>
-                      <button onClick={()=>updateBooking(b.id,"CANCELLED")} className="btn-ghost flex-1 py-2 text-xs">Refuser</button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {confirmed.length > 0 && (
-              <div className="bg-white rounded-[28px] p-5 border border-[var(--sand-dark)] shadow-sm">
-                <h2 className="text-sm font-bold uppercase tracking-wider mb-4">Courses confirmées</h2>
-                {confirmed.map((b:any) => (
-                  <div key={b.id} className="flex justify-between items-center py-2 border-b border-[var(--sand)] last:border-0">
-                    <div>
-                      <div className="font-bold text-sm">{b.tourist?.name}</div>
-                      <div className="text-[10px] text-[var(--muted)]">{new Date(b.date).toLocaleDateString("fr-FR")}</div>
-                    </div>
-                    <div className="text-[var(--sage)] font-bold text-sm">{b.totalPrice} MAD</div>
-                  </div>
-                ))}
-              </div>
-            )}
+        ) : (
+          <div className="bg-white rounded-2xl border border-sand-300 p-6 text-center">
+            <Car size={40} className="text-charcoal-300 mx-auto mb-3" />
+            <div className="text-sm font-bold text-charcoal-800 mb-1">Profil transporteur</div>
+            <div className="text-xs text-charcoal-400 mb-4">Vous n avez pas encore de profil transporteur</div>
+            <a href="/auth/register-transport" className="bg-bronze-500 text-white text-xs font-bold px-6 py-3 rounded-full no-underline">
+              Créer mon profil
+            </a>
           </div>
         )}
-      </main>
 
-      <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-lg bg-white/95 backdrop-blur-xl border-t border-[var(--sand-dark)] grid grid-cols-4 z-50 px-2 pb-6 pt-2 shadow-[0_-8px_40px_rgba(0,0,0,0.08)]">
-        {TABS.map(t => (
-          <button key={t.id} onClick={()=>setActive(t.id)} className={`flex flex-col items-center gap-1.5 ${active===t.id ? "text-[var(--bronze)]" : "text-[var(--muted)]"}`}>
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-xl ${active===t.id ? "bg-[var(--bronze-g)] text-white" : ""}`}>
-              {t.icon}
+        {/* VÉHICULES */}
+        {transporter && (
+          <>
+            <div className="flex items-center justify-between">
+              <div className="text-sm font-bold text-charcoal-800">Mes véhicules ({vehicles.length})</div>
+              <button onClick={() => { setEditVehicle(null); setVehicleForm({ type:"SEDAN", brand:"", model:"", year:"", color:"", capacity:4, hasAC:true, hasWifi:false, hasWater:false, pricePerKm:"", fixedPrice:"" }); setShowVehicleForm(true); }}
+                className="flex items-center gap-1.5 bg-bronze-500 text-white text-xs font-bold px-4 py-2 rounded-full">
+                <Plus size={12} weight="bold" /> Ajouter
+              </button>
             </div>
-            <span className="text-[9px] font-extrabold uppercase tracking-tighter">{t.label}</span>
-          </button>
-        ))}
-      </nav>
+
+            {vehicles.length === 0 ? (
+              <div className="bg-white rounded-2xl border border-sand-300 p-8 text-center">
+                <Car size={32} className="text-charcoal-300 mx-auto mb-3" />
+                <div className="text-sm text-charcoal-400">Aucun véhicule ajouté</div>
+              </div>
+            ) : vehicles.map(v => (
+              <div key={v.id} className="bg-white rounded-2xl border border-sand-300 p-4">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-sand-200 flex items-center justify-center text-xl">
+                      {VEHICLE_TYPES.find(t => t.id === v.type)?.emoji || "🚗"}
+                    </div>
+                    <div>
+                      <div className="text-sm font-bold text-charcoal-800">{v.brand} {v.model}</div>
+                      <div className="text-xs text-charcoal-400">{VEHICLE_TYPES.find(t => t.id === v.type)?.label} · {v.year}</div>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <button onClick={() => { setEditVehicle(v); setVehicleForm({...v}); setShowVehicleForm(true); }}
+                      className="w-8 h-8 rounded-full border border-sand-300 flex items-center justify-center">
+                      <Pencil size={13} className="text-charcoal-400" />
+                    </button>
+                    <button onClick={() => deleteVehicle(v.id)}
+                      className="w-8 h-8 rounded-full border border-red-200 flex items-center justify-center">
+                      <Trash size={13} className="text-red-400" />
+                    </button>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 flex-wrap">
+                  <span className="flex items-center gap-1 text-xs text-charcoal-400">
+                    <Users size={11} /> {v.capacity} pers.
+                  </span>
+                  {v.hasAC && <span className="text-xs text-charcoal-400">❄️ AC</span>}
+                  {v.hasWifi && <span className="text-xs text-charcoal-400">📶 Wifi</span>}
+                  {v.hasWater && <span className="text-xs text-charcoal-400">💧 Eau</span>}
+                </div>
+                <div className="mt-3 pt-3 border-t border-sand-200 flex items-center justify-between">
+                  {v.fixedPrice && <div className="text-xs"><span className="font-bold text-charcoal-800">{v.fixedPrice} MAD</span> <span className="text-charcoal-400">prix fixe</span></div>}
+                  {v.pricePerKm && <div className="text-xs"><span className="font-bold text-charcoal-800">{v.pricePerKm} MAD</span> <span className="text-charcoal-400">/km</span></div>}
+                </div>
+              </div>
+            ))}
+          </>
+        )}
+      </div>
+
+      {/* MODAL VÉHICULE */}
+      {showVehicleForm && (
+        <div className="fixed inset-x-0 top-0 bottom-0 z-50 bg-white flex flex-col">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-sand-200">
+            <button onClick={() => setShowVehicleForm(false)}
+              className="w-9 h-9 rounded-full border border-sand-200 flex items-center justify-center">
+              <X size={16} className="text-charcoal-600" />
+            </button>
+            <span className="font-display text-sm font-bold text-charcoal-800">{editVehicle ? "Modifier" : "Ajouter"} un véhicule</span>
+            <div className="w-9" />
+          </div>
+          <div className="flex-1 overflow-y-auto px-4 py-5 flex flex-col gap-4">
+
+            {/* Type de véhicule */}
+            <div>
+              <div className="text-xs font-bold text-charcoal-400 mb-2">Type de véhicule</div>
+              <div className="grid grid-cols-2 gap-2">
+                {VEHICLE_TYPES.map(t => (
+                  <button key={t.id} onClick={() => setVehicleForm({...vehicleForm, type: t.id})}
+                    className={"flex items-center gap-2 px-3 py-3 rounded-xl border text-sm font-semibold transition-all " + (vehicleForm.type === t.id ? "border-bronze-500 bg-bronze-500/10 text-bronze-500" : "border-sand-300 text-charcoal-600")}>
+                    <span>{t.emoji}</span> {t.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {[
+              { key: "brand", label: "Marque", ph: "Toyota, Mercedes..." },
+              { key: "model", label: "Modèle", ph: "Camry, Vito..." },
+              { key: "year", label: "Année", ph: "2020" },
+              { key: "color", label: "Couleur", ph: "Blanc, Noir..." },
+              { key: "capacity", label: "Capacité (personnes)", ph: "4" },
+              { key: "fixedPrice", label: "Prix fixe (MAD)", ph: "300" },
+              { key: "pricePerKm", label: "Prix par km (MAD)", ph: "3.5" },
+            ].map(f => (
+              <div key={f.key}>
+                <div className="text-xs font-bold text-charcoal-400 mb-1">{f.label}</div>
+                <input value={vehicleForm[f.key] || ""} onChange={e => setVehicleForm({...vehicleForm, [f.key]: e.target.value})}
+                  placeholder={f.ph}
+                  className="w-full border border-sand-300 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-bronze-500" />
+              </div>
+            ))}
+
+            {/* Équipements */}
+            <div>
+              <div className="text-xs font-bold text-charcoal-400 mb-2">Équipements</div>
+              {[
+                { key: "hasAC", label: "Climatisation", icon: "❄️" },
+                { key: "hasWifi", label: "Wifi", icon: "📶" },
+                { key: "hasWater", label: "Eau offerte", icon: "💧" },
+              ].map(eq => (
+                <div key={eq.key} className="flex items-center justify-between bg-sand-100 rounded-xl px-4 py-3 mb-2">
+                  <div className="text-sm text-charcoal-800">{eq.icon} {eq.label}</div>
+                  <button onClick={() => setVehicleForm({...vehicleForm, [eq.key]: !vehicleForm[eq.key]})}
+                    className={"w-12 h-6 rounded-full relative transition-colors " + (vehicleForm[eq.key] ? "bg-sage-300" : "bg-sand-300")}>
+                    <div className={"w-5 h-5 bg-white rounded-full absolute top-0.5 transition-all shadow-sm " + (vehicleForm[eq.key] ? "left-6" : "left-0.5")} />
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            <button onClick={saveVehicle} disabled={saving}
+              className="w-full text-white font-bold py-4 rounded-full text-sm"
+              style={{ background: "linear-gradient(135deg, #B88A44, #9A7238)", boxShadow: "0 4px 14px rgba(184,138,68,0.3)" }}>
+              {saving ? "Enregistrement..." : editVehicle ? "Mettre à jour" : "Ajouter le véhicule"}
+            </button>
+          </div>
+        </div>
+      )}
+
+      <BottomNav />
     </div>
   );
 }
