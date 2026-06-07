@@ -1060,6 +1060,7 @@ export default function AdminDashboard() {
             <div className="flex flex-col gap-3">
               {[
                 { key:"displayName", label:"Nom affiché" },
+              { key:"email", label:"Email (vrai email du guide)" },
                 { key:"city", label:"Ville" },
                 { key:"phone", label:"WhatsApp (avec indicatif)" },
                 { key:"halfDayPrice", label:"Prix demi-journée (MAD guide)" },
@@ -1090,6 +1091,20 @@ export default function AdminDashboard() {
               }} className="w-full bg-bronze-500 text-white font-bold py-3.5 rounded-full text-sm">
                 Sauvegarder
               </button>
+              {editGuideForm.email && (
+                <button onClick={async () => {
+                  const res = await fetch("/api/admin/invite", {
+                    method: "POST",
+                    headers: {"Content-Type":"application/json"},
+                    body: JSON.stringify({ email: editGuideForm.email, name: editGuideForm.displayName })
+                  });
+                  const d = await res.json();
+                  alert(d.success ? "Invitation envoyée à " + editGuideForm.email : "Erreur: " + d.error);
+                }}
+                  className="w-full border-2 border-sage-300 text-sage-300 font-bold py-3 rounded-full text-sm">
+                  📧 Envoyer invitation
+                </button>
+              )}
             </div>
           </div>
         </div>
