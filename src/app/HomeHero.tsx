@@ -41,6 +41,10 @@ export default function HomeHero() {
   const [tDate, setTDate]   = useState("");
   const [tPax, setTPax]     = useState(1);
   const [tFlight, setTFlight] = useState("");
+  const [tOrigin, setTOrigin] = useState("");
+  const [tDest2, setTDest2] = useState("");
+  const [tHour, setTHour] = useState("09:00");
+  const [tVehicle, setTVehicle] = useState("ALL");
 
   const totalPax = adults + kids;
   const pillSub  = [
@@ -258,6 +262,32 @@ export default function HomeHero() {
                   ))}
                 </div>
 
+                {/* Départ */}
+                <div className="border-2 border-sand-300 rounded-2xl overflow-hidden">
+                  <div className="flex items-center gap-3 px-4 py-3">
+                    <div className="w-2 h-2 rounded-full bg-bronze-500 flex-shrink-0" />
+                    <input value={tOrigin} onChange={e => setTOrigin(e.target.value)}
+                      placeholder="Départ — hôtel, aéroport..."
+                      className="flex-1 text-sm outline-none bg-transparent text-charcoal-800 placeholder:text-charcoal-300" />
+                  </div>
+                  <div className="flex items-center gap-3 px-4 py-3 border-t border-sand-200">
+                    <div className="w-2 h-2 rounded-full bg-sage-300 flex-shrink-0" />
+                    <input value={tDest2} onChange={e => setTDest2(e.target.value)}
+                      placeholder="Destination"
+                      className="flex-1 text-sm outline-none bg-transparent text-charcoal-800 placeholder:text-charcoal-300" />
+                  </div>
+                </div>
+
+                {/* Type véhicule */}
+                <div className="flex gap-2 overflow-x-auto" style={{scrollbarWidth:"none"}}>
+                  {[{id:"ALL",label:"Tous",e:"🚘"},{id:"SEDAN",label:"Berline",e:"🚗"},{id:"MINIVAN",label:"Minivan",e:"🚐"},{id:"SUV_4X4",label:"4x4",e:"🚙"}].map(v => (
+                    <button key={v.id} onClick={() => setTVehicle(v.id)}
+                      className={"flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-bold border transition-all " + (tVehicle === v.id ? "bg-charcoal-800 text-white border-charcoal-800" : "bg-white text-charcoal-500 border-sand-300")}>
+                      {v.e} {v.label}
+                    </button>
+                  ))}
+                </div>
+
                 <AccBlock active={acc === "dest"} onToggle={() => toggleAcc("dest")} label="Ville"
                   icon={<MapPin size={15} weight="fill" className="text-bronze-500" />}
                   value={tCity || undefined} placeholder="Choisir une ville">
@@ -291,8 +321,18 @@ export default function HomeHero() {
                   icon={<CalendarBlank size={15} weight="fill" className="text-bronze-500" />}
                   value={tDate ? new Date(tDate).toLocaleDateString("fr-FR", { day: "numeric", month: "long" }) : undefined}
                   placeholder="Ajouter une date">
-                  <input type="date" value={tDate} onChange={e => { setTDate(e.target.value); setTimeout(() => setAcc(null), 200); }}
-                    className="w-full border border-sand-300 rounded-xl px-3 py-2.5 text-sm text-charcoal-800 outline-none focus:border-bronze-500" />
+                  <MiniCal value={tDate} onChange={v => { setTDate(v); setTimeout(() => setAcc(null), 300); }} />
+                  <div className="mt-3">
+                    <div className="text-xs font-bold text-charcoal-400 mb-2">⏰ Heure de départ</div>
+                    <div className="flex gap-2 overflow-x-auto" style={{scrollbarWidth:"none"}}>
+                      {["05:00","06:00","07:00","08:00","09:00","10:00","11:00","12:00","14:00","16:00","18:00","20:00"].map(h => (
+                        <button key={h} onClick={() => setTHour(h)}
+                          className={"flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-bold border transition-all " + (tHour === h ? "bg-charcoal-800 text-white border-charcoal-800" : "text-charcoal-400 border-sand-300")}>
+                          {h}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </AccBlock>
               </>
             )}
