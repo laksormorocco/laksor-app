@@ -20,7 +20,7 @@ const LANGS: Record<string, string> = {
   "Allemand": "🇩🇪", "Italien": "🇮🇹", "Arabe": "🇲🇦",
 };
 
-type Acc   = "dest" | "date" | "pers" | "lang" | null;
+type Acc   = "dest" | "date" | "pers" | "lang" | "origin" | null;
 type Mode  = "guides" | "transport";
 type TType = "airport" | "private";
 
@@ -276,11 +276,26 @@ export default function HomeHero() {
                 <div className="border-2 border-sand-300 rounded-2xl overflow-hidden bg-white">
 
                   {/* Départ */}
-                  <div className="flex items-center gap-3 px-4 py-3 border-b border-sand-100">
-                    <div className="w-2 h-2 rounded-full bg-bronze-500 flex-shrink-0" />
-                    <input value={tOrigin} onChange={e => setTOrigin(e.target.value)}
-                      placeholder={tType === "airport" ? "Ex: Marrakech Menara (RAK)..." : "Départ — hôtel, adresse..."}
-                      className="flex-1 text-sm outline-none bg-transparent text-charcoal-800 placeholder:text-charcoal-300" />
+                  <div className="border-b border-sand-100">
+                    <div className="flex items-center gap-3 px-4 py-3">
+                      <div className="w-2 h-2 rounded-full bg-bronze-500 flex-shrink-0" />
+                      <input value={tOrigin} onChange={e => { setTOrigin(e.target.value); setAcc(e.target.value.length > 0 ? "origin" : null); }}
+                        placeholder={tType === "airport" ? "Aéroport (RAK, CMN, AGA...)" : "Départ — hôtel, adresse..."}
+                        className="flex-1 text-sm outline-none bg-transparent text-charcoal-800 placeholder:text-charcoal-300" />
+                    </div>
+                    {acc === "origin" && (
+                      <div className="px-4 pb-2">
+                        {(tType === "airport"
+                          ? ["Marrakech Menara (RAK)", "Casablanca Mohammed V (CMN)", "Agadir Al Massira (AGA)", "Fès Saïss (FEZ)", "Tanger Ibn Batouta (TNG)", "Essaouira (ESU)"]
+                          : ["Marrakech", "Casablanca", "Fès", "Agadir", "Essaouira", "Chefchaouen", "Tanger", "Rabat"]
+                        ).filter(c => c.toLowerCase().includes(tOrigin.toLowerCase())).map(c => (
+                          <button key={c} onClick={() => { setTOrigin(c); setAcc(null); }}
+                            className="flex items-center w-full py-2 border-b border-sand-100 last:border-0 text-left">
+                            <span className="text-sm text-charcoal-800">{c}</span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
 
                   {/* Destination */}
@@ -295,7 +310,7 @@ export default function HomeHero() {
                   <div className="flex items-center gap-3 px-4 py-3 border-b border-sand-100" onClick={() => toggleAcc("date")}>
                     <CalendarBlank size={14} weight="fill" className="text-bronze-500 flex-shrink-0" />
                     <span className={"flex-1 text-sm " + (tDate ? "text-charcoal-800 font-semibold" : "text-charcoal-300")}>
-                      {tDate ? new Date(tDate + "T00:00:00").toLocaleDateString("fr-FR", { day: "numeric", month: "long" }) : "Date"}
+                      {tDate ? new Date(tDate + "T00:00:00").toLocaleDateString("fr-FR", { day: "numeric", month: "long" }) + " · " + tHour : "Date"}
                     </span>
                     <CaretRight size={13} className="text-charcoal-300" />
                   </div>
