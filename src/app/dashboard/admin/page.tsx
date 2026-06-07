@@ -201,9 +201,11 @@ export default function AdminDashboard() {
   if (!auth) return (
     <div className="min-h-screen flex items-center justify-center bg-sand-200 px-4">
       <div className="bg-white rounded-3xl p-8 text-center max-w-sm w-full border border-sand-300">
-        <div className="text-4xl mb-4">🔐</div>
+            <div className="flex justify-center mb-4">
+              <img src="/logo7.png" alt="Laksor" style={{ height: 60, width: "auto", objectFit: "contain", maxWidth: 200 }} />
+            </div>
         <h2 className="font-display text-lg font-semibold text-charcoal-800 mb-2">Accès Admin</h2>
-        <p className="text-sm text-charcoal-400 mb-6">Laksor Back-office</p>
+            <p className="text-sm text-charcoal-400 mb-6">Back-office</p>
         <input type="password" value={pwd} onChange={e=>setPwd(e.target.value)}
           onKeyDown={e=>e.key==="Enter"&&setPwd(p=>{if(p===PASSWORD){setAuth(true);return p;}alert("Mot de passe incorrect");return p;})}
           placeholder="Mot de passe" className={inputCls + " mb-4"} />
