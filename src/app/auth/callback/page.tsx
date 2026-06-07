@@ -9,37 +9,39 @@ const supabase = createClient(
 
 export default function CallbackPage() {
   useEffect(() => {
-    async function handleCallback() {
-      // Attendre que Supabase traite le hash
-      await new Promise(r => setTimeout(r, 800));
-      
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) { window.location.href = "/auth/login"; return; }
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === "SIGNED_IN" && session) {
+        await fetch("/api/auth/sync", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            supabaseId: session.user.id,
+            email: session.user.email,
+            name: session.user.user_metadata?.full_name || session.user.email,
+            avatar: session.user.user_metadata?.avatar_url || null,
+          }),
+        });
 
-      await fetch("/api/auth/sync", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          supabaseId: session.user.id,
-          email: session.user.email,
-          name: session.user.user_metadata?.full_name || session.user.email,
-          avatar: session.user.user_metadata?.avatar_url || null,
-        }),
-      });
+        const res = await fetch("/api/auth/me?email=" + encodeURIComponent(session.user.email || ""));
+        const data = await res.json();
 
-      const res = await fetch("/api/auth/me?email=" + encodeURIComponent(session.user.email || ""));
-      const data = await res.json();
+        if (data.role === "ADMIN") window.location.href = "/dashboard/admin";
+        else if (data.role === "GUIDE") window.location.href = "/dashboard/guide?id=" + data.guideId;
+        else window.location.href = "/dashboard/tourist";
+      } else if (event === "SIGNED_OUT") {
+        window.location.href = "/auth/login";
+      }
+    });
 
-      if (data.role === "ADMIN") window.location.href = "/dashboard/admin";
-      else if (data.role === "GUIDE") window.location.href = "/dashboard/guide?id=" + data.guideId;
-      else window.location.href = "/dashboard/tourist";
-    }
-    handleCallback();
+    return () => subscription.unsubscribe();
   }, []);
 
   return (
     <div className="min-h-screen bg-sand-200 flex items-center justify-center">
-      <div className="w-10 h-10 border-4 border-bronze-500 border-t-transparent rounded-full animate-spin" />
+      <div className="flex flex-col items-center gap-3">
+        <div className="w-10 h-10 border-4 border-bronze-500 border-t-transparent rounded-full animate-spin" />
+        <p className="text-sm text-charcoal-400">Connexion en cours...</p>
+      </div>
     </div>
   );
 }
