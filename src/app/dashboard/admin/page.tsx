@@ -226,7 +226,7 @@ export default function AdminDashboard() {
       <div className="sticky top-0 z-30 bg-white border-b border-sand-300 px-4 h-14 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-bronze-500 rounded-xl flex items-center justify-center text-white text-sm font-bold">L</div>
-          <span className="font-display text-base font-semibold text-charcoal-800">Admin</span>
+            <img src="/logo7.png" alt="Laksor" style={{ height: 36, width: "auto", objectFit: "contain", maxWidth: 130 }} />
         </div>
         <button onClick={() => setAuth(false)} className="flex items-center gap-1.5 text-xs font-bold text-red-400 bg-red-50 px-3 py-1.5 rounded-full border border-red-200">
           <SignOut size={13} /> Déconnexion

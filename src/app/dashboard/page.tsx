@@ -31,8 +31,12 @@ export default function DashboardRedirect() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-sand-200 flex items-center justify-center">
-      <div className="w-10 h-10 border-4 border-bronze-500 border-t-transparent rounded-full animate-spin" />
+        <div className="min-h-screen bg-sand-200 flex flex-col items-center justify-center gap-6">
+      <img src="/logo7.png" alt="Laksor" style={{ height: 56, width: "auto", objectFit: "contain", maxWidth: 180 }} />
+      <div className="flex flex-col items-center gap-3">
+        <div className="w-8 h-8 rounded-full animate-spin" style={{ borderWidth: 3, borderStyle: "solid", borderColor: "#B88A44 transparent transparent transparent" }} />
+        <p className="text-xs text-charcoal-400 font-medium">Chargement...</p>
+      </div>
     </div>
   );
 }
