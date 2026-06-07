@@ -9,18 +9,10 @@ const supabase = createClient(
 
 export default function CallbackPage() {
   useEffect(() => {
-    async function handleCallback() {
-      const code = new URLSearchParams(window.location.search).get("code");
-      
-      if (code) {
-        await supabase.auth.exchangeCodeForSession(code);
-      }
-
-      await new Promise(r => setTimeout(r, 500));
-      
-      const { data: { session } } = await supabase.auth.getSession();
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (!session) { window.location.href = "/auth/login"; return; }
 
+      // Créer ou mettre à jour le user en base
       await fetch("/api/auth/sync", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -29,24 +21,24 @@ export default function CallbackPage() {
           email: session.user.email,
           name: session.user.user_metadata?.full_name || session.user.email,
           avatar: session.user.user_metadata?.avatar_url || null,
-        }),
+        })
       });
 
-      const res = await fetch("/api/auth/me?email=" + encodeURIComponent(session.user.email || ""));
+      // Rediriger vers le bon dashboard
+      const res = await fetch("/api/auth/me?supabaseId=" + session.user.id);
       const data = await res.json();
-
       if (data.role === "ADMIN") window.location.href = "/dashboard/admin";
       else if (data.role === "GUIDE") window.location.href = "/dashboard/guide?id=" + data.guideId;
       else window.location.href = "/dashboard/tourist";
-    }
-    handleCallback();
+    });
   }, []);
 
   return (
-    <div className="min-h-screen bg-sand-200 flex items-center justify-center">
-      <div className="flex flex-col items-center gap-3">
-        <div className="w-10 h-10 border-4 border-bronze-500 border-t-transparent rounded-full animate-spin" />
-        <p className="text-sm text-charcoal-400">Connexion en cours...</p>
+    <div style={{ minHeight:"100vh", display:"flex", alignItems:"center", justifyContent:"center", background:"#F7F7F7", fontFamily:"Inter, sans-serif" }}>
+      <div style={{ textAlign:"center" }}>
+        <div style={{ width:60, height:60, border:"4px solid #123EAB", borderTop:"4px solid transparent", borderRadius:"50%", animation:"spin 1s linear infinite", margin:"0 auto 20px" }}/>
+        <div style={{ color:"#123EAB", fontWeight:600, fontSize:16 }}>Connexion en cours...</div>
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     </div>
   );
