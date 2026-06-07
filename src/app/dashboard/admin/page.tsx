@@ -397,7 +397,7 @@ export default function AdminDashboard() {
           placeholder="Rechercher un guide..." className={inputCls + " flex-1"} />
         <label className={"flex-shrink-0 text-xs font-bold px-3 py-3 rounded-xl cursor-pointer " + (importing ? "bg-sand-200 text-charcoal-400" : "bg-bronze-500 text-white")}>
           {importing ? "..." : "+ CSV"}
-          <input type="file" accept=".csv,.txt" className="hidden" disabled={importing}
+          <input type="file" accept=".csv,.txt,.xlsx,.xls" className="hidden" disabled={importing}
             onChange={e => { const f=e.target.files?.[0]; if(f) handleImport(f); }} />
         </label>
       </div>
