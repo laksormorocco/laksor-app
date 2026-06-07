@@ -299,11 +299,24 @@ export default function HomeHero() {
                   </div>
 
                   {/* Destination */}
-                  <div className="flex items-center gap-3 px-4 py-3 border-b border-sand-100">
-                    <div className="w-2 h-2 rounded-full bg-sage-300 flex-shrink-0" />
-                    <input value={tDest2} onChange={e => setTDest2(e.target.value)}
-                      placeholder="Destination — hôtel, adresse..."
-                      className="flex-1 text-sm outline-none bg-transparent text-charcoal-800 placeholder:text-charcoal-300" />
+                  <div className="border-b border-sand-100">
+                    <div className="flex items-center gap-3 px-4 py-3">
+                      <div className="w-2 h-2 rounded-full bg-sage-300 flex-shrink-0" />
+                      <input value={tDest2} onChange={e => { setTDest2(e.target.value); setAcc(e.target.value.length > 0 ? "dest" : null); }}
+                        placeholder="Destination — hôtel, adresse..."
+                        className="flex-1 text-sm outline-none bg-transparent text-charcoal-800 placeholder:text-charcoal-300" />
+                    </div>
+                    {acc === "dest" && (
+                      <div className="px-4 pb-2">
+                        {["Marrakech", "Casablanca", "Fès", "Agadir", "Essaouira", "Chefchaouen", "Tanger", "Rabat"]
+                          .filter(c => c.toLowerCase().includes(tDest2.toLowerCase())).map(c => (
+                          <button key={c} onClick={() => { setTDest2(c); setAcc(null); }}
+                            className="flex items-center w-full py-2 border-b border-sand-100 last:border-0 text-left">
+                            <span className="text-sm text-charcoal-800">{c}</span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
 
                   {/* Date */}
@@ -315,8 +328,8 @@ export default function HomeHero() {
                     <CaretRight size={13} className="text-charcoal-300" />
                   </div>
                   {acc === "date" && (
-                    <div className="px-3 pb-3 border-b border-sand-100">
-                      <MiniCal value={tDate} onChange={v => { setTDate(v); setTimeout(() => setAcc(null), 300); }} />
+                    <div className="px-3 pb-3 border-b border-sand-100" style={{maxWidth: 320}}>
+                      <MiniCal value={tDate} onChange={v => { setTDate(v); }} />
                       <div className="mt-2 flex gap-2 overflow-x-auto" style={{scrollbarWidth:"none"}}>
                         {["06:00","07:00","08:00","09:00","10:00","11:00","12:00","14:00","16:00","18:00","20:00"].map(h => (
                           <button key={h} onClick={() => setTHour(h)}
