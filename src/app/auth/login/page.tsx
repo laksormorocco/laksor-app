@@ -57,6 +57,9 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-sand-200 flex flex-col max-w-lg mx-auto">
+      <div className="flex justify-center pt-8 pb-4">
+        <a href="/"><img src="/logo7.png" alt="Laksor" style={{ height: 52, width: "auto", objectFit: "contain", maxWidth: 180 }} /></a>
+      </div>
 
       {/* HEADER */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-sand-300 bg-white">
