@@ -19,8 +19,8 @@ export async function POST(req: Request) {
 
     const user = await prisma.user.upsert({
       where: { supabaseId },
-      update: { email, name: name || email, avatar: avatar || undefined, role },
-      create: { supabaseId, email, name: name || email, avatar: avatar || null, role },
+      update: { email, name: name || email, avatar: avatar || undefined, role: role as any },
+      create: { supabaseId, email, name: name || email, avatar: avatar || null, role: role as any },
     });
 
     // Si un autre compte avec cet email existe (import fictif), merger le guide profile
