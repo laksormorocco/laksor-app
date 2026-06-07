@@ -247,22 +247,7 @@ export default function HomeHero() {
             {/* ── TRANSPORT ── */}
             {mode === "transport" && (
               <>
-                <div className="grid grid-cols-2 gap-3 mb-1">
-                  {[
-                    { id: "airport" as TType, icon: <AirplaneTakeoff size={24} weight="duotone" />, label: "Transfert Aéroport", desc: "Arrivée · Départ · A/R" },
-                    { id: "private"  as TType, icon: <Car size={24} weight="duotone" />,             label: "Chauffeur Privé",    desc: "Ville · Excursion" },
-                  ].map(t => (
-                    <button key={t.id} onClick={() => { setTType(t.id); }}
-                      className={`p-4 rounded-2xl border-2 text-left transition-all
-                        ${tType === t.id ? "border-charcoal-800 bg-sand-200" : "border-sand-300 bg-white"}`}>
-                      <div className={`mb-2 ${tType === t.id ? "text-bronze-500" : "text-charcoal-400"}`}>{t.icon}</div>
-                      <div className="text-sm font-bold text-charcoal-800">{t.label}</div>
-                      <div className="text-xs text-charcoal-400 mt-0.5">{t.desc}</div>
-                    </button>
-                  ))}
-                </div>
-
-                {/* TYPE */}
+{/* TYPE */}
                 <div className="flex gap-2 mb-1">
                   {[
                     { id: "airport" as TType, icon: <AirplaneTakeoff size={14} />, label: "Aéroport" },
@@ -294,7 +279,7 @@ export default function HomeHero() {
                   <div className="flex items-center gap-3 px-4 py-3 border-b border-sand-100">
                     <div className="w-2 h-2 rounded-full bg-bronze-500 flex-shrink-0" />
                     <input value={tOrigin} onChange={e => setTOrigin(e.target.value)}
-                      placeholder={tType === "airport" ? "Aéroport d arrivée..." : "Départ — hôtel, adresse..."}
+                      placeholder={tType === "airport" ? "Ex: Marrakech Menara (RAK)..." : "Départ — hôtel, adresse..."}
                       className="flex-1 text-sm outline-none bg-transparent text-charcoal-800 placeholder:text-charcoal-300" />
                   </div>
 
@@ -305,24 +290,6 @@ export default function HomeHero() {
                       placeholder="Destination — hôtel, adresse..."
                       className="flex-1 text-sm outline-none bg-transparent text-charcoal-800 placeholder:text-charcoal-300" />
                   </div>
-
-                  {/* Ville */}
-                  <div className="flex items-center gap-3 px-4 py-3 border-b border-sand-100" onClick={() => toggleAcc("dest")}>
-                    <MapPin size={14} weight="fill" className="text-bronze-500 flex-shrink-0" />
-                    <span className={"flex-1 text-sm " + (tCity ? "text-charcoal-800 font-semibold" : "text-charcoal-300")}>{tCity || "Ville"}</span>
-                    <CaretRight size={13} className="text-charcoal-300" />
-                  </div>
-                  {acc === "dest" && (
-                    <div className="px-4 pb-3 border-b border-sand-100">
-                      {CITIES.map(city => (
-                        <button key={city} onClick={() => { setTCity(city); setAcc(null); }}
-                          className="flex items-center gap-3 w-full py-2 border-b border-sand-100 last:border-0 text-left">
-                          <span className="text-sm text-charcoal-800 flex-1">{city}</span>
-                          {tCity === city && <Check size={13} className="text-bronze-500" weight="bold" />}
-                        </button>
-                      ))}
-                    </div>
-                  )}
 
                   {/* Date */}
                   <div className="flex items-center gap-3 px-4 py-3 border-b border-sand-100" onClick={() => toggleAcc("date")}>
