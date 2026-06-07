@@ -1093,16 +1093,11 @@ export default function AdminDashboard() {
               </button>
               {editGuideForm.email && (
                 <button onClick={async () => {
-                  const res = await fetch("/api/admin/invite", {
-                    method: "POST",
-                    headers: {"Content-Type":"application/json"},
-                    body: JSON.stringify({ email: editGuideForm.email, name: editGuideForm.displayName })
-                  });
+                  const res = await fetch("/api/admin/invite", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ email: editGuideForm.email, name: editGuideForm.displayName }) });
                   const d = await res.json();
-                  alert(d.success ? "Invitation envoyée à " + editGuideForm.email : "Erreur: " + d.error);
-                }}
-                  className="w-full border-2 border-sage-300 text-sage-300 font-bold py-3 rounded-full text-sm">
-                  📧 Envoyer invitation
+                  alert(d.success ? "Invitation envoyee a " + editGuideForm.email : "Erreur: " + d.error);
+                }} className="w-full border-2 border-sage-300 text-sage-300 font-bold py-3 rounded-full text-sm mt-2">
+                  Envoyer invitation
                 </button>
               )}
             </div>
