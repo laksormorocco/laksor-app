@@ -49,7 +49,7 @@ export default function Navbar() {
 
       {/* LOGO */}
       <a href="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
-        <img src="/logo2.png" alt="Laksor" style={{ height: 44, width: "auto", objectFit: "contain" }} />
+        <img src="/logo7.png" alt="Laksor" style={{ height: 44, width: "auto", objectFit: "contain" }} />
       </a>
 
       {/* NAV LINKS — desktop */}
