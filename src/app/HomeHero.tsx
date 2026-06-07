@@ -87,7 +87,7 @@ export default function HomeHero() {
             <div className="w-9 h-9 rounded-xl bg-bronze-500 flex items-center justify-center">
               <Compass size={18} weight="bold" color="#fff" />
             </div>
-            <span className="font-display text-lg text-bronze-500 font-semibold">Laksor</span>
+            <img src="/logo7.png" alt="Laksor" style={{ height: 36, width: "auto", objectFit: "contain" }} />
           </a>
           <button
             onClick={() => openModal("guides")}
