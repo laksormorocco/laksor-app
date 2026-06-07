@@ -20,7 +20,7 @@ export default function MiniCal({ value, onChange }: { value: string; onChange: 
   function isPast(d: number) { return new Date(year, month, d) < today; }
 
   return (
-    <div className="bg-white rounded-2xl border border-sand-300 overflow-hidden">
+    <div className="bg-white rounded-2xl border border-sand-300">
       <div className="flex items-center justify-between px-4 py-3 border-b border-sand-200">
         <button onClick={() => setCur(new Date(year, month-1, 1))}
           className="w-8 h-8 rounded-full border border-sand-300 flex items-center justify-center text-charcoal-600 hover:border-bronze-500 transition-colors text-sm font-bold">
