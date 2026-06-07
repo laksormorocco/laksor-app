@@ -7,15 +7,15 @@ export async function POST(req: Request) {
     const { supabaseId, email, name, avatar } = await req.json();
     if (!supabaseId || !email) return NextResponse.json({ error: "Donnees manquantes" }, { status: 400 });
 
-    // Verifier si cet email correspond a un guide existant
-    const existingUser = await prisma.user.findFirst({
-      where: { email },
-      include: { guideProfile: { select: { id: true } } }
+    // Verifier si cet email existe deja avec un role guide/admin
+    const existingByEmail = await prisma.user.findFirst({
+      where: { email, NOT: { supabaseId } },
+      select: { id: true, role: true }
     });
 
-    let role = "TOURIST";
-    if (existingUser?.role === "ADMIN") role = "ADMIN";
-    else if (existingUser?.role === "GUIDE" || existingUser?.guideProfile) role = "GUIDE";
+    let role: string = "TOURIST";
+    if (existingByEmail?.role === "ADMIN") role = "ADMIN";
+    else if (existingByEmail?.role === "GUIDE") role = "GUIDE";
 
     const user = await prisma.user.upsert({
       where: { supabaseId },
@@ -23,14 +23,12 @@ export async function POST(req: Request) {
       create: { supabaseId, email, name: name || email, avatar: avatar || null, role: role as any },
     });
 
-    // Si un autre compte avec cet email existe (import fictif), merger le guide profile
-    if (existingUser && existingUser.supabaseId !== supabaseId) {
+    // Lier le profil guide si necessaire
+    if (role === "GUIDE" && existingByEmail) {
       await prisma.guideProfile.updateMany({
-        where: { userId: existingUser.id },
+        where: { userId: existingByEmail.id },
         data: { userId: user.id }
       }).catch(() => {});
-      // Supprimer l ancien user fictif
-      await prisma.user.delete({ where: { id: existingUser.id } }).catch(() => {});
     }
 
     return NextResponse.json({ user });
