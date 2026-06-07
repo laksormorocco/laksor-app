@@ -4,7 +4,7 @@ import { useState } from "react";
 import {
   MagnifyingGlass, MapPin, CalendarBlank, Users, Globe,
   X, Compass, Car, SunHorizon, AirplaneTakeoff, Check,
-Minus, Plus, CaretRight
+Minus, Plus, CaretRight, ClockAfternoon
 } from "@phosphor-icons/react";
 
 const CITIES = ["Marrakech", "Fès", "Chefchaouen", "Essaouira", "Agadir"];
@@ -20,7 +20,7 @@ const LANGS: Record<string, string> = {
   "Allemand": "🇩🇪", "Italien": "🇮🇹", "Arabe": "🇲🇦",
 };
 
-type Acc   = "dest" | "date" | "pers" | "lang" | "origin" | null;
+type Acc   = "dest" | "date" | "pers" | "lang" | "origin" | "hour" | null;
 type Mode  = "guides" | "transport";
 type TType = "airport" | "private";
 
@@ -271,7 +271,7 @@ export default function HomeHero() {
                   </div>
 
                 {/* MAIN CARD */}
-                <div className="border-2 border-sand-300 rounded-2xl overflow-hidden bg-white">
+                <div className="border-2 border-sand-300 rounded-2xl bg-white">
 
                   {/* Départ */}
                   <div className="border-b border-sand-100">
@@ -332,6 +332,25 @@ export default function HomeHero() {
                         {["06:00","07:00","08:00","09:00","10:00","11:00","12:00","14:00","16:00","18:00","20:00"].map(h => (
                           <button key={h} onClick={() => setTHour(h)}
                             className={"flex-shrink-0 px-2.5 py-1 rounded-full text-xs font-bold border " + (tHour === h ? "bg-charcoal-800 text-white border-charcoal-800" : "text-charcoal-400 border-sand-300")}>
+                            {h}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Heure */}
+                  <div className="flex items-center gap-3 px-4 py-3 border-b border-sand-100" onClick={() => toggleAcc("hour")}>
+                    <ClockAfternoon size={14} weight="fill" className="text-bronze-500 flex-shrink-0" />
+                    <span className={"flex-1 text-sm " + (tHour ? "text-charcoal-800 font-semibold" : "text-charcoal-300")}>{tHour || "Heure"}</span>
+                    <CaretRight size={13} className="text-charcoal-300" />
+                  </div>
+                  {acc === "hour" && (
+                    <div className="px-3 pb-3 border-b border-sand-100">
+                      <div className="flex gap-2 flex-wrap pt-2">
+                        {["05:00","06:00","07:00","08:00","09:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00","20:00","21:00","22:00"].map(h => (
+                          <button key={h} onClick={() => { setTHour(h); setAcc(null); }}
+                            className={"flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-bold border transition-all " + (tHour === h ? "bg-charcoal-800 text-white border-charcoal-800" : "text-charcoal-400 border-sand-300")}>
                             {h}
                           </button>
                         ))}
