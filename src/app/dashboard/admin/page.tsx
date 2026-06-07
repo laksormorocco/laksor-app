@@ -95,18 +95,24 @@ export default function AdminDashboard() {
 
   async function handleImport(file: File) {
     setImporting(true); setImportResult(null);
-    const text = await file.text();
-    const lines = text.split("\n").filter((l:string) => l.trim());
-    const headers = lines[0].split(/[,;	]/).map((h:string) => h.trim().toLowerCase().replace(/[“”"]/g,""));
-    const guides = lines.slice(1).map((line:string) => {
-      const vals = line.split(/[,;	]/);
-      const obj:any = {};
-      headers.forEach((h:string,i:number) => { obj[h]=(vals[i]||"").trim().replace(/[“”"]/g,""); });
-      return { nom:obj.nom||"", prenom:obj.prenom||obj["prénom"]||"", ville:obj.ville||"", langues:obj["langue de travail"]||obj.langues||"", email:obj.email||"" };
-    }).filter((g:any) => g.nom||g.prenom);
-    const res = await fetch("/api/admin/import",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({guides})});
-    const data = await res.json();
-    setImportResult(data); setImporting(false); fetchGuides();
+    try {
+      const XLSX = await import("xlsx");
+      const buffer = await file.arrayBuffer();
+      const wb = XLSX.read(buffer, { type: "array" });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const rows: any[] = XLSX.utils.sheet_to_json(ws, { header: 1 });
+      if (rows.length < 2) { setImporting(false); return; }
+      const headers = (rows[0] as string[]).map((h:string) => (h||"").toString().trim().toLowerCase());
+      const guides = rows.slice(1).map((row: any[]) => {
+        const obj:any = {};
+        headers.forEach((h:string, i:number) => { obj[h] = (row[i]||"").toString().trim(); });
+        return { nom:obj.nom||"", prenom:obj.prenom||obj["pr\u00e9nom"]||"", ville:obj.ville||"", langues:obj["langue de travail"]||obj.langues||"", email:obj.email||"" };
+      }).filter((g:any) => g.nom||g.prenom);
+      const res = await fetch("/api/admin/import",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({guides})});
+      const data = await res.json();
+      setImportResult(data);
+    } catch(e:any) { setImportResult({created:0,errors:[{error:String(e)}]}); }
+    setImporting(false); fetchGuides();
   }
 
   async function fetchAllExperiences() {
