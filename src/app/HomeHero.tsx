@@ -4,7 +4,7 @@ import { useState } from "react";
 import {
   MagnifyingGlass, MapPin, CalendarBlank, Users, Globe,
   X, Compass, Car, SunHorizon, AirplaneTakeoff, Check,
-  Minus, Plus
+Minus, Plus, CaretRight
 } from "@phosphor-icons/react";
 
 const CITIES = ["Marrakech", "Fès", "Chefchaouen", "Essaouira", "Agadir"];
@@ -262,78 +262,116 @@ export default function HomeHero() {
                   ))}
                 </div>
 
-                {/* Départ */}
-                <div className="border-2 border-sand-300 rounded-2xl overflow-hidden">
-                  <div className="flex items-center gap-3 px-4 py-3">
+                {/* TYPE */}
+                <div className="flex gap-2 mb-1">
+                  {[
+                    { id: "airport" as TType, icon: <AirplaneTakeoff size={14} />, label: "Aéroport" },
+                    { id: "private"  as TType, icon: <Car size={14} />,             label: "Privé" },
+                  ].map(t => (
+                    <button key={t.id} onClick={() => setTType(t.id)}
+                      className={"flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold border transition-all " + (tType === t.id ? "bg-charcoal-800 text-white border-charcoal-800" : "bg-white text-charcoal-500 border-sand-300")}>
+                      {t.icon} {t.label}
+                    </button>
+                  ))}
+                </div>
+
+                {/* FILTRES VEHICULE (privé seulement) */}
+                {tType === "private" && (
+                  <div className="flex gap-2 overflow-x-auto" style={{scrollbarWidth:"none"}}>
+                    {[{id:"ALL",e:"🚘",l:"Tous"},{id:"SEDAN",e:"🚗",l:"Berline"},{id:"MINIVAN",e:"🚐",l:"Minivan"},{id:"SUV_4X4",e:"🚙",l:"4x4"}].map(v => (
+                      <button key={v.id} onClick={() => setTVehicle(v.id)}
+                        className={"flex-shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold border transition-all " + (tVehicle === v.id ? "bg-charcoal-800 text-white border-charcoal-800" : "bg-white text-charcoal-500 border-sand-300")}>
+                        {v.e} {v.l}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {/* MAIN CARD */}
+                <div className="border-2 border-sand-300 rounded-2xl overflow-hidden bg-white">
+
+                  {/* Départ */}
+                  <div className="flex items-center gap-3 px-4 py-3 border-b border-sand-100">
                     <div className="w-2 h-2 rounded-full bg-bronze-500 flex-shrink-0" />
                     <input value={tOrigin} onChange={e => setTOrigin(e.target.value)}
-                      placeholder="Départ — hôtel, aéroport..."
+                      placeholder={tType === "airport" ? "Aéroport d arrivée..." : "Départ — hôtel, adresse..."}
                       className="flex-1 text-sm outline-none bg-transparent text-charcoal-800 placeholder:text-charcoal-300" />
                   </div>
-                  <div className="flex items-center gap-3 px-4 py-3 border-t border-sand-200">
+
+                  {/* Destination */}
+                  <div className="flex items-center gap-3 px-4 py-3 border-b border-sand-100">
                     <div className="w-2 h-2 rounded-full bg-sage-300 flex-shrink-0" />
                     <input value={tDest2} onChange={e => setTDest2(e.target.value)}
-                      placeholder="Destination"
+                      placeholder="Destination — hôtel, adresse..."
                       className="flex-1 text-sm outline-none bg-transparent text-charcoal-800 placeholder:text-charcoal-300" />
                   </div>
-                </div>
 
-                {/* Type véhicule */}
-                <div className="flex gap-2 overflow-x-auto" style={{scrollbarWidth:"none"}}>
-                  {[{id:"ALL",label:"Tous",e:"🚘"},{id:"SEDAN",label:"Berline",e:"🚗"},{id:"MINIVAN",label:"Minivan",e:"🚐"},{id:"SUV_4X4",label:"4x4",e:"🚙"}].map(v => (
-                    <button key={v.id} onClick={() => setTVehicle(v.id)}
-                      className={"flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-bold border transition-all " + (tVehicle === v.id ? "bg-charcoal-800 text-white border-charcoal-800" : "bg-white text-charcoal-500 border-sand-300")}>
-                      {v.e} {v.label}
-                    </button>
-                  ))}
-                </div>
-
-                <AccBlock active={acc === "dest"} onToggle={() => toggleAcc("dest")} label="Ville"
-                  icon={<MapPin size={15} weight="fill" className="text-bronze-500" />}
-                  value={tCity || undefined} placeholder="Choisir une ville">
-                  {CITIES.map(city => (
-                    <button key={city} onClick={() => { setTCity(city); setAcc(null); }}
-                      className="flex items-center gap-3 w-full py-2.5 border-b border-sand-200 last:border-0 text-left hover:bg-sand-100">
-                      <div className="w-10 h-10 rounded-xl bg-sand-200 flex items-center justify-center text-xl flex-shrink-0">
-                        {CITY_META[city].icon}
-                      </div>
-                      <span className="text-sm font-bold text-charcoal-800 flex-1">{city}</span>
-                      {tCity === city && <Check size={15} className="text-bronze-500" weight="bold" />}
-                    </button>
-                  ))}
-                </AccBlock>
-
-                <div className="border-2 border-sand-300 rounded-2xl overflow-hidden">
-                  <div className="px-4 py-3 flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Users size={15} weight="fill" className="text-bronze-500" />
-                      <span className="text-xs font-bold text-charcoal-400 uppercase tracking-wide">Voyageurs</span>
-                    </div>
-                    <span className="text-sm font-bold text-charcoal-800">{tPax} personne{tPax > 1 ? "s" : ""}</span>
+                  {/* Ville */}
+                  <div className="flex items-center gap-3 px-4 py-3 border-b border-sand-100" onClick={() => toggleAcc("dest")}>
+                    <MapPin size={14} weight="fill" className="text-bronze-500 flex-shrink-0" />
+                    <span className={"flex-1 text-sm " + (tCity ? "text-charcoal-800 font-semibold" : "text-charcoal-300")}>{tCity || "Ville"}</span>
+                    <CaretRight size={13} className="text-charcoal-300" />
                   </div>
-                  <div className="px-4 pb-4">
-                    <CounterRow label="Personnes" sub="Adultes et enfants" val={tPax} min={1}
-                      onDec={() => setTPax(Math.max(1, tPax - 1))} onInc={() => setTPax(Math.min(12, tPax + 1))} />
-                  </div>
-                </div>
-
-                <AccBlock active={acc === "date"} onToggle={() => toggleAcc("date")} label="Date"
-                  icon={<CalendarBlank size={15} weight="fill" className="text-bronze-500" />}
-                  value={tDate ? new Date(tDate).toLocaleDateString("fr-FR", { day: "numeric", month: "long" }) : undefined}
-                  placeholder="Ajouter une date">
-                  <MiniCal value={tDate} onChange={v => { setTDate(v); setTimeout(() => setAcc(null), 300); }} />
-                  <div className="mt-3">
-                    <div className="text-xs font-bold text-charcoal-400 mb-2">⏰ Heure de départ</div>
-                    <div className="flex gap-2 overflow-x-auto" style={{scrollbarWidth:"none"}}>
-                      {["05:00","06:00","07:00","08:00","09:00","10:00","11:00","12:00","14:00","16:00","18:00","20:00"].map(h => (
-                        <button key={h} onClick={() => setTHour(h)}
-                          className={"flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-bold border transition-all " + (tHour === h ? "bg-charcoal-800 text-white border-charcoal-800" : "text-charcoal-400 border-sand-300")}>
-                          {h}
+                  {acc === "dest" && (
+                    <div className="px-4 pb-3 border-b border-sand-100">
+                      {CITIES.map(city => (
+                        <button key={city} onClick={() => { setTCity(city); setAcc(null); }}
+                          className="flex items-center gap-3 w-full py-2 border-b border-sand-100 last:border-0 text-left">
+                          <span className="text-sm text-charcoal-800 flex-1">{city}</span>
+                          {tCity === city && <Check size={13} className="text-bronze-500" weight="bold" />}
                         </button>
                       ))}
                     </div>
+                  )}
+
+                  {/* Date */}
+                  <div className="flex items-center gap-3 px-4 py-3 border-b border-sand-100" onClick={() => toggleAcc("date")}>
+                    <CalendarBlank size={14} weight="fill" className="text-bronze-500 flex-shrink-0" />
+                    <span className={"flex-1 text-sm " + (tDate ? "text-charcoal-800 font-semibold" : "text-charcoal-300")}>
+                      {tDate ? new Date(tDate + "T00:00:00").toLocaleDateString("fr-FR", { day: "numeric", month: "long" }) : "Date"}
+                    </span>
+                    <CaretRight size={13} className="text-charcoal-300" />
                   </div>
-                </AccBlock>
+                  {acc === "date" && (
+                    <div className="px-3 pb-3 border-b border-sand-100">
+                      <MiniCal value={tDate} onChange={v => { setTDate(v); setTimeout(() => setAcc(null), 300); }} />
+                      <div className="mt-2 flex gap-2 overflow-x-auto" style={{scrollbarWidth:"none"}}>
+                        {["06:00","07:00","08:00","09:00","10:00","11:00","12:00","14:00","16:00","18:00","20:00"].map(h => (
+                          <button key={h} onClick={() => setTHour(h)}
+                            className={"flex-shrink-0 px-2.5 py-1 rounded-full text-xs font-bold border " + (tHour === h ? "bg-charcoal-800 text-white border-charcoal-800" : "text-charcoal-400 border-sand-300")}>
+                            {h}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Numéro de vol (aéroport seulement) */}
+                  {tType === "airport" && (
+                    <div className="flex items-center gap-3 px-4 py-3 border-b border-sand-100">
+                      <AirplaneTakeoff size={14} weight="fill" className="text-bronze-500 flex-shrink-0" />
+                      <input value={tFlight} onChange={e => setTFlight(e.target.value)}
+                        placeholder="N° de vol (ex: AT204)"
+                        className="flex-1 text-sm outline-none bg-transparent text-charcoal-800 placeholder:text-charcoal-300" />
+                    </div>
+                  )}
+
+                  {/* Voyageurs */}
+                  <div className="flex items-center justify-between px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <Users size={14} weight="fill" className="text-bronze-500" />
+                      <span className="text-sm text-charcoal-400">Personnes</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <button onClick={() => setTPax(Math.max(1, tPax-1))}
+                        className="w-7 h-7 rounded-full border border-sand-300 flex items-center justify-center text-charcoal-600 font-bold text-sm">−</button>
+                      <span className="text-sm font-bold text-charcoal-800 w-4 text-center">{tPax}</span>
+                      <button onClick={() => setTPax(Math.min(12, tPax+1))}
+                        className="w-7 h-7 rounded-full border border-sand-300 flex items-center justify-center text-charcoal-600 font-bold text-sm">+</button>
+                    </div>
+                  </div>
+
+                </div>
               </>
             )}
           </div>
