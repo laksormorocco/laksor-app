@@ -11,11 +11,21 @@ export async function POST(req: Request) {
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 
-  const { error } = await supabase.auth.admin.inviteUserByEmail(email, {
+  // Essayer invitation d abord, sinon envoyer magic link
+  const { error: inviteError } = await supabase.auth.admin.inviteUserByEmail(email, {
     data: { name },
     redirectTo: process.env.NEXT_PUBLIC_APP_URL + "/auth/callback"
   });
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ success: true });
+  if (inviteError) {
+    // Si deja inscrit, envoyer un magic link
+    const { error: magicError } = await supabase.auth.signInWithOtp({
+      email,
+      options: { shouldCreateUser: false, emailRedirectTo: process.env.NEXT_PUBLIC_APP_URL + "/auth/callback" }
+    });
+    if (magicError) return NextResponse.json({ error: magicError.message }, { status: 500 });
+    return NextResponse.json({ success: true, type: "magic_link" });
+  }
+
+  return NextResponse.json({ success: true, type: "invitation" });
 }
