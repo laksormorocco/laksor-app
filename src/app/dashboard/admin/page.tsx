@@ -66,6 +66,8 @@ export default function AdminDashboard() {
   const [crmGuide,     setCrmGuide]     = useState("");
   const [reminders,    setReminders]    = useState<any[]>([]);
   const [allExperiences, setAllExperiences] = useState<any[]>([]);
+  const [importing, setImporting] = useState(false);
+  const [importResult, setImportResult] = useState<any>(null);
   const [editGuide,    setEditGuide]    = useState<any>(null);
   const [editGuideForm, setEditGuideForm] = useState<any>({});
   const [remLoading,   setRemLoading]   = useState(false);
@@ -89,6 +91,22 @@ export default function AdminDashboard() {
   async function fetchGuides() {
     const res = await fetch("/api/admin/guides?status=" + guideTab.toUpperCase());
     setGuides((await res.json()).guides || []);
+  }
+
+  async function handleImport(file: File) {
+    setImporting(true); setImportResult(null);
+    const text = await file.text();
+    const lines = text.split("\n").filter((l:string) => l.trim());
+    const headers = lines[0].split(/[,;	]/).map((h:string) => h.trim().toLowerCase().replace(/[“”"]/g,""));
+    const guides = lines.slice(1).map((line:string) => {
+      const vals = line.split(/[,;	]/);
+      const obj:any = {};
+      headers.forEach((h:string,i:number) => { obj[h]=(vals[i]||"").trim().replace(/[“”"]/g,""); });
+      return { nom:obj.nom||"", prenom:obj.prenom||obj["prénom"]||"", ville:obj.ville||"", langues:obj["langue de travail"]||obj.langues||"", email:obj.email||"" };
+    }).filter((g:any) => g.nom||g.prenom);
+    const res = await fetch("/api/admin/import",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({guides})});
+    const data = await res.json();
+    setImportResult(data); setImporting(false); fetchGuides();
   }
 
   async function fetchAllExperiences() {
@@ -368,8 +386,20 @@ export default function AdminDashboard() {
         {/* ══ GUIDES ══ */}
         {active === "guides" && (
           <div className="flex flex-col gap-3">
-            <input value={search} onChange={e=>setSearch(e.target.value)}
-              placeholder="Rechercher un guide..." className={inputCls} />
+      <div className="flex items-center gap-2">
+        <input value={search} onChange={e=>setSearch(e.target.value)}
+          placeholder="Rechercher un guide..." className={inputCls + " flex-1"} />
+        <label className={"flex-shrink-0 text-xs font-bold px-3 py-3 rounded-xl cursor-pointer " + (importing ? "bg-sand-200 text-charcoal-400" : "bg-bronze-500 text-white")}>
+          {importing ? "..." : "+ CSV"}
+          <input type="file" accept=".csv,.txt" className="hidden" disabled={importing}
+            onChange={e => { const f=e.target.files?.[0]; if(f) handleImport(f); }} />
+        </label>
+      </div>
+      {importResult && (
+        <div className={"text-xs rounded-xl px-3 py-2 mt-1 " + (importResult.errors?.length ? "bg-amber-50 text-amber-600" : "bg-sage-300/10 text-sage-300")}>
+          ✅ {importResult.created} guides importés {importResult.errors?.length > 0 && "· ⚠️ " + importResult.errors.length + " erreurs"}
+        </div>
+      )}
             <div className="flex gap-2">
               {["pending","approved","rejected"].map(t => (
                 <button key={t} onClick={() => setGuideTab(t)}
