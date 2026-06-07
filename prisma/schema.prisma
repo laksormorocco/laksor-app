@@ -15,6 +15,7 @@ enum Role {
   TOURIST
   GUIDE
   ADMIN
+  TRANSPORTER
 }
 
 enum BookingStatus {

@@ -9,11 +9,12 @@ export async function GET(req: Request) {
 
   const user = await prisma.user.findUnique({
     where: supabaseId ? { supabaseId } : { email: email! },
-    include: { guideProfile: { select: { id: true } } }
+    include: { guideProfile: { select: { id: true } }, transporter: { select: { id: true } } }
   });
 
   if (!user) return NextResponse.json({ role: "TOURIST" });
   if (user.role === "ADMIN") return NextResponse.json({ role: "ADMIN" });
   if (user.guideProfile) return NextResponse.json({ role: "GUIDE", guideId: user.guideProfile.id });
+  if (user.transporter) return NextResponse.json({ role: "TRANSPORTER", transporterId: user.transporter.id });
   return NextResponse.json({ role: "TOURIST", userId: user.id });
 }
