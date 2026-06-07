@@ -82,10 +82,10 @@ export default async function HomePage() {
           </a>
         </div>
 
-        <div className="grid grid-cols-2 gap-3 items-start">
+        <div className="grid grid-cols-2 gap-3 items-stretch">
           {guides.map((g) => (
             <a key={g.id} href={`/guide/${g.id}`} className="no-underline block">
-              <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-sand-300 hover:shadow-md transition-shadow flex flex-col">
+              <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-sand-300 hover:shadow-md transition-shadow flex flex-col h-full">
                 <div className="relative h-44">
                   <img
                     src={g.avatar ?? "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80"}
