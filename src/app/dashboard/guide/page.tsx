@@ -163,7 +163,7 @@ export default function GuideDashboard() {
       {/* HEADER */}
       <div className="sticky top-0 z-30 bg-white border-b border-sand-300 px-4 py-2 flex items-center justify-between">
         <div className="flex flex-col gap-1.5">
-          <span className="text-[10px] font-bold text-bronze-500 tracking-widest uppercase">LAKSOR — GUIDE</span>
+          <img src="/logo7.png" alt="Laksor" style={{ height: 36, width: "auto", objectFit: "contain", maxWidth: 130 }} />
           <div className="flex bg-sand-200 rounded-full p-0.5 border border-sand-300 gap-0.5">
             <a href={`/guide/${guideId}`} className="text-[10px] px-3 py-1 rounded-full text-charcoal-400 font-semibold no-underline flex items-center gap-1">
               <Eye size={11} /> Vue publique
