@@ -93,7 +93,7 @@ model User {
   reviews        Review[]
 
   transportBookings TransportBooking[] @relation("TransportBookingUser")
-  Transporter       Transporter?
+  transporter      Transporter?
 
   @@map("users")
 }
