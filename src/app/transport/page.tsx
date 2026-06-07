@@ -102,45 +102,6 @@ export default function TransportPage() {
       </div>
 
 
-      {/* FORMULAIRE RECHERCHE */}
-      <div style={{ padding: "16px 20px 0", maxWidth: 640, margin: "0 auto" }}>
-        <div style={{ background: "#fff", borderRadius: 24, border: "1px solid rgba(234,220,200,0.6)", overflow: "hidden", boxShadow: "0 2px 16px rgba(17,17,17,0.06)" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 16px", borderBottom: "1px solid #F6F1E8" }}>
-            <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#B88A44", flexShrink: 0 }} />
-            <input value={origin} onChange={e => setOrigin(e.target.value)}
-              placeholder="Départ — ville, hôtel, aéroport..."
-              style={{ flex: 1, fontSize: 13, outline: "none", border: "none", background: "transparent", color: "#111" }} />
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 16px" }}>
-            <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#7D8F69", flexShrink: 0 }} />
-            <input value={destination} onChange={e => setDestination(e.target.value)}
-              placeholder="Destination"
-              style={{ flex: 1, fontSize: 13, outline: "none", border: "none", background: "transparent", color: "#111" }} />
-          </div>
-        </div>
-
-        {/* Calendrier */}
-        <div style={{ marginTop: 12 }}>
-          <MiniCal value={date} onChange={setDate} />
-        </div>
-
-        {/* Heure */}
-        <div style={{ marginTop: 12, background: "#fff", borderRadius: 18, border: "1px solid rgba(234,220,200,0.6)", padding: "12px 16px" }}>
-          <div style={{ fontSize: 10, fontWeight: 700, color: "#888", marginBottom: 10, textTransform: "uppercase", letterSpacing: 1 }}>⏰ Heure de départ</div>
-          <div style={{ display: "flex", gap: 8, overflowX: "auto", scrollbarWidth: "none" }}>
-            {["05:00","06:00","07:00","08:00","09:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00","20:00","21:00","22:00"].map(h => (
-              <button key={h} onClick={() => setHour(h)}
-                style={{ flexShrink: 0, padding: "6px 12px", borderRadius: 999, fontSize: 11, fontWeight: 700, border: "1px solid", cursor: "pointer", transition: "all 0.15s",
-                  background: hour === h ? "#111" : "transparent",
-                  color: hour === h ? "#fff" : "#888",
-                  borderColor: hour === h ? "#111" : "#E8DCC8" }}>
-                {h.slice(0,5)}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
       {/* BUNDLE BANNER */}
       <div style={{ padding: "12px 20px 0", maxWidth: 640, margin: "0 auto" }}>
         <div style={{
