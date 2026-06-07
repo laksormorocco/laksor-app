@@ -9,19 +9,25 @@ const supabase = createClient(
 
 export default function DashboardRedirect() {
   useEffect(() => {
-    async function redirect() {
+    async function init() {
+      // Attendre que Supabase traite le hash si present
+      await new Promise(r => setTimeout(r, 500));
+      
       const { data: { session } } = await supabase.auth.getSession();
+      
       if (!session) {
         window.location.href = "/auth/login";
         return;
       }
+
       const res = await fetch("/api/auth/me?email=" + encodeURIComponent(session.user.email || ""));
       const data = await res.json();
+
       if (data.role === "ADMIN") window.location.href = "/dashboard/admin";
       else if (data.role === "GUIDE") window.location.href = "/dashboard/guide?id=" + data.guideId;
       else window.location.href = "/dashboard/tourist";
     }
-    redirect();
+    init();
   }, []);
 
   return (
