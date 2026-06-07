@@ -84,10 +84,7 @@ export default function HomeHero() {
       <nav className="sticky top-0 z-30 bg-white border-b border-sand-300">
         <div className="flex items-center h-16 px-3 gap-2">
           <a href="/" className="flex items-center gap-2 flex-shrink-0 no-underline">
-            <div className="w-9 h-9 rounded-xl bg-bronze-500 flex items-center justify-center">
-              <Compass size={18} weight="bold" color="#fff" />
-            </div>
-            <img src="/logo7.png" alt="Laksor" style={{ height: 36, width: "auto", objectFit: "contain" }} />
+    <img src="/logo7.png" alt="Laksor" style={{ height: 48, width: "auto", objectFit: "contain", maxWidth: 150 }} />
           </a>
           <button
             onClick={() => openModal("guides")}
