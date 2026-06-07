@@ -20,7 +20,8 @@ const TABS = [
   { id: "experiences", Icon: Sparkle, label: "Experiences" },
   { id:"stats",        Icon: ChartBar,      label:"Stats"        },
   { id:"profil",       Icon: User,          label:"Profil"       },
-  { id:"services",     Icon: MapTrifold,    label:"Services"    },
+  { id:"services",  Icon: MapTrifold, label:"Services" },
+  { id:"documents", Icon: IdentificationCard, label:"Documents" },
 ];
 
 function statusBadge(status: string) {
