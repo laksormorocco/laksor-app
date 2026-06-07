@@ -9,44 +9,24 @@ const supabase = createClient(
 
 export default function DashboardRedirect() {
   useEffect(() => {
-    async function checkUser() {
+    async function redirect() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        setTimeout(async () => {
-          const { data: { session: s2 } } = await supabase.auth.getSession();
-          if (!s2) { window.location.href = "/auth/login"; return; }
-          redirect(s2);
-        }, 1500);
+        window.location.href = "/auth/login";
         return;
       }
-      redirect(session);
-    }
-
-    async function redirect(session: any) {
-      const res = await fetch("/api/auth/me?supabaseId=" + session.user.id);
+      const res = await fetch("/api/auth/me?email=" + encodeURIComponent(session.user.email || ""));
       const data = await res.json();
-      if (data.role === "GUIDE" && data.guideId) {
-        window.location.href = "/dashboard/guide?id=" + data.guideId;
-      } else if (data.role === "ADMIN") {
-        window.location.href = "/dashboard/admin";
-      } else {
-        window.location.href = "/dashboard/tourist";
-      }
+      if (data.role === "ADMIN") window.location.href = "/dashboard/admin";
+      else if (data.role === "GUIDE") window.location.href = "/dashboard/guide?id=" + data.guideId;
+      else window.location.href = "/dashboard/tourist";
     }
-
-    supabase.auth.onAuthStateChange((event, session) => {
-      if (session) redirect(session);
-    });
-
-    checkUser();
+    redirect();
   }, []);
 
   return (
-    <div style={{ minHeight:"100vh", display:"flex", alignItems:"center", justifyContent:"center", background:"#F8F5F0", fontFamily:"Georgia,serif" }}>
-      <div style={{ textAlign:"center" }}>
-        <div style={{ fontSize:48, marginBottom:16 }}>⏳</div>
-        <div style={{ fontSize:16, color:"#666" }}>Chargement de votre espace...</div>
-      </div>
+    <div className="min-h-screen bg-sand-200 flex items-center justify-center">
+      <div className="w-10 h-10 border-4 border-bronze-500 border-t-transparent rounded-full animate-spin" />
     </div>
   );
 }
