@@ -166,7 +166,7 @@ export default function BookingPage() {
           </div>
         </div>
         <div className="text-right">
-          {adjustedTotal > 0 ? (
+          {(adjustedTotal > 0 || isExperience) ? (
             <>
               <div className="font-display text-lg font-bold text-charcoal-800">{convert(adjustedTotal)} <span className="text-xs font-normal text-charcoal-400">(~{adjustedTotal} MAD)</span></div>
               {payment === "deposit" && <div className="text-[10px] text-bronze-500">Acompte : {convert(deposit)}</div>}
