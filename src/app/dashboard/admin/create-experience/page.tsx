@@ -17,7 +17,7 @@ export default function CreateExperiencePage() {
     if (!form.title || !form.price) return alert("Titre et prix requis");
     setSaving(true);
     const data = {
-      guideId: "admin",
+      
       title: form.title,
       description: form.description,
       price: Number(form.price),
