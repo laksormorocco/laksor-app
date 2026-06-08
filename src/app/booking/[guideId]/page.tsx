@@ -290,7 +290,7 @@ export default function BookingPage() {
                     {isExperience && persons >= 4 && (
                       <div className="flex justify-between text-xs">
                         <span className="text-sage-300">Réduction groupe {persons >= 7 ? "-15%" : "-8%"} ({persons} pers.)</span>
-                        <span className="text-sage-300">-{convert(Math.ceil(tourPriceParam * persons) - expBasePrice)}</span>
+                        <span className="text-sage-300">-{convert(Math.ceil((tourPriceParam || 0) * persons) - expBasePrice)}</span>
                       </div>
                     )}
                     <span className="text-charcoal-400">Frais de service</span>
