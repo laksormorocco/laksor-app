@@ -16,8 +16,10 @@ export default function CreateExperiencePage() {
   async function save() {
     if (!form.title || !form.price) return alert("Titre et prix requis");
     setSaving(true);
+    const LAKSOR_GUIDE_ID = "cmq5fr4ef0002xbtvwrfquu46";
     const data = {
       
+      guideId: LAKSOR_GUIDE_ID,
       title: form.title,
       description: form.description,
       price: Number(form.price),
