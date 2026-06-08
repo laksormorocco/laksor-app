@@ -281,10 +281,10 @@ export default function TouristDashboard() {
                       <div className="text-sm font-bold text-charcoal-800">{Number(b.totalPrice)} MAD</div>
                       <StatusBadge status={b.status} />
                       {b.status === "COMPLETED" && (
-                        <Link href={"/guide/" + b.guide?.id + "#avis"}
-                          className="mt-1 block text-[10px] text-bronze-500 font-bold no-underline">
-                    ⭐ Laisser un avis
-                        </Link>
+                        <button onClick={e => { e.stopPropagation(); setReviewForm({ templateId: b.slots?.[0]?.templateId || b.guideId, guideId: b.guideId, authorId: b.touristId, bookingId: b.id, tourTitle: b.guide?.displayName }); }}
+                          className="mt-1 bg-bronze-500 text-white font-bold px-3 py-1.5 rounded-full text-[10px] flex items-center gap-1">
+                          ⭐ Laisser un avis
+                        </button>
                       )}
                     </div>
                   </div>
