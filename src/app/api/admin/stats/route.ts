@@ -19,6 +19,13 @@ export async function GET() {
     _sum: { totalPrice: true, commission: true }
   });
 
+  // Stats expériences
+  const [totalExperiences, pendingExperiences, approvedExperiences] = await Promise.all([
+    prisma.guideExperience.count(),
+    prisma.guideExperience.count({ where: { status: "PENDING" } }),
+    prisma.guideExperience.count({ where: { status: "APPROVED", isActive: true } }),
+  ]);
+
   const recentBookings = await prisma.booking.findMany({
     take: 5,
     orderBy: { createdAt: "desc" },
@@ -81,7 +88,7 @@ export async function GET() {
   // Taux de conversion
   const conversionRate = totalBookings > 0 ? Math.round((confirmedBookings / totalBookings) * 100) : 0;
 
-  return NextResponse.json({
+  return NextResponse.json({ totalExperiences, pendingExperiences, approvedExperiences,
     totalGuides, pendingGuides, approvedGuides,
     totalBookings, pendingBookings, confirmedBookings, cancelledBookings,
     totalUsers,
