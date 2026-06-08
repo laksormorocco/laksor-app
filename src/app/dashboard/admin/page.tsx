@@ -66,6 +66,7 @@ export default function AdminDashboard() {
   const [crmGuide,     setCrmGuide]     = useState("");
   const [reminders,    setReminders]    = useState<any[]>([]);
   const [allExperiences, setAllExperiences] = useState<any[]>([]);
+  const [newExpForm, setNewExpForm] = useState<any>(null);
   const [importing, setImporting] = useState(false);
   const [importResult, setImportResult] = useState<any>(null);
   const [editGuide,    setEditGuide]    = useState<any>(null);
@@ -551,7 +552,10 @@ export default function AdminDashboard() {
           <div className="flex flex-col gap-3">
             <div className="flex items-center justify-between mb-2">
               <div className="text-sm font-bold text-charcoal-800">Experiences guides ({allExperiences.length})</div>
+            <div className="flex gap-2">
               <button onClick={fetchAllExperiences} className="text-xs text-bronze-500 font-bold">Actualiser</button>
+              <button onClick={() => setNewExpForm({ title:"", description:"", duration:"4h", groupSize:"1-8 pers.", difficulty:"Facile", price:"", city:"", meetingPoint:"", included:"", notIncluded:"", tags:"", photos:[], transportRequired:false, providerContact:"" })} className="bg-bronze-500 text-white text-xs font-bold px-3 py-1.5 rounded-full">+ Creer</button>
+            </div>
             </div>
             {allExperiences.length === 0 ? (
               <div className="bg-white rounded-2xl p-8 text-center border border-sand-300">
@@ -1143,6 +1147,74 @@ export default function AdminDashboard() {
               )}
             </div>
           </div>
+
+      {/* MODAL CREATION EXPERIENCE LAKSOR */}
+      {newExpForm && (
+        <div className="fixed inset-x-0 top-0 bottom-0 z-50 bg-white flex flex-col">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-sand-200">
+            <button onClick={() => setNewExpForm(null)} className="w-9 h-9 rounded-full border border-sand-200 flex items-center justify-center">
+              <X size={16} className="text-charcoal-600" />
+            </button>
+            <span className="font-display text-sm font-bold text-charcoal-800">Nouvelle experience Laksor</span>
+            <div className="w-9" />
+          </div>
+          <div className="flex-1 overflow-y-auto px-4 py-5 flex flex-col gap-4">
+            {([
+              { key:"title", label:"Titre *", ph:"Agafay Desert + Quad..." },
+              { key:"description", label:"Description", ph:"Description...", area:true },
+              { key:"price", label:"Prix / personne (MAD)", ph:"300" },
+              { key:"city", label:"Ville", ph:"Marrakech" },
+              { key:"meetingPoint", label:"Point de RDV", ph:"Place Jemaa el-Fna..." },
+              { key:"duration", label:"Duree", ph:"4h" },
+              { key:"groupSize", label:"Groupe", ph:"1-8 pers." },
+              { key:"providerContact", label:"Contact prestataire", ph:"+212600000000" },
+              { key:"tags", label:"Tags (virgule)", ph:"Desert, Aventure" },
+              { key:"included", label:"Inclus (virgule)", ph:"Transport, Guide" },
+              { key:"notIncluded", label:"Non inclus (virgule)", ph:"Repas" },
+            ] as any[]).map((f: any) => (
+              <div key={f.key}>
+                <div className="text-xs font-bold text-charcoal-400 mb-1">{f.label}</div>
+                {f.area ? (
+                  <textarea value={newExpForm[f.key] || ""} onChange={e => setNewExpForm({...newExpForm, [f.key]: e.target.value})}
+                    placeholder={f.ph} rows={3} className={inputCls + " resize-none"} />
+                ) : (
+                  <input value={newExpForm[f.key] || ""} onChange={e => setNewExpForm({...newExpForm, [f.key]: e.target.value})}
+                    placeholder={f.ph} className={inputCls} />
+                )}
+              </div>
+            ))}
+            <button onClick={async () => {
+              const data = {
+                guideId: "admin",
+                title: newExpForm.title,
+                description: newExpForm.description || "",
+                price: Number(newExpForm.price) || 0,
+                city: newExpForm.city || "",
+                meetingPoint: newExpForm.meetingPoint || "",
+                duration: newExpForm.duration || "4h",
+                groupSize: newExpForm.groupSize || "1-8 pers.",
+                difficulty: "Facile",
+                providerContact: newExpForm.providerContact || "",
+                tags: newExpForm.tags ? newExpForm.tags.split(",").map((s: string) => s.trim()).filter(Boolean) : [],
+                included: newExpForm.included ? newExpForm.included.split(",").map((s: string) => s.trim()).filter(Boolean) : [],
+                notIncluded: newExpForm.notIncluded ? newExpForm.notIncluded.split(",").map((s: string) => s.trim()).filter(Boolean) : [],
+                photos: newExpForm.photos || [],
+                transportRequired: false,
+                isLaksorExp: true,
+                pricePerPerson: true,
+                status: "APPROVED",
+                isActive: true,
+              };
+              const res = await fetch("/api/guide/experiences", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(data) });
+              if (res.ok) { fetchAllExperiences(); setNewExpForm(null); }
+            }} className="w-full text-white font-bold py-4 rounded-full text-sm"
+              style={{background:"linear-gradient(135deg, #B88A44, #9A7238)"}}>
+              Publier l experience
+            </button>
+          </div>
+        </div>
+      )}
+
         </div>
       )}
     </div>
