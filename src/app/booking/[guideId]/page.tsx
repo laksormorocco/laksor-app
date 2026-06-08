@@ -263,7 +263,7 @@ export default function BookingPage() {
             {persons > 2 && (
               <div className="bg-amber-50 border border-bronze-500/20 rounded-xl px-3 py-2 flex items-center gap-2">
                 <span className="text-bronze-500 text-lg">⚠️</span>
-                <span className="text-xs text-bronze-500 font-semibold">+15% par personne au-delà de 2 · Supplément estimé : +{convert(extraCost)}</span>
+                  {!isExperience && <span className="text-xs text-bronze-500 font-semibold">+200 MAD / pers. suppl. au-delà de 4 · Supplément estimé : +{convert(extraCost)}</span>}
               </div>
             )}
             {selectedDates.length > 0 && (
@@ -271,12 +271,12 @@ export default function BookingPage() {
                 <div className="text-[10px] font-bold text-charcoal-800 uppercase tracking-widest mb-3">Detail du prix</div>
                 <div className="flex flex-col gap-2">
                   <div className="flex justify-between text-sm">
-                    <span className="text-charcoal-400">Creneaux ({selectedDates.length} jour{selectedDates.length>1?"s":""})</span>
+                    <span className="text-charcoal-400">{isExperience ? "Expérience" : `Creneaux (${selectedDates.length} jour${selectedDates.length>1?"s":""})`}</span>
                     <span className="font-semibold text-charcoal-800">{convert(total)}</span>
                   </div>
                   {persons > 2 && (
                     <div className="flex justify-between text-sm">
-                      <span className="text-amber-600 text-xs font-semibold">+15% x {persons-2} pers. suppl. (base 2 pers.)</span>
+                    {!isExperience && <span className="text-amber-600 text-xs font-semibold">+200 MAD x {persons-4} pers. suppl.</span>}
                       <span className="font-semibold text-amber-600">+{convert(extraCost)}</span>
                     </div>
                   )}
@@ -287,6 +287,7 @@ export default function BookingPage() {
                     </div>
                   )}
                   <div className="flex justify-between text-sm">
+                    {isExperience && persons >= 4 && <span className="text-sage-300 text-xs font-semibold">Réduction groupe {persons >= 7 ? "-15%" : "-8%"} appliquée</span>}
                     <span className="text-charcoal-400">Frais de service</span>
                     <span className="font-semibold text-charcoal-800">+{convert(serviceFee)}</span>
                   </div>
