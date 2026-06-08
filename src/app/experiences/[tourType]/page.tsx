@@ -12,12 +12,22 @@ export default function ExperienceGuidesPage() {
   const tourType = (params.tourType as string).toUpperCase();
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [reviews, setReviews] = useState<any[]>([]);
+  const [reviewAvg, setReviewAvg] = useState(0);
   const { convert } = useExchangeRate();
 
   useEffect(() => {
     fetch("/api/experiences/" + tourType)
       .then(r => r.json())
-      .then(d => { setData(d); setLoading(false); });
+      .then(d => { 
+        setData(d); 
+        setLoading(false);
+        if (d?.tour?.id) {
+          fetch("/api/tour-reviews?templateId=" + d.tour.id)
+            .then(r => r.json())
+            .then(rv => { setReviews(rv.reviews || []); setReviewAvg(rv.avg || 0); });
+        }
+      });
   }, [tourType]);
 
   if (loading) return (
@@ -130,6 +140,53 @@ export default function ExperienceGuidesPage() {
             ))}
           </div>
         )}
+
+        {/* AVIS */}
+        <div className="mt-6">
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <h3 className="font-display text-base font-bold text-charcoal-800">Avis clients</h3>
+              {reviews.length > 0 && (
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <Star size={13} weight="fill" className="text-amber-400" />
+                  <span className="text-sm font-bold text-charcoal-800">{reviewAvg.toFixed(1)}</span>
+                  <span className="text-xs text-charcoal-400">({reviews.length} avis)</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {reviews.length === 0 ? (
+            <div className="bg-white rounded-2xl border border-sand-300 p-6 text-center">
+              <div className="text-2xl mb-2">⭐</div>
+              <div className="text-sm text-charcoal-400">Soyez le premier à laisser un avis</div>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-3">
+              {reviews.map((r: any) => (
+                <div key={r.id} className="bg-white rounded-2xl border border-sand-300 p-4">
+                  <div className="flex items-center gap-3 mb-2">
+                    {r.author?.avatar
+                      ? <img src={r.author.avatar} className="w-9 h-9 rounded-full object-cover flex-shrink-0" />
+                      : <div className="w-9 h-9 rounded-full bg-sand-200 flex items-center justify-center text-sm font-bold text-charcoal-500 flex-shrink-0">{r.author?.name?.[0]}</div>
+                    }
+                    <div className="flex-1">
+                      <div className="text-sm font-bold text-charcoal-800">{r.author?.name}</div>
+                      <div className="flex items-center gap-0.5">
+                        {[1,2,3,4,5].map(s => (
+                          <Star key={s} size={11} weight={s <= r.rating ? "fill" : "regular"} className={s <= r.rating ? "text-amber-400" : "text-sand-300"} />
+                        ))}
+                      </div>
+                    </div>
+                    <div className="text-[10px] text-charcoal-400">{new Date(r.createdAt).toLocaleDateString("fr-FR", {month:"short", year:"numeric"})}</div>
+                  </div>
+                  {r.comment && <p className="text-xs text-charcoal-600 leading-relaxed">{r.comment}</p>}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
       </div>
     </div>
   );
