@@ -93,7 +93,8 @@ model User {
   reviews        Review[]
 
   transportBookings TransportBooking[] @relation("TransportBookingUser")
-  transporter      Transporter?
+  tourReviews       TourReview[]       @relation("TourReviewAuthor")
+  transporter       Transporter?
 
   @@map("users")
 }
@@ -124,7 +125,7 @@ model GuideProfile {
 
   halfDayPrice     Float @default(350)
   extraPersonPrice Float @default(200)
-  fullDayPrice Float @default(650)
+  fullDayPrice     Float @default(650)
 
   status       GuideStatus @default(PENDING)
   avgRating    Float       @default(0)
@@ -133,12 +134,13 @@ model GuideProfile {
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
 
-  bookings        Booking[]
-  customRequests  CustomRequest[]
-  availability    Availability[]
-  tours           GuideTour[]
-  customTours     CustomTour[]
-  GuideExperience GuideExperience[]
+  bookings           Booking[]
+  customRequests     CustomRequest[]
+  availability       Availability[]
+  tours              GuideTour[]
+  customTours        CustomTour[]
+  GuideExperience    GuideExperience[]
+  tourReviewsAsGuide TourReview[]      @relation("TourReviewGuide")
 
   @@map("guide_profiles")
 }
@@ -252,6 +254,7 @@ model TourTemplate {
   updatedAt DateTime @updatedAt
 
   guideTours GuideTour[]
+  TourReview TourReview[]
 
   @@map("tour_templates")
 }
@@ -409,4 +412,18 @@ model TransportBooking {
   notes         String?
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
+}
+
+model TourReview {
+  id         String       @id @default(cuid())
+  templateId String
+  template   TourTemplate @relation(fields: [templateId], references: [id])
+  guideId    String
+  guide      GuideProfile @relation("TourReviewGuide", fields: [guideId], references: [id])
+  authorId   String
+  author     User         @relation("TourReviewAuthor", fields: [authorId], references: [id])
+  bookingId  String?
+  rating     Int
+  comment    String?      @db.Text
+  createdAt  DateTime     @default(now())
 }
