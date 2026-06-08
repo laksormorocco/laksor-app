@@ -666,10 +666,10 @@ export default function AdminDashboard() {
               <div className="text-sm font-bold text-charcoal-800">Experiences guides ({allExperiences.length})</div>
               <div className="flex gap-2">
               <button onClick={fetchAllExperiences} className="text-xs text-bronze-500 font-bold">Actualiser</button>
-              <button onClick={() => setNewExpForm({ title:"", description:"", duration:"4h", groupSize:"1-6 pers.", difficulty:"Facile", price:"", city:"", meetingPoint:"", included:"", notIncluded:"", tags:"", photos:[], transportRequired:false })}
-                className="flex items-center gap-1 bg-bronze-500 text-white text-xs font-bold px-3 py-1.5 rounded-full">
-                + Creer
-              </button>
+            <button onClick={() => setNewExpForm({ title:"", description:"", duration:"4h", groupSize:"1-8 pers.", difficulty:"Facile", price:"", city:"", meetingPoint:"", included:"", notIncluded:"", tags:"", photos:[], transportRequired:false, providerContact:"" })}
+              className="flex items-center gap-1 bg-bronze-500 text-white text-xs font-bold px-3 py-1.5 rounded-full">
+              + Creer
+            </button>
             </div>
             </div>
             {allExperiences.length === 0 ? (
