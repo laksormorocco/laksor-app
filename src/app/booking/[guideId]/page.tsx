@@ -1,4 +1,30 @@
-"use client";
+python3 << 'EOF'
+with open('src/app/dashboard/guide/page.tsx', 'r') as f:
+    lines = f.readlines()
+    
+    for i, line in enumerate(lines):
+        if 'Active les services que vous proposez' in line:
+                extra_block = '''            <div className="bg-white rounded-2xl border border-sand-300 p-4">
+                              <div className="text-xs font-bold text-charcoal-800 mb-1">Prix personne supplémentaire (MAD)</div>
+                                            <div className="text-[10px] text-charcoal-400 mb-2">Au-delà de 4 personnes · par personne</div>
+                                                          <div className="flex items-center gap-2">
+                                                                          <input type="number" defaultValue={guide?.extraPersonPrice || 200}
+                                                                                            className="flex-1 border border-sand-300 rounded-xl px-3 py-2 text-sm outline-none focus:border-bronze-500"
+                                                                                                              onBlur={async e => {
+                                                                                                                                  await fetch("/api/guide/profile", { method:"PATCH", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ guideId, extraPersonPrice: Number(e.target.value) }) });
+                                                                                                                                                    }} />
+                                                                                                                                                                    <span className="text-xs text-charcoal-400">MAD/pers.</span>
+                                                                                                                                                                                  </div>
+                                                                                                                                                                                              </div>\n'''
+                                                                                                                                                                                                      lines.insert(i+1, extra_block)
+                                                                                                                                                                                                              print(f"Inserted at line {i+2}")
+                                                                                                                                                                                                                      break
+                                                                                                                                                                                                                      
+                                                                                                                                                                                                                      with open('src/app/dashboard/guide/page.tsx', 'w') as f:
+                                                                                                                                                                                                                          f.writelines(lines)
+                                                                                                                                                                                                                          print('done')
+                                                                                                                                                                                                                          EOF
+                                                                                                                                                                                                                          "use client";
 import { useState, useEffect } from "react";
 import { createClient } from "@supabase/supabase-js";
 import { useRouter, useParams } from "next/navigation";
