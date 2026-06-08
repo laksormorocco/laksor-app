@@ -141,7 +141,7 @@ export default function ExperiencesPage() {
                       )}
                     </div>
                     <div className="flex items-center gap-1.5 bg-sage-300 text-white font-bold px-4 py-2.5 rounded-full text-xs">
-                      Voir les guides <ArrowRight size={12} weight="bold" />
+                      {t.isGuideExperience ? "Réserver maintenant" : "Voir les guides"} <ArrowRight size={12} weight="bold" />
                     </div>
                   </div>
                 </div>
