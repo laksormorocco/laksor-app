@@ -37,3 +37,22 @@ export function priceCardDisplay(halfDayPrice: number) {
     group5: Math.ceil(halfDayPrice * 1.25 * 1.4),
   };
 }
+
+// Experience pricing avec reduction groupe
+export function expPricePerPerson(basePrice: number, persons: number): number {
+  let discount = 1;
+  if (persons >= 7) discount = 0.85;
+  else if (persons >= 4) discount = 0.92;
+  return Math.ceil(basePrice * discount * 1.25);
+}
+
+export function expTotalPrice(basePrice: number, persons: number): number {
+  return expPricePerPerson(basePrice, persons) * persons;
+}
+
+export function expCommission(basePrice: number, persons: number): number {
+  let discount = 1;
+  if (persons >= 7) discount = 0.85;
+  else if (persons >= 4) discount = 0.92;
+  return Math.ceil(basePrice * discount * 0.25) * persons;
+}

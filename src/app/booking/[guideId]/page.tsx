@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { createClient } from "@supabase/supabase-js";
 import { useRouter, useParams } from "next/navigation";
 import { useExchangeRate } from "@/hooks/useExchangeRate";
-import { priceWithCommission } from "@/lib/pricing";
+import { priceWithCommission, priceWithFees, expTotalPrice } from "@/lib/pricing";
 import PriceDisplay from "@/components/PriceDisplay";
 import CalendarPicker from "@/components/CalendarPicker";
 import MiniCal from "@/components/MiniCal";
@@ -64,11 +64,7 @@ export default function BookingPage() {
   const persons = adults + children;
   const expPricePerPerson = searchParams?.get("pricePerPerson") === "true";
   const expMaxPersons = Number(searchParams?.get("maxPersons") || 1);
-  const expBasePrice = isExperience && tourPriceParam
-    ? (expPricePerPerson
-      ? tourPriceParam * persons
-      : tourPriceParam + (persons > expMaxPersons ? Math.round(tourPriceParam * (persons - expMaxPersons) * 0.15) : 0))
-    : 0;
+  const expBasePrice = isExperience && tourPriceParam ? expTotalPrice(tourPriceParam, persons) : 0;
   const extraCost = isExperience ? 0 : (persons > 4 ? (persons - 4) * 200 : 0);
   const transportCost = transport ? 300 : 0;
   const serviceFee = 25;
