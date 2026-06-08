@@ -101,6 +101,7 @@ export default function CreateExperiencePage() {
           { key: "meetingPoint", label: "Point de RDV", ph: "Place Jemaa el-Fna..." },
           { key: "duration", label: "Duree", ph: "4h" },
           { key: "groupSize", label: "Taille groupe", ph: "1-8 pers." },
+          { key: "category", label: "Catégorie / Intérêt", ph: "Aventure, Culture, Nature, Gastronomie..." },
           { key: "providerContact", label: "Contact prestataire (WA/Email)", ph: "+212600000000" },
           { key: "tags", label: "Tags (virgule)", ph: "Desert, Aventure, Nature" },
           { key: "included", label: "Inclus (virgule)", ph: "Transport, Guide" },
