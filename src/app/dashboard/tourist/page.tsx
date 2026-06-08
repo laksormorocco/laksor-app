@@ -17,6 +17,10 @@ export default function TouristDashboard() {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState("upcoming");
+  const [reviewForm, setReviewForm] = useState<any>(null);
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewComment, setReviewComment] = useState("");
+  const [reviewSaving, setReviewSaving] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
@@ -299,6 +303,61 @@ export default function TouristDashboard() {
             Explorer les guides
           </Link>
         </div>
+
+
+      {/* MODAL AVIS */}
+      {reviewForm && (
+        <div className="fixed inset-x-0 top-0 bottom-0 z-50 bg-white flex flex-col">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-sand-200">
+            <button onClick={() => { setReviewForm(null); setReviewRating(5); setReviewComment(""); }}
+              className="w-9 h-9 rounded-full border border-sand-200 flex items-center justify-center">
+              <span className="text-charcoal-600 text-lg">←</span>
+            </button>
+            <span className="font-display text-sm font-bold text-charcoal-800">Laisser un avis</span>
+            <div className="w-9" />
+          </div>
+          <div className="flex-1 overflow-y-auto px-4 py-5 flex flex-col gap-4">
+            <div className="text-sm text-charcoal-400 text-center">{reviewForm.tourTitle}</div>
+            <div className="flex justify-center gap-2">
+              {[1,2,3,4,5].map(s => (
+                <button key={s} onClick={() => setReviewRating(s)}
+                  className={"text-3xl transition-all " + (s <= reviewRating ? "opacity-100" : "opacity-30")}>
+                  ⭐
+                </button>
+              ))}
+            </div>
+            <div>
+              <div className="text-xs font-bold text-charcoal-400 mb-1">Commentaire (optionnel)</div>
+              <textarea value={reviewComment} onChange={e => setReviewComment(e.target.value)}
+                placeholder="Partagez votre expérience..."
+                rows={4} className="w-full border border-sand-300 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-bronze-500 resize-none" />
+            </div>
+            <button onClick={async () => {
+              setReviewSaving(true);
+              await fetch("/api/tour-reviews", {
+                method: "POST",
+                headers: {"Content-Type":"application/json"},
+                body: JSON.stringify({
+                  templateId: reviewForm.templateId,
+                  guideId: reviewForm.guideId,
+                  authorId: reviewForm.authorId,
+                  bookingId: reviewForm.bookingId,
+                  rating: reviewRating,
+                  comment: reviewComment
+                })
+              });
+              setReviewSaving(false);
+              setReviewForm(null);
+              setReviewRating(5);
+              setReviewComment("");
+            }}
+              className="w-full text-white font-bold py-4 rounded-full text-sm"
+              style={{background:"linear-gradient(135deg, #B88A44, #9A7238)"}}>
+              {reviewSaving ? "Envoi..." : "Publier mon avis"}
+            </button>
+          </div>
+        </div>
+      )}
 
       </div>
     </div>
