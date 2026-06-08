@@ -283,7 +283,7 @@ export default function TouristDashboard() {
                       {b.status === "COMPLETED" && (
                         <Link href={"/guide/" + b.guide?.id + "#avis"}
                           className="mt-1 block text-[10px] text-bronze-500 font-bold no-underline">
-                          Laisser un avis →
+                    ⭐ Laisser un avis
                         </Link>
                       )}
                     </div>
