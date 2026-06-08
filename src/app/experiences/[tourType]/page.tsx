@@ -122,7 +122,7 @@ export default function ExperienceGuidesPage() {
                     <div className="text-[10px] text-charcoal-400">/ 4 pers. max</div>
                   </div>
                 </div>
-                <a href={"/booking/" + g.guideId + "?tourId=" + g.templateId}
+                <a href={"/booking/" + g.guideId + "?tourId=" + g.templateId + "&tourPrice=" + Math.ceil((g.price || g.halfDayPrice || 350) * 1.25)}>
                   className="w-full flex items-center justify-center gap-2 bg-sage-300 hover:bg-sage-400 text-white font-bold py-3 rounded-full text-sm no-underline transition-colors">
                   Reserver avec {g.guide.displayName.split(" ")[0]}
                 </a>
