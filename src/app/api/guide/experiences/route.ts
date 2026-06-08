@@ -17,7 +17,7 @@ export async function POST(req: Request) {
   const body = await req.json();
   const { guideId, title, description, duration, groupSize, difficulty, price, city, meetingPoint, included, notIncluded, itinerary, photos, tags, transportRequired } = body;
   if (!title) return NextResponse.json({ error: "Donnees manquantes" }, { status: 400 });
-  const exp = await prisma.guideExperience.create({
+  const exp = await (prisma.guideExperience.create as any)({
     data: {
       ...(guideId ? { guideId } : {}),
       title, description: description || "",
