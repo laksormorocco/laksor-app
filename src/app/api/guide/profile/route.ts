@@ -24,6 +24,7 @@ export async function PATCH(req: Request) {
         guideCardBack: updateData.guideCardBack,
         nationalIdUrl: updateData.nationalIdUrl,
         nationalIdBack: updateData.nationalIdBack,
+        extraPersonPrice: updateData.extraPersonPrice !== undefined ? Number(updateData.extraPersonPrice) : undefined,
         avatar: updateData.avatar,
         gallery: updateData.gallery || [],
       }

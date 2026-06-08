@@ -122,7 +122,8 @@ model GuideProfile {
   nationalIdBack String?
   docsStatus     String      @default("PENDING")
 
-  halfDayPrice Float @default(350)
+  halfDayPrice     Float @default(350)
+  extraPersonPrice Float @default(200)
   fullDayPrice Float @default(650)
 
   status       GuideStatus @default(PENDING)
