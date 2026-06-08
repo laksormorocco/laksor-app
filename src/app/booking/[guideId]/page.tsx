@@ -380,10 +380,10 @@ export default function BookingPage() {
           <>
             <div className="bg-white rounded-2xl border border-sand-300 p-4">
               <div className="text-[10px] font-bold text-charcoal-800 uppercase tracking-widest mb-3">Récapitulatif</div>
-              <div className="flex flex-col gap-2.5">
+              <div className="flex flex-col gap-2">
                 <div className="flex justify-between text-sm">
-                  <span className="text-charcoal-400">Dates</span>
-                  <span className="font-semibold text-charcoal-800">{selectedDates.length} jour{selectedDates.length>1?"s":""}</span>
+                  <span className="text-charcoal-400">Date</span>
+                  <span className="font-semibold text-charcoal-800">{selectedDates[0] ? new Date(selectedDates[0] + "T00:00:00").toLocaleDateString("fr-FR", {weekday:"long", day:"numeric", month:"long"}) : "-"}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-charcoal-400">Participants</span>
@@ -391,32 +391,36 @@ export default function BookingPage() {
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-charcoal-400">Transport</span>
-                  <span className="font-semibold text-charcoal-800">{transport ? "+" + convert(300) : "Non"}</span>
+                  <span className="font-semibold text-charcoal-800">{isExperience ? "Inclus" : (transport ? "Oui" : "Non")}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-charcoal-400">Paiement</span>
                   <span className="font-semibold text-charcoal-800">{payment === "deposit" ? "Acompte 30%" : payment === "full" ? "100% en ligne" : "Cash"}</span>
                 </div>
-                {!isExperience && extraCost > 0 && (
-                  <div className="flex justify-between text-sm">
-                    <span className="text-charcoal-400">+15% / pers. suppl. (au-delà de 2)</span>
-                    <span className="font-semibold text-charcoal-800">{extraCost > 0 ? "+" + convert(extraCost) : ""}</span>
+                <div className="border-t border-sand-200 pt-2 flex flex-col gap-1.5">
+                  {isExperience && (
+                    <div className="flex justify-between text-xs text-charcoal-400">
+                      <span>{persons} pers. × {convert(tourPriceParam || 0)}</span>
+                      <span>{convert((tourPriceParam || 0) * persons)}</span>
+                    </div>
+                  )}
+                  {isExperience && persons >= 4 && (
+                    <div className="flex justify-between text-xs text-sage-300 font-semibold">
+                      <span>Réduction groupe {persons >= 7 ? "-15%" : "-8%"}</span>
+                      <span>-{convert(Math.ceil((tourPriceParam || 0) * persons) - expBasePrice)}</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between text-xs text-charcoal-400">
+                    <span>Frais de service</span>
+                    <span>+{convert(serviceFee)}</span>
                   </div>
-                )}
-                <div className="flex justify-between text-sm">
-                  <span className="text-charcoal-400">Frais de service</span>
-                  <span className="font-semibold text-charcoal-800">+{convert(serviceFee)}</span>
+                  <div className="flex justify-between pt-1 border-t border-sand-200">
+                    <span className="font-bold text-charcoal-800">Total</span>
+                    <span className="font-display text-lg font-bold text-bronze-500">{convert(adjustedTotal)}</span>
+                  </div>
                 </div>
-                <div className="border-t border-sand-200 pt-2.5 flex justify-between">
-                  <span className="font-bold text-charcoal-800">Total</span>
-                  <span className="font-display text-xl font-bold text-charcoal-800">{convert(adjustedTotal)} <span className="text-xs font-normal text-charcoal-400">({convert(adjustedTotal)})</span></span>
-                </div>
-                {payment === "deposit" && (
-                  <div className="text-[11px] text-bronze-500 font-semibold text-right">Acompte dû maintenant : {deposit} MAD</div>
-                )}
               </div>
             </div>
-
             <div className="bg-white rounded-2xl border border-sand-300 p-4">
               <div className="text-[10px] font-bold text-charcoal-800 uppercase tracking-widest mb-2">Vos informations</div>
               <div className="text-sm font-semibold text-charcoal-800">{guestName}</div>
