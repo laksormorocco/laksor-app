@@ -260,10 +260,10 @@ export default function BookingPage() {
               </div>
             </div>
 
-            {persons > 2 && (
+            {!isExperience && persons > 4 && (
               <div className="bg-amber-50 border border-bronze-500/20 rounded-xl px-3 py-2 flex items-center gap-2">
                 <span className="text-bronze-500 text-lg">⚠️</span>
-                  {!isExperience && <span className="text-xs text-bronze-500 font-semibold">+200 MAD / pers. suppl. au-delà de 4 · Supplément estimé : +{convert(extraCost)}</span>}
+                <span className="text-xs text-bronze-500 font-semibold">+200 MAD / pers. au-delà de 4 · Supplément : +{convert(extraCost)}</span>
               </div>
             )}
             {selectedDates.length > 0 && (
@@ -286,13 +286,13 @@ export default function BookingPage() {
                       <span className="font-semibold text-charcoal-800">+{convert(300)}</span>
                     </div>
                   )}
+                  {isExperience && persons >= 4 && (
+                    <div className="flex justify-between text-sm">
+                      <span className="text-sage-300 font-semibold">Réduction groupe {persons >= 7 ? "-15%" : "-8%"} ({persons} pers.)</span>
+                      <span className="text-sage-300 font-semibold">-{convert(Math.ceil((tourPriceParam || 0) * persons) - expBasePrice)}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between text-sm">
-                    {isExperience && persons >= 4 && (
-                      <div className="flex justify-between text-xs">
-                        <span className="text-sage-300">Réduction groupe {persons >= 7 ? "-15%" : "-8%"} ({persons} pers.)</span>
-                        <span className="text-sage-300">-{convert(Math.ceil((tourPriceParam || 0) * persons) - expBasePrice)}</span>
-                      </div>
-                    )}
                     <span className="text-charcoal-400">Frais de service</span>
                     <span className="font-semibold text-charcoal-800">+{convert(serviceFee)}</span>
                   </div>
