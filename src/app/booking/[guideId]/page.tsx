@@ -193,7 +193,7 @@ export default function BookingPage() {
               {isExperience ? (
                 <div className="flex flex-col gap-3">
                   <div className="text-[10px] text-charcoal-400">💡 Prix : {convert(tourPriceParam || 0)} par personne</div>
-    setSelectedDates([v]); if (isExperience) setTotal(0); else setTotal((tourPriceParam || 0) * persons); }}
+                  <MiniCal value={selectedDates[0] || ""} onChange={v => { setSelectedDates([v]); if (!isExperience) setTotal((tourPriceParam || 0) * persons); }} />
                 </div>
               ) : (
                 <>
