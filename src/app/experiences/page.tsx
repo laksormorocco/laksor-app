@@ -61,7 +61,7 @@ export default function ExperiencesPage() {
         ) : (
           <div className="flex flex-col gap-4">
             {tours.map(t => (
-              <Link key={t.id} href={t.isGuideExperience ? "/booking/" + t.guideId + "?expId=" + t.expId + "&tourPrice=" + t.minPrice : "/experiences/" + t.tourType.toLowerCase()}
+              <Link key={t.id} href={t.isGuideExperience ? "/booking/" + t.guideId + "?expId=" + t.expId + "&tourPrice=" + Math.ceil(t.minPrice * 1.25) : "/experiences/" + t.tourType.toLowerCase()}
                 className="bg-white rounded-2xl overflow-hidden border border-sand-300 shadow-sm no-underline block active:scale-[0.99] transition-all">
                 <div className="relative h-52">
                   {t.coverImage

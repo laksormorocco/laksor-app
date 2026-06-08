@@ -392,7 +392,7 @@ export default function BookingPage() {
                   <span className="text-charcoal-400">Paiement</span>
                   <span className="font-semibold text-charcoal-800">{payment === "deposit" ? "Acompte 30%" : payment === "full" ? "100% en ligne" : "Cash"}</span>
                 </div>
-                {extraCost > 0 && (
+                {!isExperience && extraCost > 0 && (
                   <div className="flex justify-between text-sm">
                     <span className="text-charcoal-400">+15% / pers. suppl. (au-delà de 2)</span>
                     <span className="font-semibold text-charcoal-800">+{convert(extraCost)}</span>
