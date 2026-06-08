@@ -48,6 +48,7 @@ export default function BookingPage() {
   const [bookedDates, setBookedDates] = useState<{date:string;duration:string}[]>([]);
   const [guestName, setGuestName] = useState("");
   const [guestContact, setGuestContact] = useState("");
+  const [startHour, setStartHour] = useState("09:00");
 
   useEffect(() => {
     if (!guideId) return;
@@ -197,17 +198,22 @@ export default function BookingPage() {
                 </div>
               ) : (
                 <>
-                  <div className="text-[10px] text-charcoal-400 mb-2">💡 Tarifs affichés pour 2 personnes · +15% par personne supplémentaire</div>
-                  <CalendarPicker
-                    blockedDates={bookedDates.map((b: any) => b.date)}
-                    priceHalfDay={priceWithCommission(guide?.halfDayPrice || 350)}
-                    priceFullDay={priceWithCommission(guide?.fullDayPrice || 650)}
-                    convert={convert}
-                    onSelectionChange={(slots: any[], t: number) => {
-                      setSelectedDates(slots.map((s: any) => s.date));
-                      setTotal(t);
-                    }}
-                  />
+                  <MiniCal value={selectedDates[0] || ""} onChange={v => {
+                    setSelectedDates([v]);
+                    setTotal(tourPriceParam || priceWithCommission(guide?.halfDayPrice || 350));
+                  }} />
+                  <div className="mt-3">
+                    <div className="text-xs font-bold text-charcoal-400 mb-2">⏰ Heure de début</div>
+                    <div className="flex gap-2 overflow-x-auto" style={{scrollbarWidth:"none"}}>
+                      {["07:00","08:00","09:00","10:00","11:00","12:00","14:00","15:00","16:00"].map(h => (
+                        <button key={h}
+                          onClick={() => setStartHour(h)}
+                          className={"flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-bold border transition-all " + (startHour === h ? "bg-charcoal-800 text-white border-charcoal-800" : "text-charcoal-400 border-sand-300")}>
+                          {h}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </>
               )}
             </div>
@@ -383,7 +389,7 @@ export default function BookingPage() {
               <div className="flex flex-col gap-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-charcoal-400">Date</span>
-                  <span className="font-semibold text-charcoal-800">{selectedDates[0] ? new Date(selectedDates[0] + "T00:00:00").toLocaleDateString("fr-FR", {weekday:"long", day:"numeric", month:"long"}) : "-"}</span>
+                  <span className="font-semibold text-charcoal-800">{selectedDates[0] ? new Date(selectedDates[0] + "T00:00:00").toLocaleDateString("fr-FR", {weekday:"long", day:"numeric", month:"long"}) : "-"} {selectedDates[0] && ("· " + startHour)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-charcoal-400">Participants</span>
