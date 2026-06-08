@@ -277,7 +277,7 @@ export default function BookingPage() {
                   {persons > 2 && (
                     <div className="flex justify-between text-sm">
                     {!isExperience && <span className="text-amber-600 text-xs font-semibold">+200 MAD x {persons-4} pers. suppl.</span>}
-                      <span className="font-semibold text-amber-600">+{convert(extraCost)}</span>
+                      <span className="font-semibold text-amber-600">{extraCost > 0 ? "+" + convert(extraCost) : ""}</span>
                     </div>
                   )}
                   {transport && (
@@ -400,7 +400,7 @@ export default function BookingPage() {
                 {!isExperience && extraCost > 0 && (
                   <div className="flex justify-between text-sm">
                     <span className="text-charcoal-400">+15% / pers. suppl. (au-delà de 2)</span>
-                    <span className="font-semibold text-charcoal-800">+{convert(extraCost)}</span>
+                    <span className="font-semibold text-charcoal-800">{extraCost > 0 ? "+" + convert(extraCost) : ""}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-sm">
