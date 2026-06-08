@@ -66,7 +66,8 @@ export default function BookingPage() {
   const expPricePerPerson = searchParams?.get("pricePerPerson") === "true";
   const expMaxPersons = Number(searchParams?.get("maxPersons") || 1);
   const expBasePrice = isExperience && tourPriceParam ? expTotalPrice(tourPriceParam, persons) : 0;
-  const extraCost = isExperience ? 0 : (persons > 4 ? (persons - 4) * 200 : 0);
+  const extraPersonPrice = guide?.extraPersonPrice || 200;
+  const extraCost = isExperience ? 0 : (persons > 4 ? (persons - 4) * extraPersonPrice : 0);
   const transportCost = transport ? 300 : 0;
   const serviceFee = 25;
   const adjustedTotal = isExperience ? expBasePrice + transportCost + serviceFee : total + extraCost + transportCost + serviceFee;
