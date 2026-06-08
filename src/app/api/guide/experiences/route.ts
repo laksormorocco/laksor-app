@@ -19,7 +19,8 @@ export async function POST(req: Request) {
   if (!title) return NextResponse.json({ error: "Donnees manquantes" }, { status: 400 });
   const exp = await prisma.guideExperience.create({
     data: {
-      guideId, title, description: description || "",
+      ...(guideId ? { guideId } : {}),
+      title, description: description || "",
       duration: duration || "4h", groupSize: groupSize || "1-6 pers.",
       difficulty: difficulty || "Facile", price: Number(price) || 0,
       city: city || "", meetingPoint: meetingPoint || "",
