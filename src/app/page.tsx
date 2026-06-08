@@ -140,7 +140,7 @@ export default async function HomePage() {
                     <div>
                       <div className="text-[10px] text-charcoal-400">Demi-journée · 1-4 pers.</div>
                       <div className="font-display text-base font-bold text-charcoal-800">{toEur(g.halfDayPrice)}</div>
-                      <div className="text-[10px] text-charcoal-400">+40% au-delà de 4 pers.</div>
+    <div className="text-[10px] text-charcoal-400">+{toEur(200)} / pers. suppl.</div>
                     </div>
                     <span className="text-[11px] font-bold text-white bg-sage-300 px-3 py-2 rounded-full flex-shrink-0">
                       Voir le profil
