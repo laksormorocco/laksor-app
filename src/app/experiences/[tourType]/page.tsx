@@ -119,7 +119,7 @@ export default function ExperienceGuidesPage() {
                   <div className="text-right flex-shrink-0">
                     <div className="text-[10px] text-charcoal-400">Prix</div>
                     <div className="font-display text-lg font-bold text-charcoal-800">{convert(g.price)}</div>
-                    <div className="text-[10px] text-charcoal-400">/ 4 pers. max</div>
+                    <div className="text-[10px] text-charcoal-400">/ groupe · 1-4 pers. · +200 MAD/pers. suppl.</div>
                   </div>
                 </div>
                 <a href={"/booking/" + g.guideId + "?tourId=" + g.templateId + "&tourPrice=" + Math.ceil((g.price || g.halfDayPrice || 350) * 1.25)}
