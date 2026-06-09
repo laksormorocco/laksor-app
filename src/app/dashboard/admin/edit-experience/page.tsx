@@ -52,7 +52,7 @@ export default function EditExperiencePage() {
     if (!form.title || !form.price) return alert("Titre et prix requis");
     setSaving(true);
     const LAKSOR_GUIDE_ID = "cmq5fr4ef0002xbtvwrfquu46";
-    const data: any = { ...(expId ? { id: expId } : {}),
+    const data: any = { id: expId,
       
       guideId: LAKSOR_GUIDE_ID,
       title: form.title,
