@@ -153,6 +153,20 @@ export default function ExperiencesPage() {
                           ))}
                         </div>
                       )}
+                      {t.itinerary?.length > 0 && (
+                        <div className="mb-2">
+                          <div className="text-[9px] font-bold text-bronze-500 uppercase tracking-widest mb-1">Itineraire</div>
+                          {t.itinerary.map((step:any, i:number) => (
+                            <div key={i} className="flex items-start gap-2 mb-1.5">
+                              <span className="text-[9px] font-bold text-charcoal-400 flex-shrink-0 mt-0.5">{step.time}</span>
+                              <div>
+                                <div className="text-xs font-semibold text-charcoal-800">{step.title}</div>
+                                {step.desc && <div className="text-[10px] text-charcoal-400">{step.desc}</div>}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                       {t.notIncluded?.length > 0 && (
                         <div>
                           <div className="text-[9px] font-bold text-red-400 uppercase tracking-widest mb-1">Non inclus</div>

@@ -9,7 +9,8 @@ export default function CreateExperiencePage() {
     title: "", description: "", price: "", city: "",
     meetingPoint: "", duration: "4h", groupSize: "1-8 pers.",
     providerContact: "", tags: "", included: "", notIncluded: "",
-    photos: [] as string[], transportRequired: false
+    photos: [] as string[], transportRequired: false,
+    itinerary_raw: ""
   });
   const [saving, setSaving] = useState(false);
 
@@ -30,6 +31,7 @@ export default function CreateExperiencePage() {
       difficulty: "Facile",
       providerContact: form.providerContact,
       tags: form.tags ? form.tags.split(",").map(s => s.trim()).filter(Boolean) : [],
+      itinerary: form.itinerary_raw ? form.itinerary_raw.split("\n").filter(Boolean).map((l:string) => { const [time, title, desc] = l.split("|").map((s:string) => s.trim()); return { time: time||"", title: title||l, desc: desc||"" }; }) : [],
       included: form.included ? form.included.split(",").map(s => s.trim()).filter(Boolean) : [],
       notIncluded: form.notIncluded ? form.notIncluded.split(",").map(s => s.trim()).filter(Boolean) : [],
       photos: form.photos,
@@ -111,6 +113,7 @@ export default function CreateExperiencePage() {
           { key: "groupDiscount1", label: "Réduction 1 (%)", ph: "8" },
           { key: "groupThreshold2", label: "Seuil réduction 2 (nb personnes)", ph: "7" },
           { key: "groupDiscount2", label: "Réduction 2 (%)", ph: "15" },
+    { key: "itinerary_raw", label: "Itineraire (HH:mm | Titre | Description)", ph: "08:00 | Depart | Prise en charge", area: true },
           { key: "tags", label: "Tags (virgule)", ph: "Desert, Aventure, Nature" },
           { key: "included", label: "Inclus (virgule)", ph: "Transport, Guide" },
           { key: "notIncluded", label: "Non inclus (virgule)", ph: "Repas, Entrees" },
