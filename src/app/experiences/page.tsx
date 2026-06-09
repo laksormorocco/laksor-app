@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Clock, Users, ArrowRight, MagnifyingGlass, Percent, SealCheck } from "@phosphor-icons/react";
+import { Clock, Users, ArrowRight, MagnifyingGlass, Percent, SealCheck, SlidersHorizontal } from "@phosphor-icons/react";
 import BottomNav from "@/components/BottomNav";
 import { useExchangeRate } from "@/hooks/useExchangeRate";
 import PriceDisplay from "@/components/PriceDisplay";
@@ -17,15 +17,26 @@ export default function ExperiencesPage() {
   const [loading, setLoading] = useState(true);
   const [openId, setOpenId] = useState<string|null>(null);
   const [city, setCity] = useState<string|null>(null);
+  const [sortBy, setSortBy] = useState<"popular"|"recent"|"price_asc"|"price_desc">("popular");
+  const [showSort, setShowSort] = useState(false);
   const { convert } = useExchangeRate();
 
   const CITIES = ["Marrakech", "Fes", "Essaouira", "Chefchaouen", "Agadir"];
 
   useEffect(() => {
-    fetch("/api/experiences" + (city ? "?city=" + city : ""))
+    const params = new URLSearchParams();
+    if (city) params.set("city", city);
+    params.set("sort", sortBy);
+    fetch("/api/experiences?" + params.toString())
       .then(r => r.json())
-      .then(d => { setTours(d.tours || []); setLoading(false); });
-  }, [city]);
+      .then(d => {
+        let t = d.tours || [];
+        if (sortBy === "price_asc") t = [...t].sort((a,b) => (a.minPrice||0) - (b.minPrice||0));
+        if (sortBy === "price_desc") t = [...t].sort((a,b) => (b.minPrice||0) - (a.minPrice||0));
+        if (sortBy === "recent") t = [...t].sort((a,b) => new Date(b.createdAt||0).getTime() - new Date(a.createdAt||0).getTime());
+        setTours(t); setLoading(false);
+      });
+  }, [city, sortBy]);
 
   return (
     <div className="min-h-screen bg-sand-200">
@@ -44,10 +55,34 @@ export default function ExperiencesPage() {
           <h1 className="font-display text-2xl font-bold text-charcoal-800 mb-1">Experiences au Maroc</h1>
           <p className="text-sm text-charcoal-400">Choisissez votre experience, nous vous trouvons le guide ideal</p>
         </div>
-        <div className="flex gap-2 overflow-x-auto pb-2 mb-4 scrollbar-hide">
-          {CITIES.map(c => (
-            <button key={c} onClick={() => setCity(city === c ? null : c)} className={"flex-shrink-0 px-4 py-1.5 rounded-full text-xs font-bold border transition-colors " + (city === c ? "bg-bronze-500 text-white border-bronze-500" : "bg-white text-charcoal-600 border-sand-300")}>{c}</button>
-          ))}
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex gap-2 overflow-x-auto pb-1" style={{scrollbarWidth:"none"}}>
+            {["Marrakech","Fes","Essaouira","Chefchaouen","Agadir"].map(c => (
+              <button key={c} onClick={() => setCity(city === c ? null : c)} className={"flex-shrink-0 px-4 py-1.5 rounded-full text-xs font-bold border transition-colors " + (city === c ? "bg-bronze-500 text-white border-bronze-500" : "bg-white text-charcoal-600 border-sand-300")}>{c}</button>
+            ))}
+          </div>
+          <div className="relative flex-shrink-0 ml-2">
+            <button onClick={() => setShowSort(!showSort)}
+              className={"flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border transition-all " + (sortBy !== "popular" ? "bg-charcoal-800 text-white border-charcoal-800" : "bg-white text-charcoal-600 border-sand-300")}>
+              <SlidersHorizontal size={12} weight="bold" />
+              Trier
+            </button>
+            {showSort && (
+              <div className="absolute right-0 top-9 bg-white rounded-2xl border border-sand-300 shadow-lg z-20 w-44 overflow-hidden">
+                {[
+                  {id:"popular", label:"Populaires"},
+                  {id:"recent", label:"Plus recents"},
+                  {id:"price_asc", label:"Prix croissant"},
+                  {id:"price_desc", label:"Prix decroissant"},
+                ].map(s => (
+                  <button key={s.id} onClick={() => { setSortBy(s.id as any); setShowSort(false); }}
+                    className={"w-full text-left px-4 py-3 text-xs font-semibold transition-colors " + (sortBy === s.id ? "text-bronze-500 bg-sand-100 font-bold" : "text-charcoal-700 hover:bg-sand-100")}>
+                    {sortBy === s.id && "✓ "}{s.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         {loading ? (
