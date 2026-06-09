@@ -82,68 +82,51 @@ export default async function HomePage() {
           </a>
         </div>
 
-        <div className="grid grid-cols-2 gap-3 items-stretch">
+    <div className="grid grid-cols-2 gap-3 items-stretch">
           {guides.map((g) => (
-            <a key={g.id} href={`/guide/${g.id}`} className="no-underline block">
-              <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-sand-300 hover:shadow-md transition-shadow flex flex-col h-full">
-                <div className="relative h-44">
+            <a key={g.id} href={`/guide/${g.slug || g.id}`} className="no-underline block active:scale-[0.97] transition-all">
+              <div className="bg-white overflow-hidden flex flex-col h-full" style={{borderRadius:20, boxShadow:"0 2px 14px rgba(0,0,0,0.08)"}}>
+                <div className="relative" style={{height:180}}>
                   <img
-                    src={g.avatar ?? "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80"}
+                    src={g.avatar ?? "https://images.unsplash.com/photo-1539020140153-e479b8c22e70?w=400&q=80"}
                     alt={g.displayName}
                     loading="lazy"
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent" />
-
-                  {/* Ville */}
-                  <div className="absolute bottom-2 left-2 flex items-center gap-1 bg-black/50 backdrop-blur-sm rounded-full px-2.5 py-1">
-                    <MapPin size={10} color="#fff" weight="fill" />
-                    <span className="text-white text-[11px] font-bold">{g.city}</span>
-                  </div>
-
-                  {/* Note */}
+                  <div className="absolute inset-0" style={{background:"linear-gradient(to bottom, rgba(0,0,0,0) 35%, rgba(0,0,0,0.65) 100%)"}} />
                   {g.avgRating > 0 && (
-                  <div className="absolute top-2 right-2 flex items-center gap-1 bg-white/90 backdrop-blur-sm rounded-full px-2.5 py-1">
-                    <Star size={10} color="#B88A44" weight="fill" />
-                    <span className="text-charcoal-800 text-[11px] font-bold">{g.avgRating.toFixed(1)}</span>
-                  </div>
+                    <div className="absolute top-2 right-2 flex items-center gap-1 px-2 py-1 rounded-full"
+                      style={{background:"rgba(255,255,255,0.92)", backdropFilter:"blur(8px)"}}>
+                      <Star size={9} weight="fill" className="text-amber-400" />
+                      <span className="text-[10px] font-bold text-charcoal-800">{g.avgRating.toFixed(1)}</span>
+                    </div>
                   )}
-
-                  {/* Certifié */}
-                  <div className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm rounded-full px-2.5 py-1 flex items-center gap-1">
-                    <span className="text-[10px] font-bold text-sage-300">✓ Certifié</span>
+                  <div className="absolute top-2 left-2 flex items-center gap-1 px-2 py-1 rounded-full text-[9px] font-bold"
+                    style={{background:"rgba(255,255,255,0.92)", backdropFilter:"blur(8px)", color:"#7D8F69"}}>
+                    ✦ Certifié
+                  </div>
+                  <div className="absolute bottom-0 left-0 right-0 px-2.5 pb-2.5">
+                    <div className="text-[9px] font-bold uppercase tracking-widest mb-0.5" style={{color:"#B88A44"}}>{g.city}</div>
+                    <div className="font-display text-sm font-bold text-white leading-tight truncate">{g.displayName}</div>
                   </div>
                 </div>
-
-                <div className="p-3 flex flex-col flex-1">
-                  <div className="font-display text-sm font-semibold text-charcoal-800 mb-1 truncate">
-                    {g.displayName}
-                  </div>
-                  {g.yearsExp > 0 && (
-                  <div className="flex items-center gap-1 text-charcoal-400 text-xs mb-2">
-                    <Clock size={10} />
-                    <span>{g.yearsExp} an{g.yearsExp > 1 ? "s" : ""} d'expérience</span>
-                  </div>
-                  )}
-
+                <div className="p-2.5 flex flex-col flex-1">
                   {g.languages?.length > 0 && (
-                    <div className="flex gap-0.5 mb-3">
+                    <div className="flex gap-0.5 mb-2">
                       {g.languages.slice(0, 4).map((lang: string) => (
-                        <span key={lang} className="text-base leading-none" title={lang}>
-                          {LANG_FLAGS[lang] ?? "🏳️"}
-                        </span>
+                        <span key={lang} className="text-sm leading-none">{LANG_FLAGS[lang] ?? "🏳️"}</span>
                       ))}
                     </div>
                   )}
-
-                  <div className="flex items-end justify-between mt-auto pt-2">
+                  <div className="flex items-end justify-between mt-auto pt-2" style={{borderTop:"1px solid #F6F1E8"}}>
                     <div>
-                      <div className="text-[10px] text-charcoal-400">Demi-journée · 1-4 pers.</div>
-                      <div className="font-display text-base font-bold text-charcoal-800">{toEur(g.halfDayPrice)}</div>
-    <div className="text-[10px] text-charcoal-400">+{toEur(200)} / pers. suppl.</div>
+                      <div className="text-[9px] text-charcoal-400">À partir de</div>
+                      <div className="font-display text-base font-bold leading-tight" style={{color:"#B88A44"}}>{toEur(g.halfDayPrice)}</div>
+                      <div className="text-[9px] text-charcoal-400">/ groupe · 1-4 pers.</div>
                     </div>
-                    <span className="text-[11px] font-bold text-white bg-sage-300 px-3 py-2 rounded-full flex-shrink-0">
-                      Voir le profil
+                    <span className="text-[10px] font-bold text-white px-3 py-1.5 rounded-full flex-shrink-0"
+                      style={{background:"linear-gradient(135deg, #B88A44, #9A7238)"}}>
+                      Voir →
                     </span>
                   </div>
                 </div>
