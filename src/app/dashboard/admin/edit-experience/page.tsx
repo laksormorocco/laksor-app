@@ -9,7 +9,7 @@ export default function EditExperiencePage() {
 
   useEffect(() => {
     if (expId) {
-      fetch("/api/guide/experiences?id=" + expId)
+      fetch("/api/admin/experiences?id=" + expId)
         .then(r => r.json())
         .then(d => {
           const exp = d.experience;
