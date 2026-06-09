@@ -66,6 +66,7 @@ export default function AdminDashboard() {
   const [crmGuide,     setCrmGuide]     = useState("");
   const [reminders,    setReminders]    = useState<any[]>([]);
   const [allExperiences, setAllExperiences] = useState<any[]>([]);
+  const [openBookingId, setOpenBookingId] = useState<string|null>(null);
   const [newExpForm, setNewExpForm] = useState<any>(null);
   const [importing, setImporting] = useState(false);
   const [importResult, setImportResult] = useState<any>(null);
@@ -501,45 +502,98 @@ export default function AdminDashboard() {
               </div>
             ) : bookings.map((b:any,i:number) => {
               const badge = statusBadge(b.status);
+              const isOpen = openBookingId === b.id;
               return (
-                <div key={i} className="bg-white rounded-2xl border border-sand-300 p-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="text-sm font-bold text-charcoal-800">{b.guide?.displayName}</div>
-                    <span className={badge.cls}>{badge.label}</span>
-                  </div>
-                  <div className="grid grid-cols-3 gap-2 mb-3">
-                    {[["Date",new Date(b.date).toLocaleDateString("fr-FR")],["Durée",b.duration==="HALF_DAY"?"4h":"8h"],["Pers.",String(b.persons||1)]].map(([k,v]) => (
-                      <div key={k} className="bg-sand-200 rounded-lg p-2 text-center">
-                        <div className="text-[9px] text-charcoal-400 uppercase">{k}</div>
-                        <div className="text-xs font-bold text-charcoal-800 mt-0.5">{v}</div>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="bg-sand-200 rounded-xl p-3 mb-3">
-                    <div className="text-[10px] text-charcoal-400 mb-1">Touriste</div>
-                    <div className="text-sm font-bold text-charcoal-800">{b.tourist?.name||"—"}</div>
-                    <div className="text-xs text-charcoal-400">{b.tourist?.email||"—"}</div>
-                  </div>
-                  <div className="flex items-center justify-between">
+                <div key={i} className="bg-white rounded-2xl border border-sand-300 overflow-hidden">
+                  {/* EN-TETE */}
+                  <div className="flex items-center justify-between p-4 cursor-pointer" onClick={() => setOpenBookingId(isOpen ? null : b.id)}>
                     <div>
-                      <span className="font-bold text-sage-300 text-base">{b.totalPrice} MAD</span>
-                      <span className="text-xs text-charcoal-400 ml-2">+{b.commission} comm.</span>
+                      <div className="text-sm font-bold text-charcoal-800">{b.guide?.displayName}</div>
+                      <div className="text-xs text-charcoal-400">{new Date(b.date).toLocaleDateString("fr-FR")} · {b.persons} pers.</div>
                     </div>
-                    <div className="flex gap-2">
-                      {b.tourist?.email && (
-                        <button onClick={() => { setEmailForm({to:b.tourist.email,subject:"Votre réservation",message:""}); setActive("email"); }}
-                          className="bg-sand-200 text-charcoal-600 rounded-full px-3 py-1.5 text-xs font-bold border border-sand-300">
-                          📧
-                        </button>
-                      )}
-                      {b.guide?.phone && (
-                        <a href={"https://wa.me/"+b.guide.phone.replace(/[^0-9]/g,"")} target="_blank"
-                          className="bg-sage-300 text-white rounded-full px-3 py-1.5 text-xs font-bold no-underline">
-                          💬
-                        </a>
-                      )}
+                    <div className="flex items-center gap-2">
+                      <span className={badge.cls}>{badge.label}</span>
+                      <span className="text-charcoal-400 text-xs">{isOpen ? "▲" : "▼"}</span>
                     </div>
                   </div>
+
+                  {/* ACCORDEON */}
+                  {isOpen && (
+                    <div className="px-4 pb-4 border-t border-sand-200 flex flex-col gap-3 pt-3">
+                      <div className="grid grid-cols-3 gap-2">
+                        {[
+                          ["Date", new Date(b.date).toLocaleDateString("fr-FR")],
+                          ["Durée", b.duration==="HALF_DAY"?"4h":"8h"],
+                          ["Pers.", String(b.persons||1)],
+                          ["Paiement", b.paymentMethod||"cash"],
+                          ["Commission", (b.commission||0)+" MAD"],
+                          ["REF", b.notes?.match(/REF:([A-Z0-9-]+)/)?.[1]||"—"],
+                        ].map(([k,v]) => (
+                          <div key={k} className="bg-sand-200 rounded-lg p-2 text-center">
+                            <div className="text-[9px] text-charcoal-400 uppercase">{k}</div>
+                            <div className="text-xs font-bold text-charcoal-800 mt-0.5">{v}</div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Touriste */}
+                      <div className="bg-sand-200 rounded-xl p-3">
+                        <div className="text-[10px] text-charcoal-400 mb-1 font-bold uppercase">Touriste</div>
+                        <div className="text-sm font-bold text-charcoal-800">{b.tourist?.name||b.guestName||"—"}</div>
+                        <div className="text-xs text-charcoal-400">{b.tourist?.email||"—"}</div>
+                      </div>
+
+                      {/* Tour/Expérience */}
+                      {b.slots?.[0]?.template?.title && (
+                        <div className="bg-sand-200 rounded-xl p-3">
+                          <div className="text-[10px] text-charcoal-400 mb-1 font-bold uppercase">Tour</div>
+                          <div className="text-sm font-bold text-charcoal-800">{b.slots[0].template.title}</div>
+                        </div>
+                      )}
+
+                      {/* Prix */}
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <span className="font-bold text-sage-300 text-base">{b.totalPrice} MAD</span>
+                          <span className="text-xs text-charcoal-400 ml-2">+{b.commission} comm.</span>
+                        </div>
+                        <div className="flex gap-2">
+                          {b.tourist?.email && (
+                            <button onClick={() => { setEmailForm({to:b.tourist.email,subject:"Votre réservation",message:""}); setActive("email"); }}
+                              className="bg-sand-200 text-charcoal-600 rounded-full px-3 py-1.5 text-xs font-bold border border-sand-300">
+                              📧
+                            </button>
+                          )}
+                          {b.guide?.phone && (
+                            <a href={"https://wa.me/"+b.guide.phone.replace(/[^0-9]/g,"")} target="_blank"
+                              className="bg-sage-300 text-white rounded-full px-3 py-1.5 text-xs font-bold no-underline">
+                              💬
+                            </a>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Actions statut */}
+                      <div className="flex gap-2">
+                        {b.status === "PENDING" && (
+                          <button onClick={async () => {
+                            await fetch("/api/admin/bookings", { method: "PATCH", headers: {"Content-Type":"application/json"}, body: JSON.stringify({ id: b.id, status: "CONFIRMED" }) });
+                            setBookings((prev:any[]) => prev.map((x:any) => x.id === b.id ? {...x, status: "CONFIRMED"} : x));
+                          }} className="flex-1 bg-sage-300 text-white text-xs font-bold py-2.5 rounded-full">
+                            ✓ Confirmer
+                          </button>
+                        )}
+                        {(b.status === "PENDING" || b.status === "CONFIRMED") && (
+                          <button onClick={async () => {
+                            await fetch("/api/admin/bookings", { method: "PATCH", headers: {"Content-Type":"application/json"}, body: JSON.stringify({ id: b.id, status: "CANCELLED" }) });
+                            setBookings((prev:any[]) => prev.map((x:any) => x.id === b.id ? {...x, status: "CANCELLED"} : x));
+                          }} className="flex-1 bg-red-50 text-red-400 border border-red-200 text-xs font-bold py-2.5 rounded-full">
+                            ✕ Annuler
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               );
             })}
