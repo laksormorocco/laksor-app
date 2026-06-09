@@ -2,7 +2,7 @@
 import { priceWithCommission } from "@/lib/pricing";
 import BottomNav from "@/components/BottomNav";
 import { useState, useMemo } from "react";
-import { MagnifyingGlass, MapPin, Star, Clock, SlidersHorizontal, X, ArrowLeft, ShieldCheck, ArrowsCounterClockwise, ChatCircle, Car } from "@phosphor-icons/react";
+import { MagnifyingGlass, MapPin, Star, Clock, SlidersHorizontal, X, ArrowLeft, ShieldCheck, ArrowsCounterClockwise, ChatCircle, Car , Heart , ArrowRight } from "@phosphor-icons/react";
 
 function toEur(mad: number) {
   return Math.round((mad * 1.25 + 25) * 0.092);
@@ -35,6 +35,7 @@ const SORT_OPTIONS = [
 
 type Guide = {
   slug?: string;
+  docsStatus?: string;
   id: string; displayName: string; city: string; avatar: string | null;
   avgRating: number; totalReviews: number; halfDayPrice: number;
   languages: string[]; yearsExp: number; visitTypes: string[];
@@ -53,120 +54,117 @@ function ratingLabel(r: number) {
 // Fix hydration: pas de <a> imbriqué — on utilise un div cliquable pour la card
 // et un vrai <a> seulement pour le bouton Réserver
 function GuideCard({ g, idx }: { g: Guide; idx: number }) {
-  const isTop      = g.avgRating >= 4.8 && g.totalReviews >= 20;
-  const isBest     = idx === 0;
-  const eurPrice   = toEur(g.halfDayPrice);
-  const label      = ratingLabel(g.avgRating);
+  const isTop    = g.avgRating >= 4.8 && g.totalReviews >= 20;
+  const isBest   = idx === 0;
+  const eurPrice = toEur(g.halfDayPrice);
 
   return (
     <div
-      className="bg-white rounded-2xl overflow-hidden border border-sand-300 flex cursor-pointer hover:shadow-md transition-shadow"
+      className="bg-white rounded-[20px] overflow-hidden cursor-pointer active:scale-[0.985] transition-all"
+      style={{boxShadow:"0 2px 16px rgba(0,0,0,0.09)"}}
       onClick={() => window.location.href = `/guide/${g.slug || g.id}`}
     >
-      {/* Photo */}
-      <div className="relative w-28 flex-shrink-0">
+      {/* IMAGE */}
+      <div className="relative" style={{height:200}}>
         <img
-          src={g.avatar ?? "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&q=80"}
+          src={g.avatar ?? "https://images.unsplash.com/photo-1539020140153-e479b8c22e70?w=600&q=80"}
           alt={g.displayName}
           className="w-full h-full object-cover"
-          style={{ minHeight: 180 }}
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent to-black/10" />
+        <div className="absolute inset-0" style={{background:"linear-gradient(to bottom, rgba(0,0,0,0) 40%, rgba(0,0,0,0.65) 100%)"}} />
 
-        {/* Badges */}
-        <div className="absolute top-2 left-2 flex flex-col gap-1">
-          <span className="bg-white/90 text-sage-300 text-[9px] font-bold px-2 py-0.5 rounded-full">✓ Certifié</span>
-          {isBest && <span className="bg-bronze-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full">⭐ #1</span>}
-          {isTop && !isBest && <span className="bg-charcoal-800 text-white text-[9px] font-bold px-2 py-0.5 rounded-full">🏆 Top</span>}
+        {/* Top badges */}
+        <div className="absolute top-3 left-3 flex items-center gap-1.5">
+          {g.docsStatus === "APPROVED" && (
+            <div className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold"
+              style={{background:"rgba(255,255,255,0.92)", backdropFilter:"blur(8px)", color:"#7D8F69"}}>
+              <ShieldCheck size={10} weight="fill" /> Certifié
+            </div>
+          )}
+          {isBest && (
+            <div className="px-2.5 py-1 rounded-full text-[10px] font-bold text-white" style={{background:"#B88A44"}}>
+              ★ #1
+            </div>
+          )}
+          {isTop && !isBest && (
+            <div className="px-2.5 py-1 rounded-full text-[10px] font-bold text-white"
+              style={{background:"rgba(17,17,17,0.75)", backdropFilter:"blur(8px)"}}>
+              🏆 Top
+            </div>
+          )}
         </div>
 
-        {/* Expérience */}
-        {g.yearsExp > 0 && (
-          <div className="absolute bottom-2 left-2 bg-black/55 backdrop-blur-sm rounded-md px-2 py-1 flex items-center gap-1">
-            <Clock size={9} color="#fff" />
-            <span className="text-white text-[9px] font-bold">{g.yearsExp} ans</span>
+        <button onClick={e => e.stopPropagation()}
+          className="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center border-none"
+          style={{background:"rgba(255,255,255,0.9)", backdropFilter:"blur(8px)"}}>
+          <Heart size={14} className="text-charcoal-400" />
+        </button>
+
+        <div className="absolute bottom-0 left-0 right-0 px-3.5 pb-3.5">
+          <div className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{color:"#B88A44", letterSpacing:1.5}}>{g.city}</div>
+          <div className="font-display text-xl font-bold text-white leading-tight">{g.displayName}</div>
+          {g.yearsExp > 0 && <div className="text-[10px] text-white/70 mt-0.5">⏱ {g.yearsExp} ans d'expérience</div>}
+        </div>
+      </div>
+
+      {/* RATING + LANGUAGES */}
+      <div className="flex items-center justify-between px-3.5 py-3" style={{borderBottom:"1px solid #F6F1E8"}}>
+        <div className="flex items-center gap-1.5">
+          {g.avgRating > 0 ? (
+            <>
+              <div className="flex">
+                {[1,2,3,4,5].map(i => (
+                  <Star key={i} size={11} weight={i <= Math.round(g.avgRating) ? "fill" : "regular"}
+                    className={i <= Math.round(g.avgRating) ? "text-amber-400" : "text-sand-300"} />
+                ))}
+              </div>
+              <span className="text-sm font-bold text-charcoal-800">{g.avgRating.toFixed(1)}</span>
+              <span className="text-[11px] text-charcoal-400">({g.totalReviews} avis)</span>
+            </>
+          ) : (
+            <span className="text-[11px] text-charcoal-400 italic">Premiers avis attendus</span>
+          )}
+        </div>
+        {g.languages.length > 0 && (
+          <div className="flex items-center gap-1">
+            <span className="text-[10px] text-charcoal-400 mr-0.5">Parle</span>
+            {g.languages.slice(0, 4).map(l => (
+              <span key={l} className="text-sm leading-none">{LANG_FLAGS[l] ?? "🏳️"}</span>
+            ))}
           </div>
         )}
       </div>
 
-      {/* Contenu */}
-      <div className="flex-1 p-4 flex flex-col min-w-0">
-        <div className="flex-1">
-          {/* Ville */}
-          <div className="flex items-center gap-1 text-charcoal-400 text-[10px] font-bold uppercase tracking-wide mb-1">
-            <MapPin size={10} weight="fill" className="text-bronze-500" />
-            {g.city}
+      {/* TAGS */}
+      <div className="flex items-center gap-1.5 px-3.5 py-2.5 flex-wrap" style={{borderBottom:"1px solid #F6F1E8"}}>
+        {g.specialties.slice(0, 2).map(s => (
+          <span key={s} className="text-[10px] font-medium px-2.5 py-1 rounded-full"
+            style={{background:"rgba(184,138,68,0.1)", color:"#A17635"}}>{s}</span>
+        ))}
+        {g.visitTypes.slice(0, 3).map(t => (
+          <span key={t} className="text-sm leading-none">{MOOD_ICONS[t] ?? "✦"}</span>
+        ))}
+      </div>
+
+      {/* PRICE + CTA */}
+      <div className="flex items-center justify-between px-3.5 py-3">
+        <div>
+          <div className="text-[10px] text-charcoal-400">À partir de</div>
+          <div className="font-display text-2xl font-bold leading-tight" style={{color:"#B88A44"}}>
+            €{eurPrice} <span className="text-xs font-normal text-charcoal-400 font-sans">/ groupe</span>
           </div>
-
-          {/* Nom */}
-          <div className="font-display text-base font-semibold text-charcoal-800 mb-1 leading-tight">
-            {g.displayName}
-          </div>
-
-          {/* Note */}
-          {g.avgRating > 0 && (
-            <div className="flex items-center gap-1.5 mb-2">
-              <div className="flex">
-                {[1,2,3,4,5].map(i => (
-                  <Star key={i} size={11} weight={i <= Math.round(g.avgRating) ? "fill" : "regular"}
-                    className={i <= Math.round(g.avgRating) ? "text-bronze-500" : "text-sand-300"} />
-                ))}
-              </div>
-              <span className="text-xs font-bold text-charcoal-800">{g.avgRating.toFixed(1)}</span>
-              {label && <span className="text-xs font-bold text-bronze-500">{label}</span>}
-              <span className="text-[11px] text-charcoal-400">({g.totalReviews})</span>
-            </div>
-          )}
-
-          {/* Spécialités */}
-          {g.specialties.length > 0 && (
-            <div className="text-xs text-charcoal-400 mb-2 line-clamp-1">
-              {g.specialties.slice(0, 2).join(" · ")}
-            </div>
-          )}
-
-          {/* Langues */}
-          {g.languages.length > 0 && (
-            <div className="flex gap-0.5 mb-2">
-              {g.languages.slice(0, 4).map(l => (
-                <span key={l} className="text-sm leading-none" title={l}>
-                  {LANG_FLAGS[l] ?? "🏳️"}
-                </span>
-              ))}
-            </div>
-          )}
-
-          {/* Types */}
-          {g.visitTypes.length > 0 && (
-            <div className="flex gap-1 flex-wrap">
-              {g.visitTypes.slice(0, 3).map(t => (
-                <span key={t} className="text-sm">{MOOD_ICONS[t] ?? "✦"}</span>
-              ))}
-              {g.visitTypes.length > 3 && (
-                <span className="text-[10px] text-charcoal-400">+{g.visitTypes.length - 3}</span>
-              )}
-            </div>
-          )}
+          <div className="text-[10px] text-charcoal-400">≈ {g.halfDayPrice.toLocaleString()} MAD · 1-4 pers.</div>
         </div>
-
-        {/* Prix + CTA */}
-        <div className="flex items-end justify-between mt-3 pt-3 border-t border-sand-200">
-          <div>
-            <div className="text-[9px] text-charcoal-400 uppercase tracking-wide whitespace-nowrap">À partir de</div>
-            <div className="font-display text-xl font-bold text-charcoal-800 leading-none">€{eurPrice}</div>
-            <div className="text-[9px] text-charcoal-400 mt-0.5 whitespace-nowrap">/ 4 pers. max · 4h</div>
-          </div>
-          <button
-            onClick={e => { e.stopPropagation(); window.location.href = `/guide/${g.slug || g.id}`; }}
-            className="bg-sage-300 text-white text-xs font-bold px-4 py-2 rounded-full hover:bg-sage-400 transition-colors flex-shrink-0 ml-2"
-          >
-            Voir le profil →
-          </button>
-        </div>
+        <button onClick={e => { e.stopPropagation(); window.location.href = `/guide/${g.slug || g.id}`; }}
+          className="text-white text-xs font-bold px-5 py-3 rounded-full flex items-center gap-1.5"
+          style={{background:"linear-gradient(135deg, #B88A44, #9A7238)", boxShadow:"0 4px 14px rgba(184,138,68,0.3)"}}>
+          Voir le profil <ArrowRight size={12} weight="bold" />
+        </button>
       </div>
     </div>
   );
 }
+
 
 export default function SearchClient({ guides }: { guides: Guide[] }) {
   const [city,     setCity]     = useState("All");
