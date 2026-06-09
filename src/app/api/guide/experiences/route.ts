@@ -43,8 +43,12 @@ export async function PATCH(req: Request) {
   if (data.groupThreshold2) data.groupThreshold2 = Number(data.groupThreshold2);
   if (data.groupDiscount2) data.groupDiscount2 = Number(data.groupDiscount2);
   delete data.category; delete data.data;
-  const exp = await prisma.guideExperience.update({ where: { id }, data });
-  return NextResponse.json({ experience: exp });
+  try {
+    const exp = await prisma.guideExperience.update({ where: { id }, data });
+    return NextResponse.json({ experience: exp });
+  } catch (e: any) {
+    return NextResponse.json({ error: e.message, code: e.code }, { status: 500 });
+  }
 }
 
 export async function DELETE(req: Request) {
