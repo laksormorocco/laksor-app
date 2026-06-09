@@ -57,6 +57,10 @@ export async function GET(req: Request) {
     isGuideExperience: true,
     guideId: exp.guideId,
     expId: exp.id,
+    groupThreshold1: exp.groupThreshold1,
+    groupDiscount1: exp.groupDiscount1,
+    groupThreshold2: exp.groupThreshold2,
+    groupDiscount2: exp.groupDiscount2,
     guide: exp.guide,
   }));
 
