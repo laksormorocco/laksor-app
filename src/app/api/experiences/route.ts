@@ -55,6 +55,7 @@ export async function GET(req: Request) {
     included: exp.included,
     notIncluded: exp.notIncluded,
     isGuideExperience: true,
+    itinerary: exp.itinerary || [],
     guideId: exp.guideId,
     expId: exp.id,
     groupThreshold1: exp.groupThreshold1,
