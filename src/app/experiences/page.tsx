@@ -8,8 +8,8 @@ import PriceDisplay from "@/components/PriceDisplay";
 import { priceWithCommission } from "@/lib/pricing";
 
 const EMOJI: Record<string,string> = {
-  MEDINA_SECRETS:"ğŸ•Œ", GASTRONOMIE:"ğŸ½ï¸", HISTOIRE_MONUMENTS:"ğŸ›ï¸",
-  DESERT_NATURE:"ğŸœï¸", SHOPPING_ARTISANAT:"ğŸ›ï¸", COUCHER_SOLEIL:"ğŸŒ…", PHOTO_INSTAGRAM:"ğŸ“¸"
+  MEDINA_SECRETS:"ğ•Œ", GASTRONOMIE:"ğ½ï¸", HISTOIRE_MONUMENTS:"ğ›ï¸",
+  DESERT_NATURE:"ğœï¸", SHOPPING_ARTISANAT:"ğ›ï¸", COUCHER_SOLEIL:"ğŒ…", PHOTO_INSTAGRAM:"ğ“¸"
 };
 
 export default function ExperiencesPage() {
@@ -67,7 +67,7 @@ export default function ExperiencesPage() {
                   {t.coverImage
                     ? <img src={t.coverImage} alt={t.title} className="w-full h-full object-cover" />
                     : <div className="w-full h-full bg-gradient-to-br from-sage-300/20 to-sand-300 flex items-center justify-center text-6xl">
-                        {EMOJI[t.tourType] || "ğŸ§­"}
+                        {EMOJI[t.tourType] || "ğ§­"}
                       </div>
                   }
                   <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent" />
