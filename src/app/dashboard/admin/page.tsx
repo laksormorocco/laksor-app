@@ -580,6 +580,10 @@ export default function AdminDashboard() {
                   </div>
                 </div>
                 {exp.description && <p className="text-xs text-charcoal-400 mb-3 line-clamp-2">{exp.description}</p>}
+                  <button onClick={() => window.location.href="/dashboard/admin/edit-experience?id=" + exp.id}
+                    className="flex-1 bg-charcoal-800 text-white text-xs font-bold py-2.5 rounded-full">
+                    ✏️ Modifier
+                  </button>
                 <div className="flex gap-2">
                   <button onClick={async () => {
                     await fetch("/api/admin/experiences", { method: "PATCH", headers: {"Content-Type":"application/json"}, body: JSON.stringify({ id: exp.id, status: "APPROVED" }) });
