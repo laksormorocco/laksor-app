@@ -35,7 +35,6 @@ export async function POST(req: Request) {
 
 export async function PATCH(req: Request) {
   const body = await req.json();
-  const body = await req.json();
   const { id, guideId, category, itinerary, isLaksorExp, providerContact, ...rest } = body;
   if (!id) return NextResponse.json({ error: "id requis" }, { status: 400 });
   const data: any = {};
