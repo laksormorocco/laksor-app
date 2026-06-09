@@ -40,7 +40,11 @@ export default function EditExperiencePage() {
     title: "", description: "", price: "", city: "",
     meetingPoint: "", duration: "4h", groupSize: "1-8 pers.",
     providerContact: "", tags: "", included: "", notIncluded: "",
-    photos: [] as string[], transportRequired: false
+    photos: [] as string[], transportRequired: false,
+    groupThreshold1: "",
+    groupDiscount1: "",
+    groupThreshold2: "",
+    groupDiscount2: ""
   });
   const [saving, setSaving] = useState(false);
 
