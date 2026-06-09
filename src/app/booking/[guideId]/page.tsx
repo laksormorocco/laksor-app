@@ -70,6 +70,8 @@ export default function BookingPage() {
   const t2 = searchParams?.get("t2") ? Number(searchParams.get("t2")) : null;
   const d2 = searchParams?.get("d2") ? Number(searchParams.get("d2")) : null;
   const expBasePrice = isExperience && tourPriceParam ? expTotalPrice(tourPriceParam, persons, t1, d1, t2, d2) : 0;
+  const expFullPrice = isExperience && tourPriceParam ? (tourPriceParam * persons) : 0;
+  const expDiscount = expFullPrice - expBasePrice;
   const extraPersonPrice = guide?.extraPersonPrice || 200;
   const extraCost = isExperience ? 0 : (persons > 4 ? (persons - 4) * extraPersonPrice : 0);
   const transportCost = transport ? 300 : 0;
@@ -283,7 +285,7 @@ export default function BookingPage() {
                 <div className="flex flex-col gap-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-charcoal-400">{isExperience ? "Expérience" : `Creneaux (${selectedDates.length} jour${selectedDates.length>1?"s":""})`}</span>
-                    <span className="font-semibold text-charcoal-800">{convert(isExperience ? expBasePrice : total)}</span>
+                    <span className="font-semibold text-charcoal-800">{convert(isExperience ? expFullPrice : total)}</span>
                   </div>
                   {persons > 2 && (
                     <div className="flex justify-between text-sm">
@@ -300,7 +302,7 @@ export default function BookingPage() {
                   {isExperience && persons >= 4 && (
                     <div className="flex justify-between text-sm">
                       <span className="text-sage-300 font-semibold">Réduction groupe {persons >= (t2||7) ? "-" + (d2||15) + "%" : "-" + (d1||8) + "%"} ({persons} pers.)</span>
-                      <span className="text-sage-300 font-semibold">-{convert(Math.ceil((tourPriceParam || 0) * persons) - expBasePrice)}</span>
+                      <span className="text-sage-300 font-semibold">-{convert(expDiscount)}</span>
                     </div>
                   )}
                   <div className="flex justify-between text-sm">
@@ -418,7 +420,7 @@ export default function BookingPage() {
                   {isExperience && persons >= 4 && (
                     <div className="flex justify-between text-xs text-sage-300 font-semibold">
                       <span>Réduction groupe {persons >= 7 ? "-15%" : "-8%"}</span>
-                      <span>-{convert(Math.ceil((tourPriceParam || 0) * persons) - expBasePrice)}</span>
+                      <span>-{convert(expDiscount)}</span>
                     </div>
                   )}
                   <div className="flex justify-between text-xs text-charcoal-400">
