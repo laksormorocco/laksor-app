@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Clock, Users, ArrowRight, MagnifyingGlass, Percent, SealCheck, SlidersHorizontal } from "@phosphor-icons/react";
+import { Clock, Users, ArrowRight, MagnifyingGlass, Percent, SealCheck, SlidersHorizontal, CaretDown, CaretUp } from "@phosphor-icons/react";
 import BottomNav from "@/components/BottomNav";
 import { useExchangeRate } from "@/hooks/useExchangeRate";
 import PriceDisplay from "@/components/PriceDisplay";
@@ -42,11 +42,10 @@ export default function ExperiencesPage() {
     <div className="min-h-screen bg-sand-200">
       <div className="sticky top-0 z-30 bg-white border-b border-sand-300">
         <div className="h-14 flex items-center justify-between px-4">
-          <Link href="/" className="font-display text-lg font-bold text-bronze-500 tracking-widest no-underline">LAKSOR</Link>
-          <div className="flex items-center gap-1.5 text-xs font-semibold text-charcoal-600">
-            <MagnifyingGlass size={14} className="text-bronze-500" />
-            Experiences
-          </div>
+          <Link href="/" className="no-underline">
+            <img src="/logo7.png" alt="Laksor" style={{ height: 32, width: "auto", objectFit: "contain", maxWidth: 110 }} />
+          </Link>
+          <div className="font-display text-sm font-bold text-charcoal-800">Experiences</div>
         </div>
       </div>
 
@@ -63,7 +62,7 @@ export default function ExperiencesPage() {
           </div>
           <div className="relative flex-shrink-0 ml-2">
             <button onClick={() => setShowSort(!showSort)}
-              className={"flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border transition-all " + (sortBy !== "popular" ? "bg-charcoal-800 text-white border-charcoal-800" : "bg-white text-charcoal-600 border-sand-300")}>
+              className={"flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border transition-all " + (sortBy !== "popular" ? "bg-bronze-500 text-white border-bronze-500" : "bg-white text-charcoal-600 border-sand-300")}>
               <SlidersHorizontal size={12} weight="bold" />
               Trier
             </button>
@@ -98,7 +97,7 @@ export default function ExperiencesPage() {
             {tours.map(t => (
               <Link key={t.id} href={t.isGuideExperience ? "/booking/" + t.guideId + "?expId=" + t.expId + "&tourPrice=" + Math.ceil(t.minPrice * 1.25) + (t.groupThreshold1 ? "&t1=" + t.groupThreshold1 + "&d1=" + t.groupDiscount1 : "") + (t.groupThreshold2 ? "&t2=" + t.groupThreshold2 + "&d2=" + t.groupDiscount2 : "") : "/experiences/" + t.tourType.toLowerCase()}
                 className="bg-white rounded-2xl overflow-hidden border border-sand-300 shadow-sm no-underline block active:scale-[0.99] transition-all">
-                <div className="relative h-52">
+                <div className="relative h-44">
                   {t.coverImage
                     ? <img src={t.coverImage} alt={t.title} className="w-full h-full object-cover" />
                     : <div className="w-full h-full bg-gradient-to-br from-sage-300/20 to-sand-300 flex items-center justify-center text-6xl">
@@ -136,8 +135,8 @@ export default function ExperiencesPage() {
                   )}
                   {/* BOUTON DETAILS */}
                   <button onClick={(e) => { e.preventDefault(); setOpenId(openId === t.id ? null : t.id); }}
-                    className="w-full flex items-center justify-center gap-1.5 py-2 border border-sand-300 rounded-xl text-xs font-bold text-charcoal-600 hover:border-sage-300 hover:text-sage-300 transition-colors mb-3">
-                    {openId === t.id ? "Masquer ↑" : "Voir details ↓"}
+                    className="w-full flex items-center justify-center gap-1 py-1.5 text-[10px] text-charcoal-400 hover:text-charcoal-600 transition-colors mb-2">
+                    {openId === t.id ? <><CaretUp size={10} /> Masquer</> : <><CaretDown size={10} /> Details inclus/exclus</>}
                   </button>
 
                   {/* ACCORDEON */}
@@ -187,7 +186,7 @@ export default function ExperiencesPage() {
                         <div className="text-xs text-charcoal-400">Prix sur demande</div>
                       )}
                     </div>
-                    <div className="flex items-center gap-1.5 bg-sage-300 text-white font-bold px-4 py-2.5 rounded-full text-xs">
+                    <div className="flex items-center gap-1.5 bg-bronze-500 text-white font-bold px-4 py-2.5 rounded-full text-xs">
                       {t.isGuideExperience ? "Réserver maintenant" : "Voir les guides"} <ArrowRight size={12} weight="bold" />
                     </div>
                   </div>
