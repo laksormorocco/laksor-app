@@ -40,7 +40,7 @@ export async function GET(req: Request) {
     include: { guide: { select: { id: true, displayName: true, city: true } } }
   });
 
-  const experiences = guideExperiences.map(exp => ({
+  const experiences = (guideExperiences as any[]).map((exp: any) => ({
     id: exp.id,
     tourType: "CUSTOM",
     title: exp.title,
