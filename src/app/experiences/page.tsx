@@ -71,7 +71,7 @@ export default function ExperiencesPage() {
                       </div>
                   }
                   <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent" />
-                  {t.isGuideExperience && !t.guideCount && (
+                  {t.isGuideExperience && t.guideId === "cmq5fr4ef0002xbtvwrfquu46" && (
                     <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-bronze-500 text-white rounded-full px-3 py-1.5 shadow-sm">
                       <SealCheck size={13} weight="fill" />
                       <span className="text-[11px] font-bold">Laksor</span>
