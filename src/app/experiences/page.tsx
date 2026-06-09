@@ -77,7 +77,7 @@ export default function ExperiencesPage() {
                       <span className="text-[11px] font-bold">Laksor</span>
                     </div>
                   )}
-                  {t.guideCount > 0 && (
+                  {t.guideCount > 0 && t.guideId !== "cmq5fr4ef0002xbtvwrfquu46" && (
                     <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 flex items-center gap-1.5">
                       <div className="w-1.5 h-1.5 rounded-full bg-sage-300" />
                       <span className="text-[11px] font-bold text-charcoal-800">{t.guideCount} guide{t.guideCount > 1 ? "s" : ""} disponible{t.guideCount > 1 ? "s" : ""}</span>
