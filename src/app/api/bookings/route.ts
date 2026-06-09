@@ -28,7 +28,7 @@ export async function POST(req: Request) {
     const bookingRef = "LAK-" + year + "-" + rand;
 
     const price = duration === "FULL_DAY" ? Number(guide.fullDayPrice) : Number(guide.halfDayPrice);
-    const commission = Math.round(price * 0.25);
+    const commission = Math.round(totalPrice * 0.2); // 20% du prix client = 25% du prix guide
 
     const booking = await prisma.booking.create({
       data: {

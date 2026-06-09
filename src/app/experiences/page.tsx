@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Clock, Users, ArrowRight, MagnifyingGlass, Percent } from "@phosphor-icons/react";
+import { Clock, Users, ArrowRight, MagnifyingGlass, Percent, SealCheck } from "@phosphor-icons/react";
 import BottomNav from "@/components/BottomNav";
 import { useExchangeRate } from "@/hooks/useExchangeRate";
 import PriceDisplay from "@/components/PriceDisplay";
@@ -71,6 +71,12 @@ export default function ExperiencesPage() {
                       </div>
                   }
                   <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent" />
+                  {t.isGuideExperience && !t.guideCount && (
+                    <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-bronze-500 text-white rounded-full px-3 py-1.5 shadow-sm">
+                      <SealCheck size={13} weight="fill" />
+                      <span className="text-[11px] font-bold">Laksor</span>
+                    </div>
+                  )}
                   {t.guideCount > 0 && (
                     <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 flex items-center gap-1.5">
                       <div className="w-1.5 h-1.5 rounded-full bg-sage-300" />
