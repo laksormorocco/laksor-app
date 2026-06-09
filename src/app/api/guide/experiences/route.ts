@@ -35,9 +35,14 @@ export async function POST(req: Request) {
 
 export async function PATCH(req: Request) {
   const body = await req.json();
-  const { id, ...data } = body;
-  if (!id) return NextResponse.json({ error: "id requis" }, { status: 400 });
+  const { id, guideId, ...rest } = body;
+  const data: any = { ...rest };
   if (data.price) data.price = Number(data.price);
+  if (data.groupThreshold1) data.groupThreshold1 = Number(data.groupThreshold1);
+  if (data.groupDiscount1) data.groupDiscount1 = Number(data.groupDiscount1);
+  if (data.groupThreshold2) data.groupThreshold2 = Number(data.groupThreshold2);
+  if (data.groupDiscount2) data.groupDiscount2 = Number(data.groupDiscount2);
+  delete data.category; delete data.data;
   const exp = await prisma.guideExperience.update({ where: { id }, data });
   return NextResponse.json({ experience: exp });
 }
