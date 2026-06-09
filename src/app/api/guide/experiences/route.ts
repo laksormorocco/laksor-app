@@ -35,15 +35,15 @@ export async function POST(req: Request) {
 
 export async function PATCH(req: Request) {
   const body = await req.json();
-  const { id, guideId, ...rest } = body;
-  const data: any = { ...rest };
+  const body = await req.json();
+  const { id, guideId, category, itinerary, isLaksorExp, providerContact, ...rest } = body;
+  if (!id) return NextResponse.json({ error: "id requis" }, { status: 400 });
+  const data: any = {};
+  const allowed = ["title","description","duration","groupSize","difficulty","city","meetingPoint","status","isActive","transportRequired","photos","tags","included","notIncluded","pricePerPerson","price","groupThreshold1","groupDiscount1","groupThreshold2","groupDiscount2"];
+  for (const key of allowed) { if (rest[key] !== undefined) data[key] = rest[key]; }
+  if (providerContact !== undefined) data.providerContact = providerContact;
   if (data.price) data.price = Number(data.price);
-  if (data.groupThreshold1) data.groupThreshold1 = Number(data.groupThreshold1);
-  if (data.groupDiscount1) data.groupDiscount1 = Number(data.groupDiscount1);
-  if (data.groupThreshold2) data.groupThreshold2 = Number(data.groupThreshold2);
-  if (data.groupDiscount2) data.groupDiscount2 = Number(data.groupDiscount2);
-  delete data.category; delete data.data;
-  try {
+  ["groupThreshold1","groupDiscount1","groupThreshold2","groupDiscount2"].forEach(k => { if (data[k]) data[k] = Number(data[k]); });
     const exp = await prisma.guideExperience.update({ where: { id }, data });
     return NextResponse.json({ experience: exp });
   } catch (e: any) {
