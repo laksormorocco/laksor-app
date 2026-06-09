@@ -299,7 +299,7 @@ export default function BookingPage() {
                   )}
                   {isExperience && persons >= 4 && (
                     <div className="flex justify-between text-sm">
-                      <span className="text-sage-300 font-semibold">Réduction groupe {persons >= 7 ? "-15%" : "-8%"} ({persons} pers.)</span>
+                      <span className="text-sage-300 font-semibold">Réduction groupe {persons >= (t2||7) ? "-" + (d2||15) + "%" : "-" + (d1||8) + "%"} ({persons} pers.)</span>
                       <span className="text-sage-300 font-semibold">-{convert(Math.ceil((tourPriceParam || 0) * persons) - expBasePrice)}</span>
                     </div>
                   )}
