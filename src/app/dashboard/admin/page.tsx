@@ -66,6 +66,8 @@ export default function AdminDashboard() {
   const [crmGuide,     setCrmGuide]     = useState("");
   const [reminders,    setReminders]    = useState<any[]>([]);
   const [allExperiences, setAllExperiences] = useState<any[]>([]);
+  const [expTab, setExpTab] = useState<"list"|"bookings">("list");
+  const [expBookings, setExpBookings] = useState<any[]>([]);
   const [newExpForm, setNewExpForm] = useState<any>(null);
   const [importing, setImporting] = useState(false);
   const [importResult, setImportResult] = useState<any>(null);
@@ -79,7 +81,14 @@ export default function AdminDashboard() {
   useEffect(() => { if (auth) { fetchAll(); fetchTemplates(); } }, [auth]);
   useEffect(() => { if (auth && active === "guides") fetchGuides(); }, [guideTab, active, auth]);
   useEffect(() => { if (auth && active === "crm") fetchCrm(); }, [active, auth, crmSearch, crmStatus, crmPeriod, crmGuide]);
-  useEffect(() => { if (auth && active === "experiences") fetchAllExperiences(); }, [active, auth]);
+  useEffect(() => {
+    if (auth && active === "experiences") {
+      fetchAllExperiences();
+      fetch("/api/bookings?guideId=cmq5fr4ef0002xbtvwrfquu46")
+        .then(r => r.json())
+        .then(d => setExpBookings(d.bookings || []));
+    }
+  }, [active, auth]);
   useEffect(() => { if (auth && active === "tourists") fetchTourists(); }, [active, auth, touristSearch]);
 
   async function fetchAll() {
@@ -550,6 +559,15 @@ export default function AdminDashboard() {
         
         {active === "experiences" && (
           <div className="flex flex-col gap-3">
+            {/* SOUS-ONGLETS */}
+            <div className="flex gap-2">
+              {(["list", "bookings"] as const).map(t => (
+                <button key={t} onClick={() => setExpTab(t)}
+                  className={"px-4 py-2 rounded-full text-xs font-bold border transition-all " + (expTab === t ? "bg-charcoal-800 text-white border-charcoal-800" : "bg-white text-charcoal-500 border-sand-300")}>
+                  {t === "list" ? "Experiences" : "Reservations"}
+                </button>
+              ))}
+            </div>
             <div className="flex items-center justify-between mb-2">
               <div className="text-sm font-bold text-charcoal-800">Experiences guides ({allExperiences.length})</div>
             <div className="flex gap-2">
