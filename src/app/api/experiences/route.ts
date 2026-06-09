@@ -37,7 +37,7 @@ export async function GET(req: Request) {
 
   const guideExperiences = await prisma.guideExperience.findMany({
     where: { isActive: true, status: "APPROVED" },
-    select: { id: true, title: true, description: true, duration: true, groupSize: true, difficulty: true, price: true, photos: true, tags: true, included: true, notIncluded: true, itinerary: true, transportRequired: true, meetingPoint: true, guideId: true, groupThreshold1: true, groupDiscount1: true, groupThreshold2: true, groupDiscount2: true, guide: { select: { id: true, displayName: true, city: true } } }
+    include: { guide: { select: { id: true, displayName: true, city: true } } }
   });
 
   const experiences = guideExperiences.map(exp => ({
