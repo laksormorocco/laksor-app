@@ -135,7 +135,7 @@ export default function ExperiencesPage() {
                   )}
                   {/* BOUTON DETAILS */}
                   <button onClick={(e) => { e.preventDefault(); setOpenId(openId === t.id ? null : t.id); }}
-                    className="w-full flex items-center justify-center gap-1 py-1.5 text-[10px] text-charcoal-400 hover:text-charcoal-600 transition-colors mb-2">
+                    className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl border-2 border-sand-300 bg-sand-100 text-xs font-bold text-charcoal-600 hover:border-bronze-500 hover:text-bronze-500 transition-all mb-2">
                     {openId === t.id ? <><CaretUp size={10} /> Masquer</> : <><CaretDown size={10} /> Details inclus/exclus</>}
                   </button>
 
