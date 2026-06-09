@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Clock, Users, ArrowRight, MagnifyingGlass } from "@phosphor-icons/react";
+import { Clock, Users, ArrowRight, MagnifyingGlass, Percent } from "@phosphor-icons/react";
 import BottomNav from "@/components/BottomNav";
 import { useExchangeRate } from "@/hooks/useExchangeRate";
 import PriceDisplay from "@/components/PriceDisplay";
@@ -133,7 +133,13 @@ export default function ExperiencesPage() {
                         <>
                           <div className="text-[10px] text-charcoal-400">A partir de</div>
                           <div className="font-display text-lg font-bold text-charcoal-800">
-                <PriceDisplay mad={priceWithCommission(t.minPrice)} size="md" /> <span className="text-xs font-normal text-charcoal-400">{"/ pers." + (t.groupThreshold1 ? " - " + t.groupDiscount1 + "% des " + t.groupThreshold1 + " pers." : "")}</span>
+                <PriceDisplay mad={priceWithCommission(t.minPrice)} size="md" />
+                {t.isGuideExperience && t.groupThreshold1 && (
+  <span className="inline-flex items-center gap-1 bg-sage-300/10 text-sage-300 border border-sage-300/30 text-[10px] font-bold px-2 py-1 rounded-full mt-1">
+    <Percent size={10} weight="bold" />
+    -{t.groupDiscount1}% des {t.groupThreshold1} pers.
+  </span>
+)}
                           </div>
                         </>
                       ) : (
