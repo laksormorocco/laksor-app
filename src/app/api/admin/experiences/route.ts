@@ -2,7 +2,15 @@ import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(req: Request) {
+  const url = new URL(req.url);
+  const id = url.searchParams.get("id");
+  
+  if (id) {
+    const experience = await prisma.guideExperience.findUnique({ where: { id } });
+    return NextResponse.json({ experience });
+  }
+  
   const experiences = await prisma.guideExperience.findMany({
     orderBy: { createdAt: "desc" },
     include: {
