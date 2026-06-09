@@ -1,11 +1,22 @@
 "use client";
 import { useState, useEffect } from "react";
-import { X, ArrowLeft } from "@phosphor-icons/react";
+import { ArrowLeft } from "@phosphor-icons/react";
 
 const inputCls = "w-full border border-sand-300 rounded-xl px-4 py-3 text-sm text-charcoal-800 bg-sand-100 outline-none focus:border-bronze-500 transition-colors";
 
 export default function EditExperiencePage() {
   const expId = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("id") : null;
+
+  const [form, setForm] = useState({
+    title: "", description: "", price: "", city: "",
+    meetingPoint: "", duration: "4h", groupSize: "1-8 pers.",
+    providerContact: "", tags: "", included: "", notIncluded: "",
+    photos: [] as string[], transportRequired: false,
+    itinerary_raw: "",
+    groupThreshold1: "", groupDiscount1: "",
+    groupThreshold2: "", groupDiscount2: ""
+  });
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (expId) {
@@ -27,6 +38,7 @@ export default function EditExperiencePage() {
             notIncluded: (exp.notIncluded || []).join(", "),
             photos: exp.photos || [],
             transportRequired: exp.transportRequired || false,
+            itinerary_raw: (exp.itinerary || []).map((s: any) => [s.time, s.title, s.desc].join("|")).join("\n"),
             groupThreshold1: String(exp.groupThreshold1 || ""),
             groupDiscount1: String(exp.groupDiscount1 || ""),
             groupThreshold2: String(exp.groupThreshold2 || ""),
@@ -36,25 +48,18 @@ export default function EditExperiencePage() {
     }
   }, [expId]);
 
-  const [form, setForm] = useState({
-    title: "", description: "", price: "", city: "",
-    meetingPoint: "", duration: "4h", groupSize: "1-8 pers.",
-    providerContact: "", tags: "", included: "", notIncluded: "",
-    photos: [] as string[], transportRequired: false,
-    groupThreshold1: "",
-    groupDiscount1: "",
-    groupThreshold2: "",
-    groupDiscount2: ""
-  });
-  const [saving, setSaving] = useState(false);
+  function parseItinerary(raw: string) {
+    return raw.split("\n").filter(Boolean).map((l: string) => {
+      const [time, title, desc] = l.split("|").map((s: string) => s.trim());
+      return { time: time || "", title: title || l, desc: desc || "" };
+    });
+  }
 
   async function save() {
     if (!form.title || !form.price) return alert("Titre et prix requis");
     setSaving(true);
-    const LAKSOR_GUIDE_ID = "cmq5fr4ef0002xbtvwrfquu46";
-    const data: any = { id: expId,
-      
-      guideId: LAKSOR_GUIDE_ID,
+    const data: any = {
+      id: expId,
       title: form.title,
       description: form.description,
       price: Number(form.price),
@@ -64,29 +69,29 @@ export default function EditExperiencePage() {
       groupSize: form.groupSize,
       difficulty: "Facile",
       providerContact: form.providerContact,
-      tags: form.tags ? form.tags.split(",").map(s => s.trim()).filter(Boolean) : [],
-      included: form.included ? form.included.split(",").map(s => s.trim()).filter(Boolean) : [],
-      notIncluded: form.notIncluded ? form.notIncluded.split(",").map(s => s.trim()).filter(Boolean) : [],
+      tags: form.tags ? form.tags.split(",").map((s: string) => s.trim()).filter(Boolean) : [],
+      itinerary: form.itinerary_raw ? parseItinerary(form.itinerary_raw) : [],
+      included: form.included ? form.included.split(",").map((s: string) => s.trim()).filter(Boolean) : [],
+      notIncluded: form.notIncluded ? form.notIncluded.split(",").map((s: string) => s.trim()).filter(Boolean) : [],
       photos: form.photos,
       transportRequired: form.transportRequired,
-    groupThreshold1: form.groupThreshold1 ? Number(form.groupThreshold1) : undefined,
-    groupDiscount1: form.groupDiscount1 ? Number(form.groupDiscount1) : undefined,
-    groupThreshold2: form.groupThreshold2 ? Number(form.groupThreshold2) : undefined,
-    groupDiscount2: form.groupDiscount2 ? Number(form.groupDiscount2) : undefined,
-      isLaksorExp: true,
-      pricePerPerson: true,
+      groupThreshold1: form.groupThreshold1 ? Number(form.groupThreshold1) : undefined,
+      groupDiscount1: form.groupDiscount1 ? Number(form.groupDiscount1) : undefined,
+      groupThreshold2: form.groupThreshold2 ? Number(form.groupThreshold2) : undefined,
+      groupDiscount2: form.groupDiscount2 ? Number(form.groupDiscount2) : undefined,
       status: "APPROVED",
       isActive: true,
     };
     const res = await fetch("/api/guide/experiences", {
-      method: expId ? "PATCH" : "POST",
+      method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data)
     });
     if (res.ok) {
       window.location.href = "/dashboard/admin";
     } else {
-      const errData = await res.json().catch(() => ({})); alert("Erreur: " + JSON.stringify(errData));
+      const errData = await res.json().catch(() => ({}));
+      alert("Erreur: " + JSON.stringify(errData));
     }
     setSaving(false);
   }
@@ -112,7 +117,7 @@ export default function EditExperiencePage() {
               <div key={i} className="relative flex-shrink-0">
                 <img src={url} className="w-20 h-20 rounded-xl object-cover" />
                 <button onClick={() => setForm({...form, photos: form.photos.filter((_, j) => j !== i)})}
-                  className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center">✕</button>
+                  className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center">&#x2715;</button>
               </div>
             ))}
             <label className="w-20 h-20 rounded-xl border-2 border-dashed border-sand-300 flex flex-col items-center justify-center cursor-pointer flex-shrink-0 text-charcoal-400">
@@ -124,7 +129,7 @@ export default function EditExperiencePage() {
                 const fd = new FormData();
                 fd.append("file", file as Blob);
                 fd.append("folder", "experiences");
-                const res = await fetch("/api/upload", { method: expId ? "PATCH" : "POST", body: fd });
+                const res = await fetch("/api/upload", { method: "POST", body: fd });
                 const { url } = await res.json();
                 if (url) setForm({...form, photos: [...form.photos, url]});
               }} />
@@ -140,12 +145,12 @@ export default function EditExperiencePage() {
           { key: "meetingPoint", label: "Point de RDV", ph: "Place Jemaa el-Fna..." },
           { key: "duration", label: "Duree", ph: "4h" },
           { key: "groupSize", label: "Taille groupe", ph: "1-8 pers." },
-          { key: "category", label: "Catégorie / Intérêt", ph: "Aventure, Culture, Nature, Gastronomie..." },
           { key: "providerContact", label: "Contact prestataire (WA/Email)", ph: "+212600000000" },
-          { key: "groupThreshold1", label: "Seuil réduction 1 (nb personnes)", ph: "4" },
-          { key: "groupDiscount1", label: "Réduction 1 (%)", ph: "8" },
-          { key: "groupThreshold2", label: "Seuil réduction 2 (nb personnes)", ph: "7" },
-          { key: "groupDiscount2", label: "Réduction 2 (%)", ph: "15" },
+          { key: "groupThreshold1", label: "Seuil reduction 1 (nb personnes)", ph: "4" },
+          { key: "groupDiscount1", label: "Reduction 1 (%)", ph: "8" },
+          { key: "groupThreshold2", label: "Seuil reduction 2 (nb personnes)", ph: "7" },
+          { key: "groupDiscount2", label: "Reduction 2 (%)", ph: "15" },
+          { key: "itinerary_raw", label: "Itineraire (HH:mm | Titre | Description, 1 etape par ligne)", ph: "08:00 | Depart hotel | Prise en charge", area: true },
           { key: "tags", label: "Tags (virgule)", ph: "Desert, Aventure, Nature" },
           { key: "included", label: "Inclus (virgule)", ph: "Transport, Guide" },
           { key: "notIncluded", label: "Non inclus (virgule)", ph: "Repas, Entrees" },
@@ -173,7 +178,7 @@ export default function EditExperiencePage() {
         <button onClick={save} disabled={saving}
           className="w-full text-white font-bold py-4 rounded-full text-sm"
           style={{ background: "linear-gradient(135deg, #B88A44, #9A7238)", boxShadow: "0 4px 14px rgba(184,138,68,0.3)" }}>
-          {saving ? "Enregistrement..." : expId ? "Mettre à jour" : "Publier l experience"}
+          {saving ? "Enregistrement..." : expId ? "Mettre a jour" : "Publier l experience"}
         </button>
       </div>
     </div>
