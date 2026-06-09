@@ -39,7 +39,7 @@ export async function GET(req: Request) {
     include: {
       guide: { select: { id: true, displayName: true, city: true, avatar: true, phone: true } },
       tourist: { select: { id: true, name: true, email: true, avatar: true } },
-      slots: true
+      slots: { include: { template: { select: { title: true } } } }
     }
   });
 
