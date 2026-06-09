@@ -124,6 +124,7 @@ model GuideProfile {
   docsStatus     String      @default("PENDING")
 
   halfDayPrice     Float @default(350)
+  slug             String? @unique
   extraPersonPrice Float @default(200)
   fullDayPrice     Float @default(650)
 

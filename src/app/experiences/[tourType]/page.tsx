@@ -93,7 +93,7 @@ export default function ExperienceGuidesPage() {
             {guides.map((g: any) => (
               <div key={g.guideId} className="bg-white rounded-2xl border border-sand-300 p-4 shadow-sm">
                 <div className="flex items-center gap-3 mb-3">
-                  <Link href={"/guide/" + g.guideId} className="flex-shrink-0 no-underline">
+                  <Link href={"/guide/" + (g.guide?.slug || g.guideId)} className="flex-shrink-0 no-underline">
                     <div className="w-14 h-14 rounded-xl overflow-hidden bg-sand-300">
                       {g.guide.avatar
                         ? <img src={g.guide.avatar} className="w-full h-full object-cover" alt={g.guide.displayName} />
@@ -102,7 +102,7 @@ export default function ExperienceGuidesPage() {
                     </div>
                   </Link>
                   <div className="flex-1 min-w-0">
-                    <Link href={"/guide/" + g.guideId} className="no-underline">
+                    <Link href={"/guide/" + (g.guide?.slug || g.guideId)} className="no-underline">
                       <div className="font-display text-sm font-bold text-charcoal-800">{g.guide.displayName}</div>
                     </Link>
                     <div className="flex items-center gap-1 mt-0.5">

@@ -24,7 +24,7 @@ const VISIT_LABELS: Record<string, string> = {
 
 export function GuideCard({ guide }: Props) {
   return (
-    <Link href={`/guide/${guide.id}`}>
+    <Link href={`/guide/${guide.slug || guide.id}`}>
       <div className="group bg-white rounded-2xl overflow-hidden border border-sand-200 hover:border-majorelle/30 hover:shadow-xl transition-all duration-300 card-hover">
         {/* Avatar */}
         <div className="relative h-52 bg-sand-200 overflow-hidden">

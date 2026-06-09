@@ -7,5 +7,5 @@ export default async function SearchPage() {
     where: { status: "APPROVED" },
     orderBy: { avgRating: "desc" },
   });
-  return <SearchClient guides={guides} />;
+  return <SearchClient guides={guides as any[]} />;
 }

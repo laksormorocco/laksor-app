@@ -34,6 +34,7 @@ const SORT_OPTIONS = [
 ];
 
 type Guide = {
+  slug?: string;
   id: string; displayName: string; city: string; avatar: string | null;
   avgRating: number; totalReviews: number; halfDayPrice: number;
   languages: string[]; yearsExp: number; visitTypes: string[];
@@ -60,7 +61,7 @@ function GuideCard({ g, idx }: { g: Guide; idx: number }) {
   return (
     <div
       className="bg-white rounded-2xl overflow-hidden border border-sand-300 flex cursor-pointer hover:shadow-md transition-shadow"
-      onClick={() => window.location.href = `/guide/${g.id}`}
+      onClick={() => window.location.href = `/guide/${g.slug || g.id}`}
     >
       {/* Photo */}
       <div className="relative w-28 flex-shrink-0">
@@ -156,7 +157,7 @@ function GuideCard({ g, idx }: { g: Guide; idx: number }) {
             <div className="text-[9px] text-charcoal-400 mt-0.5 whitespace-nowrap">/ 4 pers. max · 4h</div>
           </div>
           <button
-            onClick={e => { e.stopPropagation(); window.location.href = `/guide/${g.id}`; }}
+            onClick={e => { e.stopPropagation(); window.location.href = `/guide/${g.slug || g.id}`; }}
             className="bg-sage-300 text-white text-xs font-bold px-4 py-2 rounded-full hover:bg-sage-400 transition-colors flex-shrink-0 ml-2"
           >
             Voir le profil →
