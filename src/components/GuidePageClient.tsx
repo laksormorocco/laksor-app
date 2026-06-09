@@ -31,7 +31,7 @@ function getLangFlag(lang: string): string {
 
 export default function GuidePageClient({ guide }: { guide: any }) {
   const [tab, setTab] = useState<Tab>("tours");
-  const [liked, setLiked] = useState(false);
+  const [liked, setLiked] = useState(() => { try { return localStorage.getItem("liked_" + guide.id) === "1"; } catch { return false; } });
   const [showSticky, setShowSticky] = useState(false);
   const [stickyVisible, setStickyVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
@@ -160,10 +160,10 @@ export default function GuidePageClient({ guide }: { guide: any }) {
             <ArrowLeft size={18} weight="bold" className="text-white" />
           </Link>
           <div className="flex gap-2">
-            <button onClick={() => setLiked(!liked)} className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.2)", backdropFilter: "blur(8px)" }}>
+            <button onClick={() => { const n = !liked; setLiked(n); try { localStorage.setItem("liked_" + guide.id, n ? "1" : "0"); } catch {} }} className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.2)", backdropFilter: "blur(8px)" }}>
               <Heart size={18} weight={liked ? "fill" : "regular"} className={liked ? "text-red-400" : "text-white"} />
             </button>
-            <button className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.2)", backdropFilter: "blur(8px)" }}>
+            <button onClick={() => navigator.share && navigator.share({ title: guide.displayName, text: "Découvrez ce guide sur Laksor", url: window.location.href }).catch(()=>{})} className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.2)", backdropFilter: "blur(8px)" }}>
               <ShareNetwork size={18} className="text-white" />
             </button>
           </div>
