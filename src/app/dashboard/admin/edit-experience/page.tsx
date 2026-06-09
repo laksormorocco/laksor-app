@@ -82,7 +82,7 @@ export default function EditExperiencePage() {
     if (res.ok) {
       window.location.href = "/dashboard/admin";
     } else {
-      alert("Erreur lors de la creation");
+      const errData = await res.json().catch(() => ({})); alert("Erreur: " + JSON.stringify(errData));
     }
     setSaving(false);
   }
