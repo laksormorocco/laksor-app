@@ -634,23 +634,27 @@ export default function AdminDashboard() {
                   </div>
                 </div>
                 {exp.description && <p className="text-xs text-charcoal-400 mb-3 line-clamp-2">{exp.description}</p>}
+                <div className="flex items-center gap-2 flex-wrap">
                   <button onClick={() => window.location.href="/dashboard/admin/edit-experience?id=" + exp.id}
-                    className="flex-1 bg-charcoal-800 text-white text-xs font-bold py-2.5 rounded-full">
-                    ✏️ Modifier
+                    className="flex items-center gap-1.5 px-4 py-2 rounded-full border border-bronze-500 text-bronze-500 text-xs font-semibold">
+                    <PencilSimple size={14} /> Modifier
                   </button>
-                <div className="flex gap-2">
-                  <button onClick={async () => {
-                    await fetch("/api/admin/experiences", { method: "PATCH", headers: {"Content-Type":"application/json"}, body: JSON.stringify({ id: exp.id, status: "APPROVED" }) });
-                    fetchAllExperiences();
-                  }} className="flex-1 bg-sage-300 text-white text-xs font-bold py-2.5 rounded-full">
-                    Approuver
-                  </button>
-                  <button onClick={async () => {
-                    await fetch("/api/admin/experiences", { method: "PATCH", headers: {"Content-Type":"application/json"}, body: JSON.stringify({ id: exp.id, status: "REFUSED" }) });
-                    fetchAllExperiences();
-                  }} className="flex-1 bg-red-50 text-red-400 border border-red-200 text-xs font-bold py-2.5 rounded-full">
-                    Refuser
-                  </button>
+                  {exp.status !== "APPROVED" && (
+                    <button onClick={async () => {
+                      await fetch("/api/admin/experiences", { method: "PATCH", headers: {"Content-Type":"application/json"}, body: JSON.stringify({ id: exp.id, status: "APPROVED" }) });
+                      fetchAllExperiences();
+                    }} className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-bronze-500 text-white text-xs font-semibold">
+                      <Check size={14} /> Approuver
+                    </button>
+                  )}
+                  {exp.status !== "REFUSED" && (
+                    <button onClick={async () => {
+                      await fetch("/api/admin/experiences", { method: "PATCH", headers: {"Content-Type":"application/json"}, body: JSON.stringify({ id: exp.id, status: "REFUSED" }) });
+                      fetchAllExperiences();
+                    }} className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-red-50 text-red-400 border border-red-200 text-xs font-semibold">
+                      <X size={14} /> Refuser
+                    </button>
+                  )}
                 </div>
               </div>
             ))}
