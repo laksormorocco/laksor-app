@@ -103,7 +103,7 @@ export default function Footer() {
           © 2026 Laksor Morocco · Tous droits réservés
         </p>
         <div style={{ display: "flex", gap: 16, justifyContent: "center" }}>
-          {[["CGU", "/cgu"], ["Confidentialité", "/privacy"], ["FAQ", "/faq"]].map(([label, href]) => (
+          {[["CGV", "/legal/cgv"], ["CGU", "/legal/cgu"], ["Confidentialité", "/legal/privacy"], ["Charte Guides", "/legal/charte-guides"]].map(([label, href]) => (
             <Link key={label} href={href} style={{ color: "rgba(255,255,255,0.25)", fontSize: 11, textDecoration: "none" }}>
               {label}
             </Link>
