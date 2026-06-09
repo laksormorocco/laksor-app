@@ -19,7 +19,7 @@ export default function ExperiencesPage() {
   const [city, setCity] = useState<string|null>(null);
   const { convert } = useExchangeRate();
 
-  const CITIES = ["Marrakech", "Fès", "Essaouira", "Chefchaouen", "Agadir"];
+  const CITIES = ["Marrakech", "Fes", "Essaouira", "Chefchaouen", "Agadir"];
 
   useEffect(() => {
     fetch("/api/experiences" + (city ? "?city=" + city : ""))
