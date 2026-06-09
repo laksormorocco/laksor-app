@@ -39,15 +39,33 @@ export function priceCardDisplay(halfDayPrice: number) {
 }
 
 // Experience pricing avec reduction groupe
-export function expPricePerPerson(priceWithCommission: number, persons: number): number {
+export function expPricePerPerson(
+  priceWithCommission: number,
+  persons: number,
+  threshold1?: number | null,
+  discount1?: number | null,
+  threshold2?: number | null,
+  discount2?: number | null
+): number {
+  const t1 = threshold1 || 4;
+  const d1 = discount1 ? (100 - discount1) / 100 : 0.92;
+  const t2 = threshold2 || 7;
+  const d2 = discount2 ? (100 - discount2) / 100 : 0.85;
   let discount = 1;
-  if (persons >= 7) discount = 0.85;
-  else if (persons >= 4) discount = 0.92;
+  if (persons >= t2) discount = d2;
+  else if (persons >= t1) discount = d1;
   return Math.ceil(priceWithCommission * discount);
 }
 
-export function expTotalPrice(priceWithCommission: number, persons: number): number {
-  return expPricePerPerson(priceWithCommission, persons) * persons;
+export function expTotalPrice(
+  priceWithCommission: number,
+  persons: number,
+  threshold1?: number | null,
+  discount1?: number | null,
+  threshold2?: number | null,
+  discount2?: number | null
+): number {
+  return expPricePerPerson(priceWithCommission, persons, threshold1, discount1, threshold2, discount2) * persons;
 }
 
 export function expCommission(basePrice: number, persons: number): number {
