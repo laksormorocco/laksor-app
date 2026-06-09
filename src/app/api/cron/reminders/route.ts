@@ -16,7 +16,7 @@ export async function GET(req: Request) {
   const bookings = await prisma.booking.findMany({
     where: {
       status: "CONFIRMED",
-      date: { gte: in72h, lte: in73h }
+      date: { gte: now, lte: in72h }
     },
     include: {
       guide: { select: { displayName: true, phone: true, city: true } },
