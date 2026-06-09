@@ -130,6 +130,20 @@ export default function GuidePageClient({ guide }: { guide: any }) {
         </div>
       )}
 
+      {/* CTA STICKY BOTTOM */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-sand-200 px-4 py-3 flex items-center justify-between" style={{boxShadow:"0 -4px 20px rgba(17,17,17,0.08)"}}>
+        <div>
+          <div className="text-[10px] text-charcoal-400">A partir de</div>
+          <PriceDisplay mad={price} size="md" />
+          <div className="text-[10px] text-charcoal-400">/ groupe · 1-4 pers.</div>
+        </div>
+        <a href={activeTours.length > 0 ? "/booking/" + guide.id + "?tourId=" + activeTours[0]?.id + "&tourPrice=" + priceWithCommission(Number(activeTours[0]?.price || guide.halfDayPrice)) : "/booking/" + guide.id}
+          className="flex items-center gap-2 text-white font-bold px-6 py-3.5 rounded-full text-sm no-underline"
+          style={{background:"linear-gradient(135deg, #B88A44, #9A7238)", boxShadow:"0 4px 14px rgba(184,138,68,0.3)"}}>
+          Réserver <ArrowRight size={14} weight="bold" />
+        </a>
+      </div>
+
       {/* HERO */}
       <div className="relative">
         <div className="relative overflow-hidden" style={{ height: 340 }}>
@@ -160,14 +174,15 @@ export default function GuidePageClient({ guide }: { guide: any }) {
             <MapPin size={13} className="text-white/70" weight="fill" />
             <span className="text-white/80 text-xs">{guide.city}</span>
           </div>
-          <h1 className="font-display text-3xl font-bold text-white mb-3 leading-tight">{guide.displayName}</h1>
+          <h1 className="font-display text-3xl font-bold text-white mb-1 leading-tight">{guide.displayName}</h1>
+          {guide.bio && <p className="text-white/70 text-xs leading-relaxed mb-2 line-clamp-2">{guide.bio}</p>}
           <div className="flex flex-wrap gap-2">
             <span className="flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold text-white" style={{ background: "rgba(246,241,232,0.18)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.25)" }}>
                 <Star size={11} weight="fill" className="text-amber-400" /> {guide.avgRating > 0 ? Number(guide.avgRating).toFixed(1) : "Nouveau"} {guide.totalReviews > 0 ? "(" + guide.totalReviews + ")" : ""}
               </span>
             {guide.yearsExp > 0 && (
               <span className="flex items-center gap-1 px-3 py-1 rounded-full text-xs text-white" style={{ background: "rgba(246,241,232,0.18)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.25)" }}>
-                <Clock size={11} /> {guide.yearsExp} ans
+                {guide.yearsExp} ans d'exp.
               </span>
             )}
             <span className="flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold text-white" style={{ background: "#7D8F69" }}>
@@ -190,7 +205,7 @@ export default function GuidePageClient({ guide }: { guide: any }) {
       {/* STATS PILLS */}
       <div className="px-4 mt-4 flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }}>
         <div className="flex items-center gap-1.5 px-3.5 py-2 rounded-full whitespace-nowrap flex-shrink-0 text-xs font-medium text-charcoal-800" style={{ background: "rgba(255,255,255,0.7)", border: "1px solid rgba(17,17,17,0.08)", backdropFilter: "blur(8px)" }}>
-          <Eye size={13} className="text-bronze-500" /> {guide.viewCount || 0} vues
+          <Eye size={13} className="text-bronze-500" /> {guide.viewCount > 0 ? guide.viewCount + " vues" : "Nouveau"}
         </div>
         <div className="flex items-center gap-1.5 px-3.5 py-2 rounded-full whitespace-nowrap flex-shrink-0 text-xs font-medium text-sage-300" style={{ background: "rgba(255,255,255,0.7)", border: "1px solid rgba(125,143,105,0.25)", backdropFilter: "blur(8px)" }}>
           <CalendarCheck size={13} /> Disponible cette semaine
@@ -218,9 +233,9 @@ export default function GuidePageClient({ guide }: { guide: any }) {
       {/* ACHIEVEMENTS */}
       <div className="px-4 mt-4 flex gap-3 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }}>
         {[
-          { icon: "award", label: "PONCTUEL", sub: "100%", bronze: false },
-          { icon: "trophy", label: "SUPER GUIDE", sub: "Top 5%", bronze: true },
-          { icon: "lightning", label: "REPONSE <1H", sub: "Reactif", bronze: false },
+          ...(guide.totalReviews >= 10 ? [{ icon: "award", label: "PONCTUEL", sub: "100%", bronze: false }] : []),
+          ...(guide.avgRating >= 4.8 && guide.totalReviews >= 50 ? [{ icon: "trophy", label: "SUPER GUIDE", sub: "Top 5%", bronze: true }] : []),
+          ...(guide.totalReviews > 0 ? [{ icon: "lightning", label: "REPONSE <1H", sub: "Reactif", bronze: false }] : []),
         ].map((a, i) => (
           <div key={i} className="flex-shrink-0 px-4 py-3 flex flex-col items-center gap-1 min-w-[100px] bg-white rounded-2xl" style={{ border: a.bronze ? "1.5px solid rgba(184,138,68,0.25)" : "1.5px solid rgba(17,17,17,0.08)" }}>
             <SealCheck size={20} className={a.bronze ? "text-bronze-500" : "text-charcoal-400"} weight={a.bronze ? "fill" : "regular"} />
