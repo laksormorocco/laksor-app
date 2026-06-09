@@ -8,8 +8,8 @@ import PriceDisplay from "@/components/PriceDisplay";
 import { priceWithCommission } from "@/lib/pricing";
 
 const EMOJI: Record<string,string> = {
-  MEDINA_SECRETS:"", GASTRONOMIE:"️", HISTOIRE_MONUMENTS:"️",
-  DESERT_NATURE:"️", SHOPPING_ARTISANAT:"️", COUCHER_SOLEIL:"", PHOTO_INSTAGRAM:""
+  MEDINA_SECRETS:"🕌", GASTRONOMIE:"🍽️", HISTOIRE_MONUMENTS:"🏛️",
+  DESERT_NATURE:"🏜️", SHOPPING_ARTISANAT:"🛍️", COUCHER_SOLEIL:"🌅", PHOTO_INSTAGRAM:"📸"
 };
 
 export default function ExperiencesPage() {
@@ -67,7 +67,7 @@ export default function ExperiencesPage() {
                   {t.coverImage
                     ? <img src={t.coverImage} alt={t.title} className="w-full h-full object-cover" />
                     : <div className="w-full h-full bg-gradient-to-br from-sage-300/20 to-sand-300 flex items-center justify-center text-6xl">
-                        {EMOJI[t.tourType] || ""}
+                        {EMOJI[t.tourType] || "🧭"}
                       </div>
                   }
                   <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent" />
@@ -133,7 +133,7 @@ export default function ExperiencesPage() {
                         <>
                           <div className="text-[10px] text-charcoal-400">A partir de</div>
                           <div className="font-display text-lg font-bold text-charcoal-800">
-                    <PriceDisplay mad={priceWithCommission(t.minPrice)} size="md" /> <span className="text-xs font-normal text-charcoal-400">{t.isGuideExperience ? {t.groupThreshold1 ? ("/ pers. · -" + t.groupDiscount1 + "% dès " + t.groupThreshold1 + " pers.") : "/ pers."} : "/ 4 pers."}</span>
+                    <PriceDisplay mad={priceWithCommission(t.minPrice)} size="md" /> <span className="text-xs font-normal text-charcoal-400">{t.isGuideExperience ? "/ pers. · -8% dès 4 pers." : "/ 4 pers."}</span>
                           </div>
                         </>
                       ) : (
