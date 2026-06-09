@@ -427,3 +427,6 @@ model TourReview {
   comment    String?      @db.Text
   createdAt  DateTime     @default(now())
 }
+
+// Fields ajoutés pour GuideExperience
+// Ces champs doivent être dans le modèle GuideExperience
