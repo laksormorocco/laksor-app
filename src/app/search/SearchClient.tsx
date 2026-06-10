@@ -50,6 +50,27 @@ function ratingLabel(r: number) {
   return "";
 }
 
+// ── SKELETON CARD ──
+function SkeletonCard() {
+  return (
+    <div className="bg-white rounded-[20px] overflow-hidden animate-pulse" style={{boxShadow:"0 2px 16px rgba(0,0,0,0.06)"}}>
+      <div className="bg-sand-300 h-48 w-full" />
+      <div className="p-4 flex flex-col gap-3">
+        <div className="h-3 bg-sand-300 rounded-full w-1/3" />
+        <div className="h-4 bg-sand-300 rounded-full w-2/3" />
+        <div className="flex gap-1">
+          {[1,2,3,4,5].map(i => <div key={i} className="h-2.5 w-2.5 bg-sand-300 rounded-full" />)}
+        </div>
+        <div className="h-3 bg-sand-200 rounded-full w-full" />
+        <div className="flex justify-between items-center pt-2 border-t border-sand-200">
+          <div className="h-6 bg-sand-300 rounded-full w-1/3" />
+          <div className="h-8 bg-sand-300 rounded-full w-24" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── GUIDE CARD ──
 // Fix hydration: pas de <a> imbriqué — on utilise un div cliquable pour la card
 // et un vrai <a> seulement pour le bouton Réserver
@@ -167,6 +188,9 @@ function GuideCard({ g, idx }: { g: Guide; idx: number }) {
 
 
 export default function SearchClient({ guides }: { guides: Guide[] }) {
+  const [pageLoaded, setPageLoaded] = useState(false);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useState(() => { setTimeout(() => setPageLoaded(true), 300); });
   const [city,     setCity]     = useState("All");
   const [lang,     setLang]     = useState("All");
   const [types,    setTypes]    = useState<string[]>([]);
@@ -351,7 +375,7 @@ export default function SearchClient({ guides }: { guides: Guide[] }) {
           </div>
         ) : (
           <div className="flex flex-col gap-3">
-            {filtered.map((g, idx) => <GuideCard key={g.id} g={g} idx={idx} />)}
+            {!pageLoaded ? Array.from({length:4}).map((_,i) => <SkeletonCard key={i} />) : filtered.map((g, idx) => <GuideCard key={g.id} g={g} idx={idx} />)}
           </div>
         )}
 

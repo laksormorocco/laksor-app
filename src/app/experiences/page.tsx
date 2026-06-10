@@ -249,15 +249,16 @@ export default function ExperiencesPage() {
                             <div>
                               <div className="text-[9px] font-bold uppercase tracking-widest mb-2" style={{color:"#B88A44"}}>Programme</div>
                               {t.itinerary.map((step:any, i:number) => (
-                                <div key={i} className="flex gap-2.5 mb-2 last:mb-0">
-                                  <div className="flex flex-col items-center flex-shrink-0">
-                                    <div className="w-6 h-6 rounded-full flex items-center justify-center text-white text-[9px] font-bold" style={{background:"#7D8F69"}}>{i+1}</div>
-                                    {i < t.itinerary.length-1 && <div className="w-px flex-1 my-1" style={{background:"rgba(125,143,105,0.3)"}} />}
+                                <div key={i} className="flex gap-3 mb-3 last:mb-0 relative"
+                                  style={{opacity:1, transform:"translateX(0)", transition:`opacity 0.4s ease-out ${i*120}ms, transform 0.4s ease-out ${i*120}ms`}}>
+                                  <div className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-white text-[9px] font-bold z-10"
+                                    style={{background:"linear-gradient(135deg,#7D8F69,#566547)", minWidth:24, transition:`transform 0.3s ease-out ${i*120+100}ms`}}>
+                                    {i+1}
                                   </div>
-                                  <div className="flex-1 pb-1">
+                                  <div className="flex-1 bg-white rounded-xl px-3 py-2" style={{border:"1px solid rgba(234,220,200,0.6)", boxShadow:"0 1px 4px rgba(0,0,0,0.04)"}}>
                                     {step.time && <div className="text-[9px] font-bold mb-0.5" style={{color:"#B88A44"}}>{step.time}</div>}
                                     <div className="text-xs font-semibold text-charcoal-800">{step.title}</div>
-                                    {step.desc && <div className="text-[10px] text-charcoal-400 mt-0.5">{step.desc}</div>}
+                                    {step.desc && <div className="text-[10px] text-charcoal-400 mt-0.5 leading-relaxed">{step.desc}</div>}
                                   </div>
                                 </div>
                               ))}
