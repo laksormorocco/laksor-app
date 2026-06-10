@@ -100,8 +100,7 @@ export default function EditExperiencePage() {
   async function save() {
     if (!form.title || !form.price) return alert("Titre et prix requis");
     setSaving(true);
-    const clean = (s: string) => s.replace(/[
-
+    const clean = (s: string) => s.replace(/\s+/g, " ").trim();
 	]/g, " ").trim();
     const data: any = {
       id: expId,
