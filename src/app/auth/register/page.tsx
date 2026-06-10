@@ -51,7 +51,7 @@ export default function RegisterGuidePage() {
     if (!regEmail || !regPassword || !regName) return alert("Remplissez tous les champs");
     setRegLoading(true);
     const { data, error } = await supabase.auth.signUp({ email: regEmail, password: regPassword, options: { data: { full_name: regName } } });
-    if (error) alert(error.message);
+    if (error) { if (error.message.includes("already registered")) alert("Cet email est deja utilise. Connectez-vous sur /auth/login."); else alert(error.message); }
     else if (data.user) { setUser(data.user); setForm(f => ({ ...f, displayName: regName })); }
     setRegLoading(false);
   }
