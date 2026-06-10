@@ -55,19 +55,25 @@ export default function BookingPage() {
   const [hotelLocation, setHotelLocation] = useState<"inside"|"outside">("inside");
 
   useEffect(() => {
+    if (!expId) return;
+    fetch("/api/admin/experiences?id=" + expId)
+      .then(r => r.json())
+      .then(d => {
+        if (d.experience) {
+          setExperience(d.experience);
+        }
+      });
+  }, [expId]);
+
+  useEffect(() => {
     if (!guideId) return;
     const requests: Promise<any>[] = [
       fetch("/api/guide/public?guideId=" + guideId).then(r => r.json()),
       fetch("/api/guide/availability?guideId=" + guideId).then(r => r.json()),
     ];
-    if (expId) requests.push(fetch("/api/admin/experiences?id=" + expId).then(r => r.json()));
-    Promise.all(requests).then(([guideData, availData, expData]) => {
+    Promise.all(requests).then(([guideData, availData]) => {
       setGuide(guideData.guide);
       setBookedDates(availData.bookedDates || []);
-      if (expData?.experience) {
-        setExperience(expData.experience);
-        if (expData.experience.departureSlots?.length > 0) setSelectedSlot(expData.experience.departureSlots[0]);
-      }
       setLoading(false);
     });
   }, [guideId]);
