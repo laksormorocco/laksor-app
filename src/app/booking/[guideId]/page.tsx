@@ -34,6 +34,7 @@ export default function BookingPage() {
   const expId = searchParams?.get("expId") || null;
   const tourPriceParam = searchParams?.get("tourPrice") ? Number(searchParams.get("tourPrice")) : null;
   const isExperience = !!expId;
+  const bookingType = searchParams?.get("bookingType") || "group";
 
   const [guide, setGuide] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -200,7 +201,7 @@ export default function BookingPage() {
               </div>
               {isExperience ? (
                 <div className="flex flex-col gap-3">
-                  <div className="text-[10px] text-charcoal-400">💡 Prix : {convert(tourPriceParam || 0)} par personne</div>
+                  <div className="text-[10px] text-charcoal-400">💡 Prix : {convert(tourPriceParam || 0)} par personne · {bookingType === "private" ? "🔒 Privé 2-5 pers." : "👥 Groupe"}</div>
                   <MiniCal value={selectedDates[0] || ""} onChange={v => { setSelectedDates([v]); if (!isExperience) setTotal((tourPriceParam || 0) * persons); }} />
                 </div>
               ) : (
