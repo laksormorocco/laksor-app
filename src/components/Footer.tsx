@@ -60,7 +60,7 @@ export default function Footer() {
           style={{display:"flex", alignItems:"center", gap:6, background:"rgba(255,255,255,0.08)", color:"#fff", borderRadius:999, padding:"9px 18px", fontSize:12, fontWeight:700, textDecoration:"none"}}>
           ✉️ Email
         </a>
-        <a href="https://instagram.com/laksor.ma" target="_blank" rel="noopener noreferrer"
+        <a href="https://www.instagram.com/laksor.morocco" target="_blank" rel="noopener noreferrer"
           style={{display:"flex", alignItems:"center", gap:6, background:"rgba(255,255,255,0.08)", color:"#fff", borderRadius:999, padding:"9px 18px", fontSize:12, fontWeight:700, textDecoration:"none"}}>
           📸 Instagram
         </a>
