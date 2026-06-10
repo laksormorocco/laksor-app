@@ -444,24 +444,60 @@ export default function BookingPage() {
         {step === "recap" && (
           <>
             <div className="bg-white rounded-2xl border border-sand-300 p-4">
+              {/* TITRE EXPERIENCE */}
+              {isExperience && experience && (
+                <div className="mb-4 pb-3 border-b border-sand-200">
+                  <div className="text-[10px] font-bold text-bronze-500 uppercase tracking-widest mb-1">Experience Laksor</div>
+                  <div className="font-display text-base font-bold text-charcoal-800">{experience.title}</div>
+                  <div className="flex items-center gap-2 mt-1.5">
+                    <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold" style={{background:"rgba(184,138,68,0.1)", color:"#B88A44"}}>{bookingType === "private" ? "🔒 Prive" : "👥 Groupe"}</span>
+                    {experience.duration && <span className="text-[10px] text-charcoal-400">⏱ {experience.duration}</span>}
+                    {experience.meetingPoint && <span className="text-[10px] text-charcoal-400">📍 {experience.meetingPoint}</span>}
+                  </div>
+                </div>
+              )}
               <div className="text-[10px] font-bold text-charcoal-800 uppercase tracking-widest mb-3">Récapitulatif</div>
               <div className="flex flex-col gap-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-charcoal-400">Date</span>
-                  <span className="font-semibold text-charcoal-800">{selectedDates[0] ? new Date(selectedDates[0] + "T00:00:00").toLocaleDateString("fr-FR", {weekday:"long", day:"numeric", month:"long"}) : "-"} {selectedDates[0] && ("· " + startHour)}</span>
+                  <span className="font-semibold text-charcoal-800">{selectedDates[0] ? new Date(selectedDates[0] + "T00:00:00").toLocaleDateString("fr-FR", {weekday:"long", day:"numeric", month:"long"}) : "-"}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-charcoal-400">Heure de départ</span>
+                  <span className="font-semibold text-charcoal-800">{selectedSlot || startHour || "-"}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-charcoal-400">Participants</span>
-                  <span className="font-semibold text-charcoal-800">{persons} pers.</span>
+                  <span className="font-semibold text-charcoal-800">{persons} pers. ({adults} adultes{children > 0 ? ", " + children + " enfants" : ""})</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-charcoal-400">Transport</span>
-                  <span className="font-semibold text-charcoal-800">{isExperience ? "Inclus" : (transport ? "Oui" : "Non")}</span>
+                  <span className="font-semibold text-charcoal-800">{bookingType === "private" ? "Inclus 🎉" : hotelLocation === "outside" ? "Hors zone (+" + convert(transportExtraFee) + ")" : "Gratuit ✓"}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-charcoal-400">Paiement</span>
                   <span className="font-semibold text-charcoal-800">{payment === "deposit" ? "Acompte 30%" : payment === "full" ? "100% en ligne" : "Cash"}</span>
                 </div>
+                {isExperience && experience?.included?.length > 0 && (
+                  <div className="mt-2 pt-2 border-t border-sand-200">
+                    <div className="text-[10px] font-bold text-sage-300 mb-1.5">✓ Inclus</div>
+                    <div className="flex flex-wrap gap-1">
+                      {experience.included.map((item:string) => (
+                        <span key={item} className="text-[10px] px-2 py-0.5 rounded-full" style={{background:"rgba(125,143,105,0.1)", color:"#7D8F69"}}>{item}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {isExperience && experience?.notIncluded?.length > 0 && (
+                  <div className="mt-1">
+                    <div className="text-[10px] font-bold text-red-400 mb-1.5">✗ A prévoir</div>
+                    <div className="flex flex-wrap gap-1">
+                      {experience.notIncluded.map((item:string) => (
+                        <span key={item} className="text-[10px] px-2 py-0.5 rounded-full bg-red-50 text-red-400">{item}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 <div className="border-t border-sand-200 pt-2 flex flex-col gap-1.5">
                   {isExperience && (
                     <div className="flex justify-between text-xs text-charcoal-400">
