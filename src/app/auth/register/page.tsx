@@ -28,6 +28,10 @@ export default function RegisterGuidePage() {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [regEmail, setRegEmail] = useState("");
+  const [regPassword, setRegPassword] = useState("");
+  const [regName, setRegName] = useState("");
+  const [regLoading, setRegLoading] = useState(false);
   const [form, setForm] = useState({
     displayName:"", phone:"", city:"", bio:"",
     languages:"", specialties:"", halfDayPrice:"500", fullDayPrice:"950"
@@ -42,6 +46,15 @@ export default function RegisterGuidePage() {
       setLoading(false);
     });
   }, []);
+
+  async function signUpWithEmail() {
+    if (!regEmail || !regPassword || !regName) return alert("Remplissez tous les champs");
+    setRegLoading(true);
+    const { data, error } = await supabase.auth.signUp({ email: regEmail, password: regPassword, options: { data: { full_name: regName } } });
+    if (error) alert(error.message);
+    else if (data.user) { setUser(data.user); setForm(f => ({ ...f, displayName: regName })); }
+    setRegLoading(false);
+  }
 
   async function signInWithGoogle() {
     await supabase.auth.signInWithOAuth({
@@ -134,7 +147,22 @@ export default function RegisterGuidePage() {
           <div className="bg-white rounded-2xl p-6 border border-sand-300 text-center">
             <div className="w-16 h-16 bg-sand-200 rounded-2xl flex items-center justify-center mx-auto mb-4 text-3xl">🔐</div>
             <h2 className="font-display text-lg font-semibold text-charcoal-800 mb-2">Connectez-vous d&apos;abord</h2>
-            <p className="text-sm text-charcoal-400 mb-6 leading-relaxed">Utilisez votre compte Google pour créer votre profil guide</p>
+            <p className="text-sm text-charcoal-400 mb-5 leading-relaxed">Creez un compte ou connectez-vous pour continuer</p>
+            <div className="flex flex-col gap-3 mb-5 text-left">
+              <input type="text" value={regName} onChange={e => setRegName(e.target.value)} placeholder="Votre nom complet" className="w-full border border-sand-300 rounded-xl px-4 py-3 text-sm outline-none focus:border-bronze-500 bg-sand-100" />
+              <input type="email" value={regEmail} onChange={e => setRegEmail(e.target.value)} placeholder="Email" className="w-full border border-sand-300 rounded-xl px-4 py-3 text-sm outline-none focus:border-bronze-500 bg-sand-100" />
+              <input type="password" value={regPassword} onChange={e => setRegPassword(e.target.value)} placeholder="Mot de passe (min. 8 caracteres)" className="w-full border border-sand-300 rounded-xl px-4 py-3 text-sm outline-none focus:border-bronze-500 bg-sand-100" />
+              <button onClick={signUpWithEmail} disabled={!regEmail || !regPassword || !regName || regLoading}
+                className="w-full text-white font-bold py-3.5 rounded-full text-sm disabled:opacity-40"
+                style={{background:"linear-gradient(135deg, #B88A44, #9A7238)"}}>
+                {regLoading ? "..." : "Continuer avec email"}
+              </button>
+            </div>
+            <div className="flex items-center gap-3 mb-5">
+              <div className="flex-1 h-px bg-sand-200" />
+              <span className="text-xs text-charcoal-400">ou</span>
+              <div className="flex-1 h-px bg-sand-200" />
+            </div>
             <button onClick={signInWithGoogle}
               className="w-full flex items-center justify-center gap-3 bg-white border-2 border-sand-300 rounded-full px-6 py-3.5 text-sm font-bold text-charcoal-800 hover:border-bronze-500 transition-colors">
               <svg width="18" height="18" viewBox="0 0 24 24">
