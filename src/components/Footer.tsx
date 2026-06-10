@@ -1,79 +1,69 @@
 import Link from "next/link";
+import { InstagramLogo, WhatsappLogo, EnvelopeSimple } from "@phosphor-icons/react/dist/ssr";
 
 export default function Footer() {
   return (
-    <footer style={{background:"#1A1A1A", color:"#fff", fontFamily:"var(--font-body)", padding:"48px 20px 32px"}}>
+    <footer className="bg-white border-t border-sand-300 px-5 pt-10 pb-8">
 
-      {/* TOP : Logo + tagline */}
-      <div style={{textAlign:"center", marginBottom:40}}>
-        <img src="/logo7.png" alt="Laksor" style={{height:40, width:"auto", objectFit:"contain", maxWidth:140, marginBottom:12, filter:"brightness(0) invert(1)"}} />
-        <p style={{color:"rgba(255,255,255,0.4)", fontSize:12, lineHeight:1.7, maxWidth:280, margin:"0 auto"}}>
+      {/* LOGO + TAGLINE */}
+      <div className="text-center mb-8">
+        <img src="/logo7.png" alt="Laksor" style={{height:36, width:"auto", objectFit:"contain", maxWidth:120}} className="mx-auto mb-3" />
+        <p className="text-xs text-charcoal-400 leading-relaxed max-w-xs mx-auto">
           Discover Morocco with certified local guides.<br/>
           Authentic experiences · Private tours
         </p>
       </div>
 
-      {/* GRID LINKS */}
-      <div style={{display:"grid", gridTemplateColumns:"1fr 1fr", gap:"32px 16px", marginBottom:36}}>
+      {/* LINKS */}
+      <div className="grid grid-cols-2 gap-6 mb-8">
         <div>
-          <div style={{fontSize:10, fontWeight:800, color:"#B88A44", letterSpacing:2, textTransform:"uppercase", marginBottom:14}}>Discover</div>
+          <div className="text-[10px] font-bold text-bronze-500 uppercase tracking-widest mb-3">Discover</div>
           {[
             ["Find a guide", "/search"],
             ["Experiences", "/experiences"],
-            ["Marrakech guides", "/search?city=Marrakech"],
-            ["Fès guides", "/search?city=Fes"],
-            ["Essaouira guides", "/search?city=Essaouira"],
+            ["Marrakech", "/search?city=Marrakech"],
+            ["Fès", "/search?city=Fes"],
+            ["Essaouira", "/search?city=Essaouira"],
           ].map(([l, h]) => (
-            <Link key={l} href={h} style={{display:"block", color:"rgba(255,255,255,0.45)", fontSize:13, marginBottom:10, textDecoration:"none"}}>{l}</Link>
+            <Link key={l} href={h} className="block text-sm text-charcoal-400 mb-2.5 no-underline hover:text-bronze-500 transition-colors">{l}</Link>
           ))}
         </div>
         <div>
-          <div style={{fontSize:10, fontWeight:800, color:"#B88A44", letterSpacing:2, textTransform:"uppercase", marginBottom:14}}>Guides</div>
+          <div className="text-[10px] font-bold text-bronze-500 uppercase tracking-widest mb-3">Guides</div>
           {[
             ["Become a guide", "/auth/register"],
-            ["Guide dashboard", "/dashboard/guide"],
             ["Guide charter", "/legal/charte-guides"],
             ["About Laksor", "/about"],
           ].map(([l, h]) => (
-            <Link key={l} href={h} style={{display:"block", color:"rgba(255,255,255,0.45)", fontSize:13, marginBottom:10, textDecoration:"none"}}>{l}</Link>
+            <Link key={l} href={h} className="block text-sm text-charcoal-400 mb-2.5 no-underline hover:text-bronze-500 transition-colors">{l}</Link>
           ))}
         </div>
       </div>
 
-      {/* STATS */}
-      <div style={{display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:8, marginBottom:32, background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.07)", borderRadius:16, padding:"16px 12px"}}>
-        {[{val:"47+",lbl:"Guides"},{val:"5",lbl:"Cities"},{val:"⭐4.9",lbl:"Rating"}].map(s => (
-          <div key={s.lbl} style={{textAlign:"center"}}>
-            <div style={{fontFamily:"var(--font-serif)", fontSize:18, fontWeight:700, color:"#B88A44"}}>{s.val}</div>
-            <div style={{fontSize:10, color:"rgba(255,255,255,0.3)", marginTop:3}}>{s.lbl}</div>
-          </div>
-        ))}
-      </div>
-
-      {/* CONTACT */}
-      <div style={{display:"flex", gap:10, justifyContent:"center", marginBottom:32}}>
+      {/* SOCIAL */}
+      <div className="flex items-center justify-center gap-3 mb-8">
         <a href="https://wa.me/212657436342" target="_blank" rel="noopener noreferrer"
-          style={{display:"flex", alignItems:"center", gap:6, background:"#25D366", color:"#fff", borderRadius:999, padding:"9px 18px", fontSize:12, fontWeight:700, textDecoration:"none"}}>
-          💬 WhatsApp
-        </a>
-        <a href="mailto:contact@laksor.ma"
-          style={{display:"flex", alignItems:"center", gap:6, background:"rgba(255,255,255,0.08)", color:"#fff", borderRadius:999, padding:"9px 18px", fontSize:12, fontWeight:700, textDecoration:"none"}}>
-          ✉️ Email
+          className="flex items-center gap-2 text-xs font-bold text-white px-4 py-2.5 rounded-full no-underline"
+          style={{background:"#25D366"}}>
+          <WhatsappLogo size={14} weight="fill" /> WhatsApp
         </a>
         <a href="https://www.instagram.com/laksor.morocco" target="_blank" rel="noopener noreferrer"
-          style={{display:"flex", alignItems:"center", gap:6, background:"rgba(255,255,255,0.08)", color:"#fff", borderRadius:999, padding:"9px 18px", fontSize:12, fontWeight:700, textDecoration:"none"}}>
-          📸 Instagram
+          className="flex items-center gap-2 text-xs font-bold text-white px-4 py-2.5 rounded-full no-underline"
+          style={{background:"linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)"}}>
+          <InstagramLogo size={14} weight="fill" /> Instagram
+        </a>
+        <a href="mailto:contact@laksor.ma"
+          className="flex items-center gap-2 text-xs font-semibold text-charcoal-600 px-4 py-2.5 rounded-full no-underline border border-sand-300">
+          <EnvelopeSimple size={14} weight="fill" /> Email
         </a>
       </div>
 
       {/* BOTTOM */}
-      <div style={{borderTop:"1px solid rgba(255,255,255,0.08)", paddingTop:20, textAlign:"center"}}>
-        <p style={{color:"rgba(255,255,255,0.2)", fontSize:11, marginBottom:12}}>
-          © 2026 Laksor Morocco · All rights reserved
-        </p>
-        <div style={{display:"flex", gap:16, justifyContent:"center", flexWrap:"wrap"}}>
-          {[["Terms","/ legal/cgv"],["Usage Policy","/legal/cgu"],["Privacy","/legal/privacy"],["Guide Charter","/legal/charte-guides"]].map(([l,h]) => (
-            <Link key={l} href={h} style={{color:"rgba(255,255,255,0.2)", fontSize:11, textDecoration:"none"}}>{l}</Link>
+      <div className="border-t border-sand-200 pt-5 text-center">
+        <p className="text-[11px] text-charcoal-300 mb-3">© 2026 Laksor Morocco · All rights reserved</p>
+        <div className="flex gap-4 justify-center flex-wrap">
+          {[["Terms","/legal/cgv"],["Usage","/legal/cgu"],["Privacy","/legal/privacy"],["Guide Charter","/legal/charte-guides"]].map(([l,h]) => (
+            <Link key={l} href={h} className="text-[11px] text-charcoal-300 no-underline hover:text-bronze-500 transition-colors">{l}</Link>
           ))}
         </div>
       </div>
