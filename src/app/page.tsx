@@ -50,7 +50,7 @@ export default async function HomePage() {
   }
 
   return (
-    <div className="bg-sand-200 min-h-screen pb-20">
+    <div className="bg-sand-200">
 
       <HomeHero />
 
