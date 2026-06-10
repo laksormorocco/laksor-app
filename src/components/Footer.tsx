@@ -2,111 +2,78 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer style={{
-      background: "var(--charcoal)",
-      color: "#fff",
-      fontFamily: "var(--font-body)",
-      padding: "40px 20px 32px",
-    }}>
+    <footer style={{background:"#1A1A1A", color:"#fff", fontFamily:"var(--font-body)", padding:"48px 20px 32px"}}>
 
-      {/* LOGO */}
-      <div style={{ textAlign: "center", marginBottom: 32 }}>
-        <div style={{ display: "inline-flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
-          <div style={{ width: 36, height: 36, borderRadius: 10, background: "var(--bronze-g)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <span style={{ color: "#fff", fontWeight: 900, fontSize: 18, fontFamily: "var(--font-serif)" }}>L</span>
-          </div>
-          <div>
-            <div style={{ fontFamily: "var(--font-serif)", fontWeight: 700, fontSize: 18, color: "#fff", lineHeight: 1 }}>Laksor</div>
-            <div style={{ fontSize: 8, color: "rgba(255,255,255,0.35)", letterSpacing: 1.5, textTransform: "uppercase" }}>Morocco</div>
-          </div>
-        </div>
-        <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, lineHeight: 1.65, maxWidth: 260, margin: "0 auto" }}>
-          Connecter les voyageurs aux meilleurs guides locaux du Maroc
+      {/* TOP : Logo + tagline */}
+      <div style={{textAlign:"center", marginBottom:40}}>
+        <img src="/logo7.png" alt="Laksor" style={{height:40, width:"auto", objectFit:"contain", maxWidth:140, marginBottom:12, filter:"brightness(0) invert(1)"}} />
+        <p style={{color:"rgba(255,255,255,0.4)", fontSize:12, lineHeight:1.7, maxWidth:280, margin:"0 auto"}}>
+          Discover Morocco with certified local guides.<br/>
+          Authentic experiences · Private tours
         </p>
       </div>
 
-      {/* LINKS */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginBottom: 32 }}>
+      {/* GRID LINKS */}
+      <div style={{display:"grid", gridTemplateColumns:"1fr 1fr", gap:"32px 16px", marginBottom:36}}>
         <div>
-          <div style={{ fontSize: 10, fontWeight: 800, color: "var(--bronze)", letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 14 }}>
-            Découvrir
-          </div>
+          <div style={{fontSize:10, fontWeight:800, color:"#B88A44", letterSpacing:2, textTransform:"uppercase", marginBottom:14}}>Discover</div>
           {[
-            ["Trouver un guide",  "/search"],
-            ["Transport privé",   "/transport"],
-            ["Comment ça marche", "/#how"],
-            ["Villes du Maroc",   "/search"],
-          ].map(([label, href]) => (
-            <Link key={label} href={href} style={{ display: "block", color: "rgba(255,255,255,0.5)", fontSize: 12, marginBottom: 10, textDecoration: "none" }}>
-              {label}
-            </Link>
+            ["Find a guide", "/search"],
+            ["Experiences", "/experiences"],
+            ["Marrakech guides", "/search?city=Marrakech"],
+            ["Fès guides", "/search?city=Fes"],
+            ["Essaouira guides", "/search?city=Essaouira"],
+          ].map(([l, h]) => (
+            <Link key={l} href={h} style={{display:"block", color:"rgba(255,255,255,0.45)", fontSize:13, marginBottom:10, textDecoration:"none"}}>{l}</Link>
           ))}
         </div>
         <div>
-          <div style={{ fontSize: 10, fontWeight: 800, color: "var(--bronze)", letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 14 }}>
-            Guides & Pros
-          </div>
+          <div style={{fontSize:10, fontWeight:800, color:"#B88A44", letterSpacing:2, textTransform:"uppercase", marginBottom:14}}>Guides</div>
           {[
-            ["Devenir guide",    "/auth/register"],
-            ["Dashboard guide",  "/dashboard/guide"],
-            ["FAQ",              "/faq"],
-            ["À propos",         "/about"],
-          ].map(([label, href]) => (
-            <Link key={label} href={href} style={{ display: "block", color: "rgba(255,255,255,0.5)", fontSize: 12, marginBottom: 10, textDecoration: "none" }}>
-              {label}
-            </Link>
+            ["Become a guide", "/auth/register"],
+            ["Guide dashboard", "/dashboard/guide"],
+            ["Guide charter", "/legal/charte-guides"],
+            ["About Laksor", "/about"],
+          ].map(([l, h]) => (
+            <Link key={l} href={h} style={{display:"block", color:"rgba(255,255,255,0.45)", fontSize:13, marginBottom:10, textDecoration:"none"}}>{l}</Link>
           ))}
         </div>
       </div>
 
       {/* STATS */}
-      <div style={{
-        display: "grid", gridTemplateColumns: "1fr 1fr 1fr",
-        gap: 10, marginBottom: 28,
-        background: "rgba(255,255,255,0.04)",
-        border: "1px solid rgba(255,255,255,0.07)",
-        borderRadius: 16, padding: "16px 12px",
-      }}>
-        {[
-          { val: "47+",  label: "Guides"  },
-          { val: "5",    label: "Villes"  },
-          { val: "⭐4.9", label: "Note"   },
-        ].map(s => (
-          <div key={s.label} style={{ textAlign: "center" }}>
-            <div style={{ fontFamily: "var(--font-serif)", fontSize: 18, fontWeight: 700, color: "var(--bronze)" }}>{s.val}</div>
-            <div style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", marginTop: 3 }}>{s.label}</div>
+      <div style={{display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:8, marginBottom:32, background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.07)", borderRadius:16, padding:"16px 12px"}}>
+        {[{val:"47+",lbl:"Guides"},{val:"5",lbl:"Cities"},{val:"⭐4.9",lbl:"Rating"}].map(s => (
+          <div key={s.lbl} style={{textAlign:"center"}}>
+            <div style={{fontFamily:"var(--font-serif)", fontSize:18, fontWeight:700, color:"#B88A44"}}>{s.val}</div>
+            <div style={{fontSize:10, color:"rgba(255,255,255,0.3)", marginTop:3}}>{s.lbl}</div>
           </div>
         ))}
       </div>
 
       {/* CONTACT */}
-      <div style={{ display: "flex", gap: 10, marginBottom: 28, justifyContent: "center" }}>
-        <a
-          href="https://wa.me/212657436342"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ display: "flex", alignItems: "center", gap: 6, background: "#25D366", color: "#fff", borderRadius: "999px", padding: "9px 18px", fontSize: 12, fontWeight: 700, textDecoration: "none" }}
-        >
+      <div style={{display:"flex", gap:10, justifyContent:"center", marginBottom:32}}>
+        <a href="https://wa.me/212657436342" target="_blank" rel="noopener noreferrer"
+          style={{display:"flex", alignItems:"center", gap:6, background:"#25D366", color:"#fff", borderRadius:999, padding:"9px 18px", fontSize:12, fontWeight:700, textDecoration:"none"}}>
           💬 WhatsApp
         </a>
-        <a
-          href="mailto:laksor.morocco@gmail.com"
-          style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,0.08)", color: "#fff", borderRadius: "999px", padding: "9px 18px", fontSize: 12, fontWeight: 700, textDecoration: "none" }}
-        >
+        <a href="mailto:contact@laksor.ma"
+          style={{display:"flex", alignItems:"center", gap:6, background:"rgba(255,255,255,0.08)", color:"#fff", borderRadius:999, padding:"9px 18px", fontSize:12, fontWeight:700, textDecoration:"none"}}>
           ✉️ Email
+        </a>
+        <a href="https://instagram.com/laksor.ma" target="_blank" rel="noopener noreferrer"
+          style={{display:"flex", alignItems:"center", gap:6, background:"rgba(255,255,255,0.08)", color:"#fff", borderRadius:999, padding:"9px 18px", fontSize:12, fontWeight:700, textDecoration:"none"}}>
+          📸 Instagram
         </a>
       </div>
 
       {/* BOTTOM */}
-      <div style={{ borderTop: "1px solid rgba(255,255,255,0.08)", paddingTop: 20, textAlign: "center" }}>
-        <p style={{ color: "rgba(255,255,255,0.25)", fontSize: 11, marginBottom: 10 }}>
-          © 2026 Laksor Morocco · Tous droits réservés
+      <div style={{borderTop:"1px solid rgba(255,255,255,0.08)", paddingTop:20, textAlign:"center"}}>
+        <p style={{color:"rgba(255,255,255,0.2)", fontSize:11, marginBottom:12}}>
+          © 2026 Laksor Morocco · All rights reserved
         </p>
-        <div style={{ display: "flex", gap: 16, justifyContent: "center" }}>
-          {[["CGV", "/legal/cgv"], ["CGU", "/legal/cgu"], ["Confidentialité", "/legal/privacy"], ["Charte Guides", "/legal/charte-guides"]].map(([label, href]) => (
-            <Link key={label} href={href} style={{ color: "rgba(255,255,255,0.25)", fontSize: 11, textDecoration: "none" }}>
-              {label}
-            </Link>
+        <div style={{display:"flex", gap:16, justifyContent:"center", flexWrap:"wrap"}}>
+          {[["Terms","/ legal/cgv"],["Usage Policy","/legal/cgu"],["Privacy","/legal/privacy"],["Guide Charter","/legal/charte-guides"]].map(([l,h]) => (
+            <Link key={l} href={h} style={{color:"rgba(255,255,255,0.2)", fontSize:11, textDecoration:"none"}}>{l}</Link>
           ))}
         </div>
       </div>
