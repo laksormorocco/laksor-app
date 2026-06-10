@@ -56,7 +56,7 @@ export default async function HomePage() {
 
       {/* STATS */}
       <div className="px-4 mt-4 max-w-2xl mx-auto">
-        <div className="bg-white rounded-2xl shadow-md flex justify-around text-center py-4 px-2">
+        <div className="bg-white rounded-2xl shadow-md flex justify-around text-center py-4 px-2 animate-fade-up">
           {[
             { n: "47+",   label: "Guides",        cls: "text-bronze-500" },
             { n: "28+",   label: "Chauffeurs",    cls: "text-sage-300"   },
@@ -77,15 +77,15 @@ export default async function HomePage() {
       {/* TOP GUIDES */}
       <section className="mt-8 px-4 max-w-2xl mx-auto">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="font-display text-xl font-semibold text-charcoal-800">Top Guides</h2>
+          <h2 className="font-display text-xl font-semibold text-charcoal-800 animate-fade-up">Top Guides</h2>
           <a href="/search" className="flex items-center gap-1 text-xs font-bold text-bronze-500">
             Voir tout <ArrowRight size={13} weight="bold" />
           </a>
         </div>
 
     <div className="grid grid-cols-2 gap-3 items-stretch">
-          {guides.map((g) => (
-            <a key={g.id} href={`/guide/${g.slug || g.id}`} className="no-underline block active:scale-[0.97] transition-all">
+          {guides.map((g, idx) => (
+            <a key={g.id} href={`/guide/${g.slug || g.id}`} className="no-underline block active:scale-[0.97] transition-all animate-fade-up" style={{animationDelay: `${idx * 100}ms`, animationFillMode:"both"}}>
               <div className="bg-white overflow-hidden flex flex-col h-full" style={{borderRadius:20, boxShadow:"0 2px 14px rgba(0,0,0,0.08)"}}>
                 <div className="relative" style={{height:180}}>
                   <img
@@ -146,7 +146,7 @@ export default async function HomePage() {
 
       {/* VILLES */}
       <section className="mt-10 max-w-2xl mx-auto">
-        <h2 className="font-display text-xl font-semibold text-charcoal-800 mb-4 px-4">Explorer par ville</h2>
+        <h2 className="font-display text-xl font-semibold text-charcoal-800 mb-4 px-4 animate-fade-up">Explorer par ville</h2>
         <div className="flex gap-3 px-4 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }}>
           {CITIES.map((c) => (
             <a key={c.name} href={`/search?city=${encodeURIComponent(c.name)}`}
