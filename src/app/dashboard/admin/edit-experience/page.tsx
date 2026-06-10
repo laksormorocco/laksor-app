@@ -100,11 +100,13 @@ export default function EditExperiencePage() {
   async function save() {
     if (!form.title || !form.price) return alert("Titre et prix requis");
     setSaving(true);
+    const clean = (s: string) => s.replace(/[
+	]/g, " ").trim();
     const data: any = {
       id: expId,
-      title: form.title, description: form.description,
+      title: clean(form.title), description: clean(form.description),
       price: Number(form.price), city: form.city,
-      meetingPoint: form.meetingPoint, duration: form.duration,
+      meetingPoint: clean(form.meetingPoint), duration: form.duration,
       groupSize: form.groupSize, difficulty: "Facile",
       providerContact: form.providerContact,
       tags: form.tags ? form.tags.split(",").map((s: string) => s.trim()).filter(Boolean) : [],
