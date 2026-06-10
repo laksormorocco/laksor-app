@@ -50,16 +50,24 @@ export default function BookingPage() {
   const [guestName, setGuestName] = useState("");
   const [guestContact, setGuestContact] = useState("");
   const [startHour, setStartHour] = useState("09:00");
+  const [experience, setExperience] = useState<any>(null);
+  const [selectedSlot, setSelectedSlot] = useState<string>("");
   const [hotelLocation, setHotelLocation] = useState<"inside"|"outside">("inside");
 
   useEffect(() => {
     if (!guideId) return;
-    Promise.all([
+    const requests: Promise<any>[] = [
       fetch("/api/guide/public?guideId=" + guideId).then(r => r.json()),
       fetch("/api/guide/availability?guideId=" + guideId).then(r => r.json()),
-    ]).then(([guideData, availData]) => {
+    ];
+    if (expId) requests.push(fetch("/api/admin/experiences?id=" + expId).then(r => r.json()));
+    Promise.all(requests).then(([guideData, availData, expData]) => {
       setGuide(guideData.guide);
       setBookedDates(availData.bookedDates || []);
+      if (expData?.experience) {
+        setExperience(expData.experience);
+        if (expData.experience.departureSlots?.length > 0) setSelectedSlot(expData.experience.departureSlots[0]);
+      }
       setLoading(false);
     });
   }, [guideId]);
@@ -204,7 +212,30 @@ export default function BookingPage() {
               {isExperience ? (
                 <div className="flex flex-col gap-3">
                   <div className="text-[10px] text-charcoal-400">💡 Prix : {convert(tourPriceParam || 0)} par personne · {bookingType === "private" ? "🔒 Privé 2-5 pers." : "👥 Groupe"}</div>
-                  <MiniCal value={selectedDates[0] || ""} onChange={v => { setSelectedDates([v]); if (!isExperience) setTotal((tourPriceParam || 0) * persons); }} />
+                  <MiniCal value={selectedDates[0] || ""} onChange={v => { setSelectedDates([v]); }} />
+                  {/* CRENEAUX GROUPE */}
+                  {bookingType === "group" && experience?.departureSlots?.length > 0 && (
+                    <div>
+                      <div className="text-xs font-bold text-charcoal-400 mb-2">🕐 Créneau de départ</div>
+                      <div className="flex gap-2 flex-wrap">
+                        {experience.departureSlots.map((slot:string) => (
+                          <button key={slot} onClick={() => setSelectedSlot(slot)}
+                            className={"px-4 py-2 rounded-full text-xs font-bold border transition-all " + (selectedSlot === slot ? "bg-bronze-500 text-white border-bronze-500" : "bg-white text-charcoal-600 border-sand-300")}>
+                            {slot}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {/* HEURE LIBRE PRIVE */}
+                  {bookingType === "private" && (
+                    <div>
+                      <div className="text-xs font-bold text-charcoal-400 mb-2">🕐 Votre heure de départ</div>
+                      <input type="time" value={selectedSlot} onChange={e => setSelectedSlot(e.target.value)}
+                        className="w-full border border-sand-300 rounded-xl px-4 py-3 text-sm outline-none focus:border-bronze-500 bg-white" />
+                      <div className="text-[10px] text-charcoal-400 mt-1">Choisissez l heure qui vous convient</div>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <>
