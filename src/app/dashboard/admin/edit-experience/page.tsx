@@ -122,7 +122,7 @@ export default function EditExperiencePage() {
       groupDiscount2: form.groupDiscount2 ? Number(form.groupDiscount2) : undefined,
       status: "APPROVED", isActive: true,
     };
-    const res = await fetch("/api/guide/experiences", {
+    console.log("DATA SENT:", JSON.stringify(data)); const res = await fetch("/api/guide/experiences", {
       method: "PATCH", headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data)
     });
