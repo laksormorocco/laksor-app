@@ -217,6 +217,16 @@ export default async function HomePage() {
       </section>
 
 
+      {/* FOOTER LEGAL */}
+      <div className="px-5 py-6 border-t border-sand-300 mt-4">
+        <div className="flex flex-wrap gap-3 justify-center mb-3">
+          {[["CGV", "/legal/cgv"], ["CGU", "/legal/cgu"], ["Confidentialite", "/legal/privacy"], ["Charte Guides", "/legal/charte-guides"]].map(([label, href]) => (
+            <a key={label} href={href} className="text-[11px] text-charcoal-400 no-underline hover:text-bronze-500 transition-colors">{label}</a>
+          ))}
+        </div>
+        <p className="text-center text-[10px] text-charcoal-300">© 2026 Laksor Morocco · Tous droits reserves</p>
+      </div>
+
       <BottomNav />
       <div className="h-20" />
     </div>
