@@ -101,7 +101,8 @@ export default function EditExperiencePage() {
     if (!form.title || !form.price) return alert("Titre et prix requis");
     setSaving(true);
     const clean = (s: string) => s.replace(/[
-	]/g, " ").trim();
+
+	]/g, " ").trim();
     const data: any = {
       id: expId,
       title: clean(form.title), description: clean(form.description),
@@ -129,7 +130,7 @@ export default function EditExperiencePage() {
       body: JSON.stringify(data)
     });
     if (res.ok) { window.location.href = "/dashboard/admin"; }
-    else { const errData = await res.json().catch(() => ({})); alert("Erreur: " + JSON.stringify(errData)); }
+    else { const errText = await res.text().catch(() => "unknown"); alert("Status: " + res.status + " | " + errText.slice(0, 300)); }
     setSaving(false);
   }
 
