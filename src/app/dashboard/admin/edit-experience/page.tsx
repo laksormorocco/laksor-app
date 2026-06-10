@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { ArrowLeft, Image, MapPin, CurrencyDollar, ListBullets, Tag, Clock } from "@phosphor-icons/react";
+import { ArrowLeft, Image, MapPin, CurrencyDollar, ListBullets, Tag, Clock, Percent } from "@phosphor-icons/react";
 
 const inputCls = "w-full border border-sand-300 rounded-xl px-4 py-3 text-sm text-charcoal-800 bg-white outline-none focus:border-bronze-500 transition-colors";
 
@@ -186,6 +186,26 @@ export default function EditExperiencePage() {
             </Field>
             <Field label="Prix prive (MAD/pers.)">
               <input value={form.privatePricePerPerson} onChange={set("privatePricePerPerson")} placeholder="600" className={inputCls} />
+            </Field>
+          </div>
+        </Section>
+
+        <Section title="Reductions groupe" icon={<Percent size={14} weight="bold" />}>
+          <div className="bg-sand-100 rounded-xl p-3 text-xs text-charcoal-400 mb-2">Optionnel — laisser vide si pas de réduction</div>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Seuil 1 (nb pers.)">
+              <input value={form.groupThreshold1} onChange={set("groupThreshold1")} placeholder="4" className={inputCls} />
+            </Field>
+            <Field label="Réduction 1 (%)">
+              <input value={form.groupDiscount1} onChange={set("groupDiscount1")} placeholder="8" className={inputCls} />
+            </Field>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Seuil 2 (nb pers.)">
+              <input value={form.groupThreshold2} onChange={set("groupThreshold2")} placeholder="7" className={inputCls} />
+            </Field>
+            <Field label="Réduction 2 (%)">
+              <input value={form.groupDiscount2} onChange={set("groupDiscount2")} placeholder="15" className={inputCls} />
             </Field>
           </div>
         </Section>
