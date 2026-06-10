@@ -46,8 +46,7 @@ export default function EditExperiencePage() {
     providerContact: "", tags: "", included: "", notIncluded: "",
     photos: [] as string[], transportRequired: false,
     itinerary_raw: "",
-    isPrivateAvailable: false,
-    privatePrice: "", privateMaxPersons: "", privateExtraPrice: "",
+    privatePricePerPerson: "",
     groupThreshold1: "", groupDiscount1: "",
     groupThreshold2: "", groupDiscount2: ""
   });
@@ -76,10 +75,7 @@ export default function EditExperiencePage() {
             notIncluded: (exp.notIncluded || []).join(", "),
             photos: exp.photos || [],
             transportRequired: exp.transportRequired || false,
-            isPrivateAvailable: exp.isPrivateAvailable || false,
-            privatePrice: String(exp.privatePrice || ""),
-            privateMaxPersons: String(exp.privateMaxPersons || ""),
-            privateExtraPrice: String(exp.privateExtraPrice || ""),
+            privatePricePerPerson: String(exp.privatePricePerPerson || ""),
             itinerary_raw: (exp.itinerary || []).map((s: any) => [s.time, s.title, s.desc].join("|")).join("\n"),
             groupThreshold1: String(exp.groupThreshold1 || ""),
             groupDiscount1: String(exp.groupDiscount1 || ""),
@@ -109,10 +105,7 @@ export default function EditExperiencePage() {
       groupSize: form.groupSize, difficulty: "Facile",
       providerContact: form.providerContact,
       tags: form.tags ? form.tags.split(",").map((s: string) => s.trim()).filter(Boolean) : [],
-      isPrivateAvailable: form.isPrivateAvailable,
-      privatePrice: form.privatePrice ? Number(form.privatePrice) : undefined,
-      privateMaxPersons: form.privateMaxPersons ? Number(form.privateMaxPersons) : undefined,
-      privateExtraPrice: form.privateExtraPrice ? Number(form.privateExtraPrice) : undefined,
+      privatePricePerPerson: form.privatePricePerPerson ? Number(form.privatePricePerPerson) : undefined,
       itinerary: form.itinerary_raw ? parseItinerary(form.itinerary_raw) : [],
       included: form.included ? form.included.replace(/\n/g, ",").split(",").map((s: string) => s.trim()).filter(Boolean) : [],
       notIncluded: form.notIncluded ? form.notIncluded.replace(/\n/g, ",").split(",").map((s: string) => s.trim()).filter(Boolean) : [],
@@ -174,27 +167,15 @@ export default function EditExperiencePage() {
         </Section>
 
         <Section title="Prix" icon={<CurrencyDollar size={14} weight="bold" />}>
-          <Field label="Prix groupe (MAD / pers.) *">
-            <input value={form.price} onChange={set("price")} placeholder="400" className={inputCls} />
-          </Field>
-          <div className="border-t border-sand-200 pt-3">
-            <Toggle label="Option privee disponible" value={form.isPrivateAvailable} onChange={() => setForm(f => ({...f, isPrivateAvailable: !f.isPrivateAvailable}))} />
+          <div className="bg-sand-100 rounded-xl p-3 text-xs text-charcoal-400 mb-1">Prix par personne · Groupe 2-20 pers. · Prive 2-5 pers.</div>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Prix groupe (MAD/pers.) *">
+              <input value={form.price} onChange={set("price")} placeholder="400" className={inputCls} />
+            </Field>
+            <Field label="Prix prive (MAD/pers.)">
+              <input value={form.privatePricePerPerson} onChange={set("privatePricePerPerson")} placeholder="600" className={inputCls} />
+            </Field>
           </div>
-          {form.isPrivateAvailable && (
-            <div className="flex flex-col gap-3 bg-sand-100 rounded-xl p-3">
-              <Field label="Prix prive (MAD / pers.)">
-                <input value={form.privatePrice} onChange={set("privatePrice")} placeholder="600" className={inputCls} />
-              </Field>
-              <div className="grid grid-cols-2 gap-3">
-                <Field label="Personnes incluses">
-                  <input value={form.privateMaxPersons} onChange={set("privateMaxPersons")} placeholder="4" className={inputCls} />
-                </Field>
-                <Field label="Suppl./pers. supp. (MAD)">
-                  <input value={form.privateExtraPrice} onChange={set("privateExtraPrice")} placeholder="300" className={inputCls} />
-                </Field>
-              </div>
-            </div>
-          )}
         </Section>
 
         <Section title="Logistique" icon={<MapPin size={14} weight="bold" />}>
