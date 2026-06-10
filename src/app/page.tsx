@@ -85,7 +85,7 @@ export default async function HomePage() {
 
     <div className="grid grid-cols-2 gap-3 items-stretch">
           {guides.map((g, idx) => (
-            <a key={g.id} href={`/guide/${g.slug || g.id}`} className="no-underline block active:scale-[0.97] transition-all animate-fade-up" style={{animationDelay: `${idx * 100}ms`, animationFillMode:"both"}}>
+            <a key={g.id} href={`/guide/${g.slug || g.id}`} className="no-underline block active:scale-[0.97] transition-all animate-fade-up" style={{animationDelay: `${idx * 200}ms`, animationFillMode:"both"}}>
               <div className="bg-white overflow-hidden flex flex-col h-full" style={{borderRadius:20, boxShadow:"0 2px 14px rgba(0,0,0,0.08)"}}>
                 <div className="relative" style={{height:180}}>
                   <img

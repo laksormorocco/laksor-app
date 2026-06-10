@@ -142,7 +142,7 @@ const config: Config = {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up":   "accordion-up 0.2s ease-out",
-        "fade-up":        "fade-up 0.5s ease-out forwards",
+        "fade-up":        "fade-up 0.8s ease-out forwards",
         shimmer:          "shimmer 2s linear infinite",
         "fade-in":       "fade-in 0.6s ease-out forwards",
         "slide-up":      "slide-up 0.7s ease-out forwards",
