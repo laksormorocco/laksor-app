@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 import { prisma } from "@/lib/prisma";
 import HomeHero from "./HomeHero";
 import BottomNav from "@/components/BottomNav";
+import AnimatedSection from "@/components/AnimatedSection";
 import Footer from "@/components/Footer";
 import {
   MapPin, Star, Clock, ArrowRight,
@@ -55,7 +56,7 @@ export default async function HomePage() {
       <HomeHero />
 
       {/* STATS */}
-      <div className="px-4 mt-4 max-w-2xl mx-auto">
+      <AnimatedSection className="px-4 mt-4 max-w-2xl mx-auto">
         <div className="bg-white rounded-2xl shadow-md flex justify-around text-center py-4 px-2 animate-fade-up">
           {[
             { n: "47+",   label: "Guides",        cls: "text-bronze-500" },
@@ -72,10 +73,10 @@ export default async function HomePage() {
             </div>
           ))}
         </div>
-      </div>
+      </AnimatedSection>
 
       {/* TOP GUIDES */}
-      <section className="mt-8 px-4 max-w-2xl mx-auto">
+      <AnimatedSection className="mt-8 px-4 max-w-2xl mx-auto" delay={100}>
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-display text-xl font-semibold text-charcoal-800 animate-fade-up">Top Guides</h2>
           <a href="/search" className="flex items-center gap-1 text-xs font-bold text-bronze-500">
@@ -85,7 +86,7 @@ export default async function HomePage() {
 
     <div className="grid grid-cols-2 gap-3 items-stretch">
           {guides.map((g, idx) => (
-            <a key={g.id} href={`/guide/${g.slug || g.id}`} className="no-underline block active:scale-[0.97] transition-all animate-fade-up" style={{animationDelay: `${idx * 200}ms`, animationFillMode:"both"}}>
+            <a key={g.id} href={`/guide/${g.slug || g.id}`} className="no-underline block active:scale-[0.95] active:opacity-90 transition-all duration-150 animate-fade-up" style={{animationDelay: `${idx * 200}ms`, animationFillMode:"both"}}>
               <div className="bg-white overflow-hidden flex flex-col h-full" style={{borderRadius:20, boxShadow:"0 2px 14px rgba(0,0,0,0.08)"}}>
                 <div className="relative" style={{height:180}}>
                   <img
@@ -142,10 +143,10 @@ export default async function HomePage() {
             Voir tous les guides <ArrowRight size={13} weight="bold" />
           </a>
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* VILLES */}
-      <section className="mt-10 max-w-2xl mx-auto">
+      <AnimatedSection className="mt-10 max-w-2xl mx-auto" delay={200}>
         <h2 className="font-display text-xl font-semibold text-charcoal-800 mb-4 px-4 animate-fade-up">Explorer par ville</h2>
         <div className="flex gap-3 px-4 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }}>
           {CITIES.map((c) => (
@@ -159,10 +160,10 @@ export default async function HomePage() {
             </a>
           ))}
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* POURQUOI */}
-      <section className="mt-10 px-4 max-w-2xl mx-auto border-t border-sand-300 pt-8">
+<AnimatedSection className="mt-10 px-4 max-w-2xl mx-auto border-t border-sand-300 pt-8" delay={300}>
         <h2 className="font-display text-xl font-semibold text-charcoal-800 mb-5">Pourquoi Laksor ?</h2>
         <div className="grid grid-cols-2 gap-3">
           {TRUST.map((t) => (
@@ -173,10 +174,10 @@ export default async function HomePage() {
             </div>
           ))}
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* JOIN */}
-      <section className="mt-8 px-4 max-w-2xl mx-auto pb-4">
+<AnimatedSection className="mt-8 px-4 max-w-2xl mx-auto pb-4" delay={400}>
         <div className="relative rounded-3xl overflow-hidden" style={{background:"linear-gradient(135deg, #111111 0%, #2a1f0e 100%)"}}>
           <div className="absolute inset-0 opacity-10" style={{backgroundImage:"url(https://images.unsplash.com/photo-1647878501041-1609141a7fb1?q=80&w=1971&auto=format&fit=crop)", backgroundSize:"cover", backgroundPosition:"center"}} />
           <div className="relative p-6">
@@ -215,7 +216,7 @@ export default async function HomePage() {
             </div>
           </div>
         </div>
-      </section>
+      </AnimatedSection>
 
 
       <Footer />
