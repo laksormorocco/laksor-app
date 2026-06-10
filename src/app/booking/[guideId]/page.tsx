@@ -348,7 +348,7 @@ export default function BookingPage() {
                   {transport && (
                     <div className="flex justify-between text-sm">
                       <span className="text-charcoal-400">Transport</span>
-                      <span className="font-semibold text-charcoal-800">+{convert(300)}</span>
+            <span className="font-semibold text-charcoal-800">+{convert(transportExtraFee)}</span>
                     </div>
                   )}
                   {isExperience && persons >= 4 && (
