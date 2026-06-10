@@ -75,10 +75,10 @@ export default function BookingPage() {
   const persons = adults + children;
   const expPricePerPerson = searchParams?.get("pricePerPerson") === "true";
   const expMaxPersons = Number(searchParams?.get("maxPersons") || 1);
-  const t1 = searchParams?.get("t1") ? Number(searchParams.get("t1")) : null;
-  const d1 = searchParams?.get("d1") ? Number(searchParams.get("d1")) : null;
-  const t2 = searchParams?.get("t2") ? Number(searchParams.get("t2")) : null;
-  const d2 = searchParams?.get("d2") ? Number(searchParams.get("d2")) : null;
+  const t1 = experience ? (experience.groupThreshold1 || null) : (searchParams?.get("t1") ? Number(searchParams.get("t1")) : null);
+  const d1 = experience ? (experience.groupDiscount1 || null) : (searchParams?.get("d1") ? Number(searchParams.get("d1")) : null);
+  const t2 = experience ? (experience.groupThreshold2 || null) : (searchParams?.get("t2") ? Number(searchParams.get("t2")) : null);
+  const d2 = experience ? (experience.groupDiscount2 || null) : (searchParams?.get("d2") ? Number(searchParams.get("d2")) : null);
   const expBasePrice = isExperience && tourPriceParam ? expTotalPrice(tourPriceParam, persons, t1, d1, t2, d2) : 0;
   const expFullPrice = isExperience && tourPriceParam ? (tourPriceParam * persons) : 0;
   const expDiscount = expFullPrice - expBasePrice;

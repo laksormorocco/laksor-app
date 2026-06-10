@@ -214,27 +214,28 @@ export default function EditExperiencePage() {
           {/* CRENEAUX DE DEPART */}
           <div>
             <div className="text-xs font-semibold text-charcoal-400 mb-2">Creneaux de depart (Groupe)</div>
-            <div className="flex flex-wrap gap-2 mb-2">
-              {form.departureSlots.map((slot, i) => (
-                <div key={i} className="flex items-center gap-1.5 bg-bronze-500/10 text-bronze-500 px-3 py-1.5 rounded-full text-xs font-bold">
-                  {slot}
-                  <button onClick={() => setForm(f => ({...f, departureSlots: f.departureSlots.filter((_,j) => j !== i)}))}
-                    className="text-bronze-500 hover:text-red-400 font-bold">x</button>
-                </div>
+            {/* Créneaux déjà ajoutés */}
+            {form.departureSlots.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-3">
+                {form.departureSlots.map((slot, i) => (
+                  <div key={i} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold"
+                    style={{background:"rgba(184,138,68,0.12)", color:"#B88A44"}}>
+                    🕐 {slot}
+                    <button onClick={() => setForm(f => ({...f, departureSlots: f.departureSlots.filter((_,j) => j !== i)}))}
+                      className="ml-1 text-red-400 font-bold text-sm leading-none">×</button>
+                  </div>
+                ))}
+              </div>
+            )}
+            {/* Heures suggérées */}
+            <div className="text-[10px] text-charcoal-400 mb-2">Heures suggérées — appuyez pour ajouter</div>
+            <div className="flex flex-wrap gap-2 mb-3">
+              {["07:00","08:00","09:00","10:00","14:00","15:00","16:00","16:30","17:00","18:00","19:00","20:00"].filter(h => !form.departureSlots.includes(h)).map(h => (
+                <button key={h} onClick={() => setForm(f => ({...f, departureSlots: [...f.departureSlots, h].sort()}))}
+                  className="px-3 py-1.5 rounded-full text-xs font-semibold border border-sand-300 bg-white text-charcoal-600 active:bg-bronze-500 active:text-white active:border-bronze-500 transition-all">
+                  {h}
+                </button>
               ))}
-            </div>
-            <div className="flex gap-2">
-              <input type="time" id="newSlot" className={inputCls + " flex-1"} />
-              <button onClick={() => {
-                const input = document.getElementById("newSlot") as HTMLInputElement;
-                if (input?.value && !form.departureSlots.includes(input.value)) {
-                  setForm(f => ({...f, departureSlots: [...f.departureSlots, input.value].sort()}));
-                  input.value = "";
-                }
-              }} className="px-4 py-2 rounded-xl text-white text-xs font-bold flex-shrink-0"
-                style={{background:"linear-gradient(135deg, #B88A44, #9A7238)"}}>
-                + Ajouter
-              </button>
             </div>
           </div>
 
