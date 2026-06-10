@@ -250,7 +250,7 @@ export default function ExperiencesPage() {
                               <div className="text-[9px] font-bold uppercase tracking-widest mb-2" style={{color:"#B88A44"}}>Programme</div>
                               {t.itinerary.map((step:any, i:number) => (
                                 <div key={i} className="flex gap-3 mb-3 last:mb-0 relative"
-                                  style={{opacity:1, transform:"translateX(0)", transition:`opacity 0.4s ease-out ${i*120}ms, transform 0.4s ease-out ${i*120}ms`}}>
+                                  style={{opacity: openId === t.id ? 1 : 0, transform: openId === t.id ? "translateX(0)" : "translateX(-12px)", transition:`opacity 0.4s ease-out ${i*120}ms, transform 0.4s ease-out ${i*120}ms`}}>
                                   <div className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-white text-[9px] font-bold z-10"
                                     style={{background:"linear-gradient(135deg,#7D8F69,#566547)", minWidth:24, transition:`transform 0.3s ease-out ${i*120+100}ms`}}>
                                     {i+1}

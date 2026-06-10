@@ -1,7 +1,7 @@
 "use client";
 import { priceWithCommission } from "@/lib/pricing";
 import BottomNav from "@/components/BottomNav";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { MagnifyingGlass, MapPin, Star, Clock, SlidersHorizontal, X, ArrowLeft, ShieldCheck, ArrowsCounterClockwise, ChatCircle, Car , Heart , ArrowRight } from "@phosphor-icons/react";
 
 function toEur(mad: number) {
@@ -189,8 +189,7 @@ function GuideCard({ g, idx }: { g: Guide; idx: number }) {
 
 export default function SearchClient({ guides }: { guides: Guide[] }) {
   const [pageLoaded, setPageLoaded] = useState(false);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useState(() => { setTimeout(() => setPageLoaded(true), 300); });
+  useEffect(() => { const t = setTimeout(() => setPageLoaded(true), 500); return () => clearTimeout(t); }, []);
   const [city,     setCity]     = useState("All");
   const [lang,     setLang]     = useState("All");
   const [types,    setTypes]    = useState<string[]>([]);
