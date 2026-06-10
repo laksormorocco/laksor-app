@@ -221,8 +221,8 @@ export default function ExperiencesPage() {
                   </div>
                 </div>
 
-                {/* GUIDE STRIP */}
-                {t.guide && (
+                {/* GUIDE STRIP — seulement pour les tours guides, pas les expériences Laksor */}
+                {t.guide && t.guideId !== "cmq5fr4ef0002xbtvwrfquu46" && (
                   <div className="flex items-center justify-between px-3.5 py-3" style={{borderBottom:"1px solid #F0EDE7"}}>
                     <div className="flex items-center gap-2">
                       {t.guide.avatar
@@ -240,6 +240,52 @@ export default function ExperiencesPage() {
                         <Star size={11} weight="fill" className="text-amber-400" />
                         <span className="text-xs font-bold text-charcoal-800">{Number(t.guide.avgRating).toFixed(1)}</span>
                         <span className="text-[10px] text-charcoal-400">({t.guide.totalReviews})</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* LANGUES + CRENEAUX */}
+                {(t.languages?.length > 0 || t.departureSlots?.length > 0) && (
+                  <div className="flex items-center justify-between px-3.5 py-2.5" style={{borderBottom:"1px solid #F0EDE7"}}>
+                    {t.languages?.length > 0 && (
+                      <div className="flex items-center gap-1">
+                        <span className="text-[9px] text-charcoal-400 mr-1">Langues</span>
+                        {t.languages.slice(0,4).map((l:string) => (
+                          <span key={l} className="text-xs">{l==="Français"?"🇫🇷":l==="Anglais"?"🇬🇧":l==="Espagnol"?"🇪🇸":l==="Allemand"?"🇩🇪":l==="Arabe"?"🇲🇦":l==="Italien"?"🇮🇹":l==="Russe"?"🇷🇺":"🏳️"}</span>
+                        ))}
+                      </div>
+                    )}
+                    {t.departureSlots?.length > 0 && (
+                      <div className="flex items-center gap-1 flex-wrap justify-end">
+                        <span className="text-[9px] text-charcoal-400 mr-1">Départs</span>
+                        {t.departureSlots.slice(0,3).map((slot:string) => (
+                          <span key={slot} className="text-[9px] font-bold px-2 py-0.5 rounded-full" style={{background:"rgba(184,138,68,0.1)", color:"#B88A44"}}>{slot}</span>
+                        ))}
+                        {t.departureSlots.length > 3 && <span className="text-[9px] text-charcoal-400">+{t.departureSlots.length-3}</span>}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* LANGUES + CRENEAUX */}
+                {(t.languages?.length > 0 || t.departureSlots?.length > 0) && (
+                  <div className="flex items-center justify-between px-3.5 py-2.5" style={{borderBottom:"1px solid #F0EDE7"}}>
+                    {t.languages?.length > 0 && (
+                      <div className="flex items-center gap-1">
+                        <span className="text-[9px] text-charcoal-400 mr-1">Langues</span>
+                        {t.languages.slice(0,4).map((l:string) => (
+                          <span key={l} className="text-xs">{l==="Français"?"🇫🇷":l==="Anglais"?"🇬🇧":l==="Espagnol"?"🇪🇸":l==="Allemand"?"🇩🇪":l==="Arabe"?"🇲🇦":l==="Italien"?"🇮🇹":l==="Russe"?"🇷🇺":"🏳️"}</span>
+                        ))}
+                      </div>
+                    )}
+                    {t.departureSlots?.length > 0 && (
+                      <div className="flex items-center gap-1 flex-wrap justify-end">
+                        <span className="text-[9px] text-charcoal-400 mr-1">Départs</span>
+                        {t.departureSlots.slice(0,3).map((slot:string) => (
+                          <span key={slot} className="text-[9px] font-bold px-2 py-0.5 rounded-full" style={{background:"rgba(184,138,68,0.1)", color:"#B88A44"}}>{slot}</span>
+                        ))}
+                        {t.departureSlots.length > 3 && <span className="text-[9px] text-charcoal-400">+{t.departureSlots.length-3}</span>}
                       </div>
                     )}
                   </div>
