@@ -339,21 +339,21 @@ export default function BookingPage() {
                     <span className="text-charcoal-400">{isExperience ? "Expérience" : `Creneaux (${selectedDates.length} jour${selectedDates.length>1?"s":""})`}</span>
                     <span className="font-semibold text-charcoal-800">{convert(isExperience ? expFullPrice : total)}</span>
                   </div>
-                  {persons > 2 && (
+                  {!isExperience && persons > 4 && (
                     <div className="flex justify-between text-sm">
-                    {!isExperience && <span className="text-amber-600 text-xs font-semibold">+200 MAD x {persons-4} pers. suppl.</span>}
-                      <span className="font-semibold text-amber-600">{extraCost > 0 ? "+" + convert(extraCost) : ""}</span>
+                      <span className="text-amber-600 text-xs font-semibold">+200 MAD x {persons-4} pers. suppl.</span>
+                      <span className="font-semibold text-amber-600">+{convert(extraCost)}</span>
                     </div>
                   )}
-                  {transport && (
+                  {transport && hotelLocation === "outside" && (
                     <div className="flex justify-between text-sm">
-                      <span className="text-charcoal-400">Transport</span>
-            <span className="font-semibold text-charcoal-800">+{convert(transportExtraFee)}</span>
+                      <span className="text-charcoal-400">Ramassage hors zone</span>
+                      <span className="font-semibold text-charcoal-800">+{convert(transportExtraFee)}</span>
                     </div>
                   )}
-                  {isExperience && persons >= 4 && (
+                  {isExperience && expDiscount > 0 && (
                     <div className="flex justify-between text-sm">
-                      <span className="text-sage-300 font-semibold">Réduction groupe {persons >= (t2||7) ? "-" + (d2||15) + "%" : "-" + (d1||8) + "%"} ({persons} pers.)</span>
+                      <span className="text-sage-300 font-semibold">Réduction groupe ({persons} pers.)</span>
                       <span className="text-sage-300 font-semibold">-{convert(expDiscount)}</span>
                     </div>
                   )}
@@ -469,9 +469,9 @@ export default function BookingPage() {
                       <span>{convert((tourPriceParam || 0) * persons)}</span>
                     </div>
                   )}
-                  {isExperience && persons >= 4 && (
+                  {isExperience && expDiscount > 0 && (
                     <div className="flex justify-between text-xs text-sage-300 font-semibold">
-                      <span>Réduction groupe {persons >= 7 ? "-15%" : "-8%"}</span>
+                      <span>Réduction groupe ({persons} pers.)</span>
                       <span>-{convert(expDiscount)}</span>
                     </div>
                   )}
