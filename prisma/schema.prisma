@@ -354,6 +354,10 @@ model GuideExperience {
   isActive          Boolean      @default(false)
   pricePerPerson       Float?
   privatePricePerPerson Float?
+  departureSlots       String[]       
+  pickupRadiusKm       Int?           
+  pickupExtraFeePerPerson Float?      
+  languages            String[]       
   isLaksorExp     Boolean  @default(false)
   providerContact String?
   groupThreshold1 Int?

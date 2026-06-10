@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { ArrowLeft, Image, MapPin, CurrencyDollar, ListBullets, Tag } from "@phosphor-icons/react";
+import { ArrowLeft, Image, MapPin, CurrencyDollar, ListBullets, Tag, Clock } from "@phosphor-icons/react";
 
 const inputCls = "w-full border border-sand-300 rounded-xl px-4 py-3 text-sm text-charcoal-800 bg-white outline-none focus:border-bronze-500 transition-colors";
 
@@ -48,7 +48,11 @@ export default function EditExperiencePage() {
     itinerary_raw: "",
     privatePricePerPerson: "",
     groupThreshold1: "", groupDiscount1: "",
-    groupThreshold2: "", groupDiscount2: ""
+    groupThreshold2: "", groupDiscount2: "",
+    departureSlots: [] as string[],
+    pickupRadiusKm: "10",
+    pickupExtraFeePerPerson: "110",
+    languages: [] as string[]
   });
   const [saving, setSaving] = useState(false);
 
@@ -81,6 +85,10 @@ export default function EditExperiencePage() {
             groupDiscount1: String(exp.groupDiscount1 || ""),
             groupThreshold2: String(exp.groupThreshold2 || ""),
             groupDiscount2: String(exp.groupDiscount2 || ""),
+            departureSlots: exp.departureSlots || [],
+            pickupRadiusKm: String(exp.pickupRadiusKm || "10"),
+            pickupExtraFeePerPerson: String(exp.pickupExtraFeePerPerson || "110"),
+            languages: exp.languages || [],
           });
         });
     }
@@ -106,6 +114,10 @@ export default function EditExperiencePage() {
       providerContact: form.providerContact,
       tags: form.tags ? form.tags.split(",").map((s: string) => s.trim()).filter(Boolean) : [],
       privatePricePerPerson: form.privatePricePerPerson ? Number(form.privatePricePerPerson) : undefined,
+      departureSlots: form.departureSlots,
+      pickupRadiusKm: form.pickupRadiusKm ? Number(form.pickupRadiusKm) : 10,
+      pickupExtraFeePerPerson: form.pickupExtraFeePerPerson ? Number(form.pickupExtraFeePerPerson) : 110,
+      languages: form.languages,
       itinerary: form.itinerary_raw ? parseItinerary(form.itinerary_raw) : [],
       included: form.included ? form.included.replace(/\n/g, ",").split(",").map((s: string) => s.trim()).filter(Boolean) : [],
       notIncluded: form.notIncluded ? form.notIncluded.replace(/\n/g, ",").split(",").map((s: string) => s.trim()).filter(Boolean) : [],
@@ -175,6 +187,63 @@ export default function EditExperiencePage() {
             <Field label="Prix prive (MAD/pers.)">
               <input value={form.privatePricePerPerson} onChange={set("privatePricePerPerson")} placeholder="600" className={inputCls} />
             </Field>
+          </div>
+        </Section>
+
+        <Section title="Disponibilites & Langues" icon={<Clock size={14} weight="bold" />}>
+          {/* CRENEAUX DE DEPART */}
+          <div>
+            <div className="text-xs font-semibold text-charcoal-400 mb-2">Creneaux de depart (Groupe)</div>
+            <div className="flex flex-wrap gap-2 mb-2">
+              {form.departureSlots.map((slot, i) => (
+                <div key={i} className="flex items-center gap-1.5 bg-bronze-500/10 text-bronze-500 px-3 py-1.5 rounded-full text-xs font-bold">
+                  {slot}
+                  <button onClick={() => setForm(f => ({...f, departureSlots: f.departureSlots.filter((_,j) => j !== i)}))}
+                    className="text-bronze-500 hover:text-red-400 font-bold">x</button>
+                </div>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <input type="time" id="newSlot" className={inputCls + " flex-1"} />
+              <button onClick={() => {
+                const input = document.getElementById("newSlot") as HTMLInputElement;
+                if (input?.value && !form.departureSlots.includes(input.value)) {
+                  setForm(f => ({...f, departureSlots: [...f.departureSlots, input.value].sort()}));
+                  input.value = "";
+                }
+              }} className="px-4 py-2 rounded-xl text-white text-xs font-bold flex-shrink-0"
+                style={{background:"linear-gradient(135deg, #B88A44, #9A7238)"}}>
+                + Ajouter
+              </button>
+            </div>
+          </div>
+
+          {/* RAMASSAGE */}
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Rayon gratuit (km)">
+              <input value={form.pickupRadiusKm} onChange={set("pickupRadiusKm")} placeholder="10" className={inputCls} />
+            </Field>
+            <Field label="Frais hors zone (MAD/pers.)">
+              <input value={form.pickupExtraFeePerPerson} onChange={set("pickupExtraFeePerPerson")} placeholder="110" className={inputCls} />
+            </Field>
+          </div>
+
+          {/* LANGUES */}
+          <div>
+            <div className="text-xs font-semibold text-charcoal-400 mb-2">Langues disponibles</div>
+            <div className="flex flex-wrap gap-2">
+              {["Français","Anglais","Espagnol","Allemand","Arabe","Italien","Russe"].map(lang => (
+                <button key={lang} onClick={() => setForm(f => ({
+                  ...f,
+                  languages: f.languages.includes(lang)
+                    ? f.languages.filter(l => l !== lang)
+                    : [...f.languages, lang]
+                }))}
+                  className={"px-3 py-1.5 rounded-full text-xs font-bold border transition-all " + (form.languages.includes(lang) ? "bg-sage-300 text-white border-sage-300" : "bg-white text-charcoal-600 border-sand-300")}>
+                  {lang}
+                </button>
+              ))}
+            </div>
           </div>
         </Section>
 
