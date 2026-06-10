@@ -50,6 +50,7 @@ export default function BookingPage() {
   const [guestName, setGuestName] = useState("");
   const [guestContact, setGuestContact] = useState("");
   const [startHour, setStartHour] = useState("09:00");
+  const [hotelLocation, setHotelLocation] = useState<"inside"|"outside">("inside");
 
   useEffect(() => {
     if (!guideId) return;
@@ -75,7 +76,8 @@ export default function BookingPage() {
   const expDiscount = expFullPrice - expBasePrice;
   const extraPersonPrice = guide?.extraPersonPrice || 200;
   const extraCost = isExperience ? 0 : (persons > 4 ? (persons - 4) * extraPersonPrice : 0);
-  const transportCost = transport ? 300 : 0;
+  const transportExtraFee = persons * 110; // 110 MAD/pers hors zone
+  const transportCost = bookingType === "private" ? 0 : (transport && hotelLocation === "outside" ? transportExtraFee : 0);
   const serviceFee = 25;
   const adjustedTotal = isExperience ? expBasePrice + transportCost + serviceFee : total + extraCost + transportCost + serviceFee;
   const deposit = Math.round(adjustedTotal * 0.3);
@@ -258,21 +260,39 @@ export default function BookingPage() {
               ))}
             </div>
 
-            <div className="bg-white rounded-2xl border border-sand-300 p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Car size={16} className="text-bronze-500" />
-                  <div>
-                    <div className="text-sm font-semibold text-charcoal-800">Prise en charge hôtel/riad</div>
-                    <div className="text-[10px] text-charcoal-400">+{convert(300)} aller-retour</div>
-                  </div>
-                </div>
-                <button onClick={() => setTransport(!transport)}
-                  className={`w-12 h-6 rounded-full relative transition-colors flex-shrink-0 ${transport ? "bg-sage-300" : "bg-sand-300"}`}>
-                  <div className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-all shadow-sm ${transport ? "left-6" : "left-0.5"}`} />
-                </button>
+        {bookingType === "private" ? (
+          <div className="bg-sage-300/10 border border-sage-300/30 rounded-2xl p-4">
+            <div className="flex items-center gap-2">
+              <Car size={16} className="text-sage-300" />
+              <div>
+                <div className="text-sm font-semibold text-charcoal-800">Ramassage inclus 🎉</div>
+                <div className="text-[10px] text-charcoal-400">En option privee, nous venons vous chercher ou vous etes</div>
               </div>
             </div>
+          </div>
+        ) : (
+          <div className="bg-white rounded-2xl border border-sand-300 p-4">
+            <div className="text-[10px] font-bold text-charcoal-400 uppercase tracking-widest mb-3">📍 Votre lieu de residence</div>
+            <div className="flex gap-2 mb-3">
+              <button onClick={() => { setHotelLocation("inside"); setTransport(false); }}
+                className={"flex-1 py-2 rounded-xl text-xs font-bold border transition-all " + (hotelLocation === "inside" ? "bg-sage-300 text-white border-sage-300" : "bg-white text-charcoal-600 border-sand-300")}>
+                Dans Marrakech (&lt;10km)
+              </button>
+              <button onClick={() => { setHotelLocation("outside"); setTransport(true); }}
+                className={"flex-1 py-2 rounded-xl text-xs font-bold border transition-all " + (hotelLocation === "outside" ? "bg-amber-500 text-white border-amber-500" : "bg-white text-charcoal-600 border-sand-300")}>
+                Hors Marrakech
+              </button>
+            </div>
+            {hotelLocation === "outside" && (
+              <div className="bg-amber-50 rounded-xl p-3 text-xs text-amber-700 font-semibold">
+                Frais de ramassage : {convert(transportExtraFee)} ({persons} pers. x 110 MAD)
+              </div>
+            )}
+            {hotelLocation === "inside" && (
+              <div className="text-[10px] text-charcoal-400">Ramassage gratuit dans un rayon de 10km du centre</div>
+            )}
+          </div>
+        )}
 
             {!isExperience && persons > 4 && (
               <div className="bg-amber-50 border border-bronze-500/20 rounded-xl px-3 py-2 flex items-center gap-2">
