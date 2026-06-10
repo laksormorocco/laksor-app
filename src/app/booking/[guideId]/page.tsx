@@ -68,8 +68,8 @@ export default function BookingPage() {
         setExperience(expData.experience);
         if (expData.experience.departureSlots?.length > 0) setSelectedSlot(expData.experience.departureSlots[0]);
       }
-      setLoading(false);
     });
+    setLoading(false);
   }, [guideId]);
 
   const persons = adults + children;
