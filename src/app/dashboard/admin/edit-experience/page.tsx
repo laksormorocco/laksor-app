@@ -1,8 +1,41 @@
 "use client";
 import { useState, useEffect } from "react";
-import { ArrowLeft } from "@phosphor-icons/react";
+import { ArrowLeft, Image, MapPin, CurrencyDollar, ListBullets, Tag } from "@phosphor-icons/react";
 
-const inputCls = "w-full border border-sand-300 rounded-xl px-4 py-3 text-sm text-charcoal-800 bg-sand-100 outline-none focus:border-bronze-500 transition-colors";
+const inputCls = "w-full border border-sand-300 rounded-xl px-4 py-3 text-sm text-charcoal-800 bg-white outline-none focus:border-bronze-500 transition-colors";
+
+function Section({ title, icon, children }: { title: string; icon: React.ReactNode; children: React.ReactNode }) {
+  return (
+    <div className="bg-white rounded-2xl border border-sand-200 overflow-hidden">
+      <div className="flex items-center gap-2 px-4 py-3 border-b border-sand-100" style={{background:"rgba(184,138,68,0.05)"}}>
+        <span className="text-bronze-500">{icon}</span>
+        <span className="text-xs font-bold text-charcoal-700 uppercase tracking-widest">{title}</span>
+      </div>
+      <div className="px-4 py-4 flex flex-col gap-4">{children}</div>
+    </div>
+  );
+}
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <div className="text-xs font-semibold text-charcoal-400 mb-1.5">{label}</div>
+      {children}
+    </div>
+  );
+}
+
+function Toggle({ label, value, onChange }: { label: string; value: boolean; onChange: () => void }) {
+  return (
+    <div className="flex items-center justify-between py-1">
+      <span className="text-sm text-charcoal-700">{label}</span>
+      <button onClick={onChange}
+        className={"w-11 h-6 rounded-full relative transition-colors " + (value ? "bg-bronze-500" : "bg-sand-300")}>
+        <div className={"w-5 h-5 bg-white rounded-full absolute top-0.5 transition-all shadow-sm " + (value ? "left-5" : "left-0.5")} />
+      </button>
+    </div>
+  );
+}
 
 export default function EditExperiencePage() {
   const expId = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("id") : null;
@@ -14,13 +47,14 @@ export default function EditExperiencePage() {
     photos: [] as string[], transportRequired: false,
     itinerary_raw: "",
     isPrivateAvailable: false,
-    privatePrice: "",
-    privateMaxPersons: "",
-    privateExtraPrice: "",
+    privatePrice: "", privateMaxPersons: "", privateExtraPrice: "",
     groupThreshold1: "", groupDiscount1: "",
     groupThreshold2: "", groupDiscount2: ""
   });
   const [saving, setSaving] = useState(false);
+
+  const set = (key: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+    setForm(f => ({ ...f, [key]: e.target.value }));
 
   useEffect(() => {
     if (expId) {
@@ -68,14 +102,10 @@ export default function EditExperiencePage() {
     setSaving(true);
     const data: any = {
       id: expId,
-      title: form.title,
-      description: form.description,
-      price: Number(form.price),
-      city: form.city,
-      meetingPoint: form.meetingPoint,
-      duration: form.duration,
-      groupSize: form.groupSize,
-      difficulty: "Facile",
+      title: form.title, description: form.description,
+      price: Number(form.price), city: form.city,
+      meetingPoint: form.meetingPoint, duration: form.duration,
+      groupSize: form.groupSize, difficulty: "Facile",
       providerContact: form.providerContact,
       tags: form.tags ? form.tags.split(",").map((s: string) => s.trim()).filter(Boolean) : [],
       isPrivateAvailable: form.isPrivateAvailable,
@@ -85,51 +115,116 @@ export default function EditExperiencePage() {
       itinerary: form.itinerary_raw ? parseItinerary(form.itinerary_raw) : [],
       included: form.included ? form.included.split(",").map((s: string) => s.trim()).filter(Boolean) : [],
       notIncluded: form.notIncluded ? form.notIncluded.split(",").map((s: string) => s.trim()).filter(Boolean) : [],
-      photos: form.photos,
-      transportRequired: form.transportRequired,
+      photos: form.photos, transportRequired: form.transportRequired,
       groupThreshold1: form.groupThreshold1 ? Number(form.groupThreshold1) : undefined,
       groupDiscount1: form.groupDiscount1 ? Number(form.groupDiscount1) : undefined,
       groupThreshold2: form.groupThreshold2 ? Number(form.groupThreshold2) : undefined,
       groupDiscount2: form.groupDiscount2 ? Number(form.groupDiscount2) : undefined,
-      status: "APPROVED",
-      isActive: true,
+      status: "APPROVED", isActive: true,
     };
     const res = await fetch("/api/guide/experiences", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
+      method: "PATCH", headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data)
     });
-    if (res.ok) {
-      window.location.href = "/dashboard/admin";
-    } else {
-      const errData = await res.json().catch(() => ({}));
-      alert("Erreur: " + JSON.stringify(errData));
-    }
+    if (res.ok) { window.location.href = "/dashboard/admin"; }
+    else { const errData = await res.json().catch(() => ({})); alert("Erreur: " + JSON.stringify(errData)); }
     setSaving(false);
   }
 
   return (
-    <div className="min-h-screen bg-sand-100 pb-10">
+    <div className="min-h-screen pb-10" style={{background:"#F6F1E8"}}>
       <div className="flex items-center justify-between px-4 py-3 border-b border-sand-200 bg-white sticky top-0 z-30">
         <button onClick={() => window.location.href="/dashboard/admin"}
           className="w-9 h-9 rounded-full border border-sand-200 flex items-center justify-center">
           <ArrowLeft size={16} className="text-charcoal-600" />
         </button>
-        <span className="font-display text-sm font-bold text-charcoal-800">{expId ? "Modifier" : "Nouvelle"} experience Laksor</span>
+        <span className="font-display text-sm font-bold text-charcoal-800">
+          {expId ? "Modifier" : "Nouvelle"} expérience
+        </span>
         <div className="w-9" />
       </div>
 
-      <div className="px-4 py-5 flex flex-col gap-4">
+      <div className="px-4 py-5 flex flex-col gap-4 max-w-lg mx-auto">
 
-        {/* Photos */}
-        <div>
-          <div className="text-xs font-bold text-charcoal-400 mb-2">Photos</div>
+        <Section title="Infos générales" icon={<ListBullets size={14} weight="bold" />}>
+          <Field label="Titre *">
+            <input value={form.title} onChange={set("title")} placeholder="Agafay Desert + Quad + Diner" className={inputCls} />
+          </Field>
+          <Field label="Description">
+            <textarea value={form.description} onChange={set("description")} placeholder="Decrivez l experience..." rows={3} className={inputCls + " resize-none"} />
+          </Field>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Ville">
+              <input value={form.city} onChange={set("city")} placeholder="Marrakech" className={inputCls} />
+            </Field>
+            <Field label="Duree">
+              <input value={form.duration} onChange={set("duration")} placeholder="4h" className={inputCls} />
+            </Field>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Taille groupe">
+              <input value={form.groupSize} onChange={set("groupSize")} placeholder="1-8 pers." className={inputCls} />
+            </Field>
+            <Field label="Contact prestataire">
+              <input value={form.providerContact} onChange={set("providerContact")} placeholder="+212600000000" className={inputCls} />
+            </Field>
+          </div>
+          <Toggle label="Transport inclus" value={form.transportRequired} onChange={() => setForm(f => ({...f, transportRequired: !f.transportRequired}))} />
+        </Section>
+
+        <Section title="Prix" icon={<CurrencyDollar size={14} weight="bold" />}>
+          <Field label="Prix groupe (MAD / pers.) *">
+            <input value={form.price} onChange={set("price")} placeholder="400" className={inputCls} />
+          </Field>
+          <div className="border-t border-sand-200 pt-3">
+            <Toggle label="Option privee disponible" value={form.isPrivateAvailable} onChange={() => setForm(f => ({...f, isPrivateAvailable: !f.isPrivateAvailable}))} />
+          </div>
+          {form.isPrivateAvailable && (
+            <div className="flex flex-col gap-3 bg-sand-100 rounded-xl p-3">
+              <Field label="Prix prive (MAD / pers.)">
+                <input value={form.privatePrice} onChange={set("privatePrice")} placeholder="600" className={inputCls} />
+              </Field>
+              <div className="grid grid-cols-2 gap-3">
+                <Field label="Personnes incluses">
+                  <input value={form.privateMaxPersons} onChange={set("privateMaxPersons")} placeholder="4" className={inputCls} />
+                </Field>
+                <Field label="Suppl./pers. supp. (MAD)">
+                  <input value={form.privateExtraPrice} onChange={set("privateExtraPrice")} placeholder="300" className={inputCls} />
+                </Field>
+              </div>
+            </div>
+          )}
+        </Section>
+
+        <Section title="Logistique" icon={<MapPin size={14} weight="bold" />}>
+          <Field label="Point de rendez-vous">
+            <input value={form.meetingPoint} onChange={set("meetingPoint")} placeholder="Place Jemaa el-Fna, Marrakech" className={inputCls} />
+          </Field>
+          <Field label="Itineraire (HH:mm | Titre | Description — 1 etape par ligne)">
+            <textarea value={form.itinerary_raw} onChange={set("itinerary_raw")}
+              placeholder={"16:30 | Prise en charge | Transfert depuis l hotel\n17:30 | Arrivee Agafay | Accueil the menthe"} rows={5} className={inputCls + " resize-none font-mono text-xs"} />
+          </Field>
+        </Section>
+
+        <Section title="Contenu & Tags" icon={<Tag size={14} weight="bold" />}>
+          <Field label="Inclus (virgule)">
+            <input value={form.included} onChange={set("included")} placeholder="Transport, Guide, The menthe" className={inputCls} />
+          </Field>
+          <Field label="Non inclus (virgule)">
+            <input value={form.notIncluded} onChange={set("notIncluded")} placeholder="Boissons alcoolisees, Pourboires" className={inputCls} />
+          </Field>
+          <Field label="Tags (virgule)">
+            <input value={form.tags} onChange={set("tags")} placeholder="Desert, Aventure, Couple, Famille" className={inputCls} />
+          </Field>
+        </Section>
+
+        <Section title="Photos" icon={<Image size={14} weight="bold" />}>
           <div className="flex gap-2 overflow-x-auto pb-1">
             {form.photos.map((url, i) => (
               <div key={i} className="relative flex-shrink-0">
                 <img src={url} className="w-20 h-20 rounded-xl object-cover" />
-                <button onClick={() => setForm({...form, photos: form.photos.filter((_, j) => j !== i)})}
-                  className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center">&#x2715;</button>
+                <button onClick={() => setForm(f => ({...f, photos: f.photos.filter((_, j) => j !== i)}))}
+                  className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center">x</button>
               </div>
             ))}
             <label className="w-20 h-20 rounded-xl border-2 border-dashed border-sand-300 flex flex-col items-center justify-center cursor-pointer flex-shrink-0 text-charcoal-400">
@@ -143,52 +238,11 @@ export default function EditExperiencePage() {
                 fd.append("folder", "experiences");
                 const res = await fetch("/api/upload", { method: "POST", body: fd });
                 const { url } = await res.json();
-                if (url) setForm({...form, photos: [...form.photos, url]});
+                if (url) setForm(f => ({...f, photos: [...f.photos, url]}));
               }} />
             </label>
           </div>
-        </div>
-
-        {[
-          { key: "title", label: "Titre *", ph: "Agafay Desert + Quad..." },
-          { key: "description", label: "Description", ph: "Description de l experience...", area: true },
-          { key: "price", label: "Prix par personne (MAD)", ph: "300" },
-          { key: "city", label: "Ville", ph: "Marrakech" },
-          { key: "meetingPoint", label: "Point de RDV", ph: "Place Jemaa el-Fna..." },
-          { key: "duration", label: "Duree", ph: "4h" },
-          { key: "groupSize", label: "Taille groupe", ph: "1-8 pers." },
-          { key: "providerContact", label: "Contact prestataire (WA/Email)", ph: "+212600000000" },
-          { key: "groupThreshold1", label: "Seuil reduction 1 (nb personnes)", ph: "4" },
-          { key: "groupDiscount1", label: "Reduction 1 (%)", ph: "8" },
-          { key: "groupThreshold2", label: "Seuil reduction 2 (nb personnes)", ph: "7" },
-          { key: "groupDiscount2", label: "Reduction 2 (%)", ph: "15" },
-          { key: "privatePrice", label: "Prix privé (MAD — forfait groupe)", ph: "2400" },
-          { key: "privateMaxPersons", label: "Personnes incluses dans le privé", ph: "4" },
-          { key: "privateExtraPrice", label: "Supplément par personne supplémentaire (MAD)", ph: "300" },
-          { key: "itinerary_raw", label: "Itineraire (HH:mm | Titre | Description, 1 etape par ligne)", ph: "08:00 | Depart hotel | Prise en charge", area: true },
-          { key: "tags", label: "Tags (virgule)", ph: "Desert, Aventure, Nature" },
-          { key: "included", label: "Inclus (virgule)", ph: "Transport, Guide" },
-          { key: "notIncluded", label: "Non inclus (virgule)", ph: "Repas, Entrees" },
-        ].map(f => (
-          <div key={f.key}>
-            <div className="text-xs font-bold text-charcoal-400 mb-1">{f.label}</div>
-            {(f as any).area ? (
-              <textarea value={(form as any)[f.key]} onChange={e => setForm({...form, [f.key]: e.target.value})}
-                placeholder={f.ph} rows={3} className={inputCls + " resize-none"} />
-            ) : (
-              <input value={(form as any)[f.key]} onChange={e => setForm({...form, [f.key]: e.target.value})}
-                placeholder={f.ph} className={inputCls} />
-            )}
-          </div>
-        ))}
-
-        <div className="flex items-center justify-between bg-white rounded-xl border border-sand-300 px-4 py-3">
-          <div className="text-sm font-semibold text-charcoal-800">Transport necessaire</div>
-          <button onClick={() => setForm({...form, transportRequired: !form.transportRequired})}
-            className={"w-12 h-6 rounded-full relative transition-colors " + (form.transportRequired ? "bg-sage-300" : "bg-sand-300")}>
-            <div className={"w-5 h-5 bg-white rounded-full absolute top-0.5 transition-all shadow-sm " + (form.transportRequired ? "left-6" : "left-0.5")} />
-          </button>
-        </div>
+        </Section>
 
         <button onClick={save} disabled={saving}
           className="w-full text-white font-bold py-4 rounded-full text-sm"
