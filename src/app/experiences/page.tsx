@@ -1,7 +1,7 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { MagnifyingGlass, SlidersHorizontal, Star, Clock, Users, ArrowRight, Percent, SealCheck, CaretDown, CaretUp, Heart } from "@phosphor-icons/react";
+import { MagnifyingGlass, SlidersHorizontal, Star, ArrowRight, SealCheck, CaretDown, CaretUp, Heart, Users, Lock, CaretLeft, CaretRight } from "@phosphor-icons/react";
 import BottomNav from "@/components/BottomNav";
 import { useExchangeRate } from "@/hooks/useExchangeRate";
 import PriceDisplay from "@/components/PriceDisplay";
@@ -34,6 +34,8 @@ export default function ExperiencesPage() {
   const [category, setCategory] = useState("all");
   const [sortBy, setSortBy] = useState<"popular"|"recent"|"price_asc"|"price_desc">("popular");
   const [showSort, setShowSort] = useState(false);
+  const [selectedType, setSelectedType] = useState<Record<string,"group"|"private">>({});
+  const [photoIdx, setPhotoIdx] = useState<Record<string,number>>({});
   const { convert } = useExchangeRate();
 
   const CITIES = ["Marrakech", "Fes", "Essaouira", "Chefchaouen", "Agadir"];
@@ -148,13 +150,44 @@ export default function ExperiencesPage() {
                 className="no-underline block active:scale-[0.98] transition-all"
                 style={{background:"white", borderRadius:20, overflow:"hidden", boxShadow:"0 2px 16px rgba(0,0,0,0.10)"}}>
 
-                {/* IMAGE */}
-                <div className="relative" style={{height:210}}>
-                  {t.coverImage
-                    ? <img src={t.coverImage} alt={t.title} className="w-full h-full object-cover" />
-                    : <div className="w-full h-full flex items-center justify-center text-6xl" style={{background:"linear-gradient(135deg, rgba(125,143,105,0.15), rgba(246,241,232,0.8))"}}>{EMOJI[t.tourType] || "🧭"}</div>
-                  }
-                  <div className="absolute inset-0" style={{background:"linear-gradient(to bottom, rgba(0,0,0,0) 40%, rgba(0,0,0,0.65) 100%)"}} />
+                {/* IMAGE CAROUSEL */}
+                <div className="relative overflow-hidden" style={{height:220}}>
+                  {/* Photos carousel */}
+                  {t.photos?.length > 0 ? (
+                    <>
+                      <div className="flex h-full transition-transform duration-500 ease-out"
+                        style={{transform:`translateX(-${(photoIdx[t.id]||0)*100}%)`}}>
+                        {t.photos.map((photo:string, pi:number) => (
+                          <img key={pi} src={photo} alt={t.title}
+                            className="w-full h-full object-cover flex-shrink-0" style={{minWidth:"100%"}} />
+                        ))}
+                      </div>
+                      {t.photos.length > 1 && (
+                        <>
+                          <button onClick={e => { e.preventDefault(); setPhotoIdx(prev => ({...prev, [t.id]: Math.max(0, (prev[t.id]||0)-1)})); }}
+                            className="absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full flex items-center justify-center z-10"
+                            style={{background:"rgba(255,255,255,0.85)", backdropFilter:"blur(8px)"}}>
+                            <CaretLeft size={12} weight="bold" className="text-charcoal-800" />
+                          </button>
+                          <button onClick={e => { e.preventDefault(); setPhotoIdx(prev => ({...prev, [t.id]: Math.min(t.photos.length-1, (prev[t.id]||0)+1)})); }}
+                            className="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full flex items-center justify-center z-10"
+                            style={{background:"rgba(255,255,255,0.85)", backdropFilter:"blur(8px)"}}>
+                            <CaretRight size={12} weight="bold" className="text-charcoal-800" />
+                          </button>
+                          <div className="absolute bottom-16 left-0 right-0 flex justify-center gap-1 z-10">
+                            {t.photos.map((_:any, pi:number) => (
+                              <div key={pi} className={"w-1.5 h-1.5 rounded-full transition-all " + ((photoIdx[t.id]||0) === pi ? "bg-white scale-125" : "bg-white/50")} />
+                            ))}
+                          </div>
+                        </>
+                      )}
+                    </>
+                  ) : t.coverImage ? (
+                    <img src={t.coverImage} alt={t.title} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-6xl" style={{background:"linear-gradient(135deg, rgba(125,143,105,0.15), rgba(246,241,232,0.8))"}}>{EMOJI[t.tourType] || "🧭"}</div>
+                  )}
+                  <div className="absolute inset-0" style={{background:"linear-gradient(to bottom, rgba(0,0,0,0) 35%, rgba(0,0,0,0.72) 100%)"}} />
 
                   {/* Top badges */}
                   <div className="absolute top-3 left-3">
@@ -178,7 +211,8 @@ export default function ExperiencesPage() {
                     <div className="text-[10px] font-semibold uppercase tracking-widest mb-1" style={{color:"#B88A44", letterSpacing:1.5}}>
                       {t.isGuideExperience ? "Experience" : (EMOJI[t.tourType] || "") + " Tour"}
                     </div>
-                    <div className="font-display text-lg font-bold text-white mb-2" style={{lineHeight:1.2}}>{t.title}</div>
+                    <div className="font-display text-lg font-bold text-white mb-1" style={{lineHeight:1.2}}>{t.title}</div>
+                    {t.description && <div className="text-[10px] text-white/70 mb-2 line-clamp-2 leading-relaxed">{t.description}</div>}
                     <div className="flex items-center gap-2">
                       {t.duration && <span className="text-[10px] font-medium px-2 py-0.5 rounded-full text-white/90" style={{background:"rgba(255,255,255,0.18)", border:"1px solid rgba(255,255,255,0.2)"}}>⏱ {t.duration}</span>}
                       {t.groupSize && <span className="text-[10px] font-medium px-2 py-0.5 rounded-full text-white/90" style={{background:"rgba(255,255,255,0.18)", border:"1px solid rgba(255,255,255,0.2)"}}>👥 {t.groupSize}</span>}
@@ -212,23 +246,41 @@ export default function ExperiencesPage() {
 
                 {/* BOTTOM */}
                 <div className="px-3.5 py-3">
+                  {/* TOGGLE GROUPE / PRIVE */}
+                  {t.privatePricePerPerson && (
+                    <div className="flex gap-2 mb-3 p-1 rounded-full bg-sand-100" style={{border:"1px solid #EADCC8"}}>
+                      <button onClick={e => { e.preventDefault(); setSelectedType(prev => ({...prev, [t.id]: "group"})); }}
+                        className={"flex-1 flex items-center justify-center gap-1.5 py-2 rounded-full text-xs font-bold transition-all " + ((selectedType[t.id]||"group") === "group" ? "bg-bronze-500 text-white shadow-sm" : "text-charcoal-500")}>
+                        <Users size={12} weight="bold" /> Groupe
+                      </button>
+                      <button onClick={e => { e.preventDefault(); setSelectedType(prev => ({...prev, [t.id]: "private"})); }}
+                        className={"flex-1 flex items-center justify-center gap-1.5 py-2 rounded-full text-xs font-bold transition-all " + (selectedType[t.id] === "private" ? "bg-charcoal-800 text-white shadow-sm" : "text-charcoal-500")}>
+                        <Lock size={12} weight="bold" /> Privé
+                      </button>
+                    </div>
+                  )}
                   <div className="flex items-end justify-between mb-2.5">
                     <div>
-                      <div className="text-[10px] text-charcoal-400 mb-0.5">A partir de</div>
-                      {t.minPrice ? (
+                      <div className="text-[10px] text-charcoal-400 mb-0.5">À partir de</div>
+                      {selectedType[t.id] === "private" && t.privatePricePerPerson ? (
                         <>
-                          <div className="font-display text-xl font-bold text-charcoal-800">
+                          <div className="font-display text-xl font-bold" style={{color:"#B88A44"}}>
+                            <PriceDisplay mad={priceWithCommission(t.privatePricePerPerson)} size="md" />
+                          </div>
+                          <div className="text-[10px] text-charcoal-400 mt-0.5">/ pers. · Privatisé 2-5 pers.</div>
+                        </>
+                      ) : t.minPrice ? (
+                        <>
+                          <div className="font-display text-xl font-bold" style={{color:"#B88A44"}}>
                             <PriceDisplay mad={priceWithCommission(t.minPrice)} size="md" />
                           </div>
-                          <div className="text-[10px] text-charcoal-400 mt-0.5">
-                            {t.isGuideExperience ? ("/ pers." + (t.groupThreshold1 ? " -" + t.groupDiscount1 + "% des " + t.groupThreshold1 + " pers." : "")) : "/ groupe · 1-4 pers."}
-                          </div>
+                          <div className="text-[10px] text-charcoal-400 mt-0.5">/ pers. · Groupe</div>
                         </>
                       ) : (
                         <div className="text-xs text-charcoal-400">Prix sur demande</div>
                       )}
                     </div>
-                    <div className="flex items-center gap-1.5 text-white font-bold px-4 py-2.5 rounded-full text-xs no-underline"
+                    <div className="flex items-center gap-1.5 text-white font-bold px-4 py-2.5 rounded-full text-xs no-underline active:scale-95 transition-transform"
                       style={{background:"linear-gradient(135deg, #B88A44, #9A7238)", boxShadow:"0 4px 14px rgba(184,138,68,0.3)"}}>
                       {t.isGuideExperience ? "Réserver" : "Voir les guides"} <ArrowRight size={11} weight="bold" />
                     </div>
