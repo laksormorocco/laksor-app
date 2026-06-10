@@ -352,7 +352,8 @@ model GuideExperience {
   transportRequired Boolean      @default(false)
   status            String       @default("PENDING")
   isActive          Boolean      @default(false)
-  pricePerPerson  Boolean  @default(true)
+  pricePerPerson       Float?
+  privatePricePerPerson Float?
   isLaksorExp     Boolean  @default(false)
   providerContact String?
   groupThreshold1 Int?
