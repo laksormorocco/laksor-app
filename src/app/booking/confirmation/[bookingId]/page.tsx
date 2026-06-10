@@ -17,6 +17,7 @@ export default function ConfirmationPage() {
   const [whatsapp, setWhatsapp] = useState("");
   const [waSaved, setWaSaved] = useState(false);
   const [invoiceUrl, setInvoiceUrl] = useState("");
+  const [experience, setExperience] = useState<any>(null);
 
   useEffect(() => {
     if (bookingId) {
@@ -34,6 +35,7 @@ export default function ConfirmationPage() {
       .then(data => {
         setBooking(data.booking);
         setBookingRef(data.bookingRef || "");
+        if (data.experience) setExperience(data.experience);
         setLoading(false);
       });
   }, [bookingId]);
@@ -89,6 +91,55 @@ export default function ConfirmationPage() {
             <div className="font-display text-2xl font-bold text-bronze-500 tracking-widest">{bookingRef}</div>
             <div className="text-[10px] text-charcoal-400 mt-1">Conservez ce numero pour tout suivi</div>
           </div>
+
+          {/* EXPERIENCE */}
+          {experience && (
+            <div className="bg-white rounded-2xl border border-sand-300 p-4">
+              <div className="text-[10px] font-bold text-bronze-500 uppercase tracking-widest mb-2">Experience Laksor</div>
+              <div className="font-display text-base font-bold text-charcoal-800 mb-3">{experience.title}</div>
+              <div className="flex flex-col gap-2">
+                {experience.duration && (
+                  <div className="flex items-center gap-2 text-sm">
+                    <span className="text-charcoal-400">⏱ Durée</span>
+                    <span className="font-semibold text-charcoal-800">{experience.duration}</span>
+                  </div>
+                )}
+                {experience.meetingPoint && (
+                  <div className="flex items-center gap-2 text-sm">
+                    <MapPin size={14} className="text-charcoal-400 flex-shrink-0" />
+                    <span className="text-charcoal-600">{experience.meetingPoint}</span>
+                  </div>
+                )}
+                {experience.providerContact && (
+                  <div className="flex items-center gap-2 text-sm">
+                    <WhatsappLogo size={14} className="text-sage-300 flex-shrink-0" />
+                    <a href={"https://wa.me/" + experience.providerContact.replace(/[^0-9]/g, "")}
+                      className="text-sage-300 font-semibold no-underline">{experience.providerContact}</a>
+                  </div>
+                )}
+                {experience.included?.length > 0 && (
+                  <div className="mt-2">
+                    <div className="text-[10px] font-bold text-sage-300 mb-1.5">✓ Inclus</div>
+                    <div className="flex flex-wrap gap-1">
+                      {experience.included.map((item:string) => (
+                        <span key={item} className="text-[10px] px-2 py-0.5 rounded-full" style={{background:"rgba(125,143,105,0.1)", color:"#7D8F69"}}>{item}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {experience.notIncluded?.length > 0 && (
+                  <div className="mt-1">
+                    <div className="text-[10px] font-bold text-red-400 mb-1.5">✗ A prévoir</div>
+                    <div className="flex flex-wrap gap-1">
+                      {experience.notIncluded.map((item:string) => (
+                        <span key={item} className="text-[10px] px-2 py-0.5 rounded-full bg-red-50 text-red-400">{item}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* GUIDE */}
           <div className="bg-white rounded-2xl border border-sand-300 p-4">

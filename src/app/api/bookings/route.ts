@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { guideId, supabaseId, date, duration, persons, totalPrice, notes, paymentMethod, startTime, transport, guestName, guestContact } = body;
+    const { guideId, supabaseId, date, duration, persons, totalPrice, notes, paymentMethod, startTime, transport, guestName, guestContact, expId } = body;
 
     if (!guideId) return NextResponse.json({ error: "Données manquantes" }, { status: 400 });
 
