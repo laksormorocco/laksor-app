@@ -369,22 +369,40 @@ export default function ExperiencesPage() {
             <h3 className="font-display text-lg font-bold text-charcoal-800 mb-4">Groupe ou Privé ?</h3>
             <div className="flex flex-col gap-3 mb-5">
               <div className="bg-sand-100 rounded-2xl p-4" style={{border:"1px solid #EADCC8"}}>
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-8 h-8 rounded-full bg-bronze-500 flex items-center justify-center">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-8 h-8 rounded-full bg-bronze-500 flex items-center justify-center flex-shrink-0">
                     <Users size={14} weight="bold" className="text-white" />
                   </div>
-                  <span className="text-sm font-bold text-charcoal-800">Expérience en Groupe</span>
+                  <span className="text-sm font-bold text-charcoal-800">👥 Expérience en Groupe</span>
                 </div>
-                <p className="text-xs text-charcoal-500 leading-relaxed">Vous rejoignez d autres voyageurs pour vivre l experience ensemble. Idéal pour les solo travelers ou les petits budgets. Prix par personne.</p>
+                {[
+                  "🕐 Créneaux de départ fixes — vous choisissez parmi les horaires disponibles",
+                  "🚐 Ramassage gratuit si votre hôtel est dans un rayon de 10km du centre de Marrakech",
+                  "💰 Frais supplémentaires de 110 MAD/pers. si vous résidez en dehors de Marrakech",
+                  "👫 Vous partagez l experience avec d autres voyageurs",
+                ].map((item, i) => (
+                  <div key={i} className="flex items-start gap-2 mb-2 last:mb-0">
+                    <span className="text-xs leading-relaxed text-charcoal-600">{item}</span>
+                  </div>
+                ))}
               </div>
               <div className="bg-charcoal-800 rounded-2xl p-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{background:"#B88A44"}}>
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{background:"#B88A44"}}>
                     <Lock size={14} weight="bold" className="text-white" />
                   </div>
-                  <span className="text-sm font-bold text-white">Expérience Privée</span>
+                  <span className="text-sm font-bold text-white">🔒 Expérience Privée</span>
                 </div>
-                <p className="text-xs text-white/70 leading-relaxed">Le prestataire est 100% dédié à votre groupe (2-5 pers.). Départ à l heure souhaitée, programme personnalisable. Prix par personne.</p>
+                {[
+                  "🕐 Vous choisissez librement votre heure de départ",
+                  "🚐 Ramassage inclus depuis votre lieu de résidence — partout à Marrakech",
+                  "👑 Le prestataire est 100% dédié à votre groupe (2-5 pers.)",
+                  "✨ Programme personnalisable selon vos envies",
+                ].map((item, i) => (
+                  <div key={i} className="flex items-start gap-2 mb-2 last:mb-0">
+                    <span className="text-xs leading-relaxed text-white/70">{item}</span>
+                  </div>
+                ))}
               </div>
             </div>
             <button onClick={() => setShowInfo(false)}
