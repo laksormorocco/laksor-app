@@ -47,10 +47,11 @@ export function expPricePerPerson(
   threshold2?: number | null,
   discount2?: number | null
 ): number {
-  const t1 = threshold1 || 4;
-  const d1 = discount1 ? (100 - discount1) / 100 : 0.92;
-  const t2 = threshold2 || 7;
-  const d2 = discount2 ? (100 - discount2) / 100 : 0.85;
+  if (!threshold1 || !discount1) return priceWithCommission;
+  const t1 = threshold1;
+  const d1 = (100 - discount1) / 100;
+  const t2 = threshold2 || 999;
+  const d2 = discount2 ? (100 - discount2) / 100 : 1;
   let discount = 1;
   if (persons >= t2) discount = d2;
   else if (persons >= t1) discount = d1;
