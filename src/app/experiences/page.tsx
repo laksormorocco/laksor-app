@@ -248,28 +248,6 @@ export default function ExperiencesPage() {
                 )}
 
                 {/* LANGUES + CRENEAUX */}
-                {(t.languages?.length > 0 || t.departureSlots?.length > 0) && (
-                  <div className="flex items-center justify-between px-3.5 py-2.5" style={{borderBottom:"1px solid #F0EDE7"}}>
-                    {t.languages?.length > 0 && (
-                      <div className="flex items-center gap-1">
-                        <span className="text-[9px] text-charcoal-400 mr-1">Langues</span>
-                        {t.languages.slice(0,4).map((l:string) => (
-                          <span key={l} className="text-xs">{l==="Français"?"🇫🇷":l==="Anglais"?"🇬🇧":l==="Espagnol"?"🇪🇸":l==="Allemand"?"🇩🇪":l==="Arabe"?"🇲🇦":l==="Italien"?"🇮🇹":l==="Russe"?"🇷🇺":"🏳️"}</span>
-                        ))}
-                      </div>
-                    )}
-                    {t.departureSlots?.length > 0 && (
-                      <div className="flex items-center gap-1 flex-wrap justify-end">
-                        <span className="text-[9px] text-charcoal-400 mr-1">Départs</span>
-                        {t.departureSlots.slice(0,3).map((slot:string) => (
-                          <span key={slot} className="text-[9px] font-bold px-2 py-0.5 rounded-full" style={{background:"rgba(184,138,68,0.1)", color:"#B88A44"}}>{slot}</span>
-                        ))}
-                        {t.departureSlots.length > 3 && <span className="text-[9px] text-charcoal-400">+{t.departureSlots.length-3}</span>}
-                      </div>
-                    )}
-                  </div>
-                )}
-
                 {/* BOTTOM */}
                 <div className="px-3.5 py-3">
                   {/* TOGGLE GROUPE / PRIVE */}
