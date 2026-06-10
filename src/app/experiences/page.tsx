@@ -36,6 +36,7 @@ export default function ExperiencesPage() {
   const [showSort, setShowSort] = useState(false);
   const [selectedType, setSelectedType] = useState<Record<string,"group"|"private">>({});
   const [photoIdx, setPhotoIdx] = useState<Record<string,number>>({});
+  const [showInfo, setShowInfo] = useState(false);
   const { convert } = useExchangeRate();
 
   const CITIES = ["Marrakech", "Fes", "Essaouira", "Chefchaouen", "Agadir"];
@@ -247,7 +248,7 @@ export default function ExperiencesPage() {
                 {/* BOTTOM */}
                 <div className="px-3.5 py-3">
                   {/* TOGGLE GROUPE / PRIVE */}
-                  {t.privatePricePerPerson && (
+            {t.privatePricePerPerson && (<>
                     <div className="flex gap-2 mb-3 p-1 rounded-full bg-sand-100" style={{border:"1px solid #EADCC8"}}>
                       <button onClick={e => { e.preventDefault(); setSelectedType(prev => ({...prev, [t.id]: "group"})); }}
                         className={"flex-1 flex items-center justify-center gap-1.5 py-2 rounded-full text-xs font-bold transition-all " + ((selectedType[t.id]||"group") === "group" ? "bg-bronze-500 text-white shadow-sm" : "text-charcoal-500")}>
@@ -258,7 +259,11 @@ export default function ExperiencesPage() {
                         <Lock size={12} weight="bold" /> Privé
                       </button>
                     </div>
-                  )}
+                    <button onClick={e => { e.preventDefault(); setShowInfo(true); }}
+                      className="text-[10px] text-charcoal-400 underline text-center w-full mt-1 mb-1">
+                      Quelle différence ?
+                    </button>
+            </>)}
                   <div className="flex items-end justify-between mb-2.5">
                     <div>
                       <div className="text-[10px] text-charcoal-400 mb-0.5">À partir de</div>
@@ -352,6 +357,41 @@ export default function ExperiencesPage() {
           </div>
         )}
       </div>
+      {/* MODAL INFO GROUPE/PRIVE */}
+      {showInfo && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center" style={{background:"rgba(0,0,0,0.5)", backdropFilter:"blur(4px)"}}
+          onClick={() => setShowInfo(false)}>
+          <div className="bg-white rounded-t-3xl w-full max-w-lg p-6 pb-10" onClick={e => e.stopPropagation()}>
+            <div className="w-10 h-1 bg-sand-300 rounded-full mx-auto mb-5" />
+            <h3 className="font-display text-lg font-bold text-charcoal-800 mb-4">Groupe ou Privé ?</h3>
+            <div className="flex flex-col gap-3 mb-5">
+              <div className="bg-sand-100 rounded-2xl p-4" style={{border:"1px solid #EADCC8"}}>
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-8 h-8 rounded-full bg-bronze-500 flex items-center justify-center">
+                    <Users size={14} weight="bold" className="text-white" />
+                  </div>
+                  <span className="text-sm font-bold text-charcoal-800">Expérience en Groupe</span>
+                </div>
+                <p className="text-xs text-charcoal-500 leading-relaxed">Vous rejoignez d autres voyageurs pour vivre l experience ensemble. Idéal pour les solo travelers ou les petits budgets. Prix par personne.</p>
+              </div>
+              <div className="bg-charcoal-800 rounded-2xl p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{background:"#B88A44"}}>
+                    <Lock size={14} weight="bold" className="text-white" />
+                  </div>
+                  <span className="text-sm font-bold text-white">Expérience Privée</span>
+                </div>
+                <p className="text-xs text-white/70 leading-relaxed">Le prestataire est 100% dédié à votre groupe (2-5 pers.). Départ à l heure souhaitée, programme personnalisable. Prix par personne.</p>
+              </div>
+            </div>
+            <button onClick={() => setShowInfo(false)}
+              className="w-full py-3.5 text-white font-bold rounded-full text-sm"
+              style={{background:"linear-gradient(135deg, #B88A44, #9A7238)"}}>
+              Compris !
+            </button>
+          </div>
+        </div>
+      )}
       <BottomNav />
     </div>
   );
