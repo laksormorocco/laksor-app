@@ -36,6 +36,19 @@ export default function ProviderDashboard() {
   const [activeTab, setActiveTab] = useState<"experiences"|"stats"|"profile">("experiences");
 
   useEffect(() => {
+    const handleFocus = () => {
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (!session) return;
+        fetch("/api/provider/me?supabaseId=" + session.user.id)
+          .then(r => r.json())
+          .then(d => { if (d.provider) setProvider(d.provider); });
+      });
+    };
+    window.addEventListener("focus", handleFocus);
+    return () => window.removeEventListener("focus", handleFocus);
+  }, []);
+
+  useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) { router.push("/auth/login"); return; }
       fetch("/api/provider/me?supabaseId=" + session.user.id)

@@ -39,7 +39,7 @@ export async function PATCH(req: Request) {
     const { id, guideId, category, isLaksorExp, providerContact, ...rest } = body;
     if (!id) return NextResponse.json({ error: "id requis" }, { status: 400 });
     const data: any = {};
-    const allowed = ["title","description","duration","groupSize","difficulty","city","meetingPoint","status","isActive","transportRequired","photos","tags","included","notIncluded","pricePerPerson","price","groupThreshold1","groupDiscount1","groupThreshold2","groupDiscount2","itinerary","pricePerPerson","privatePricePerPerson","departureSlots","pickupRadiusKm","pickupExtraFeePerPerson","languages"];
+    const allowed = ["title","description","duration","groupSize","difficulty","city","meetingPoint","status","isActive","transportRequired","photos","tags","included","notIncluded","pricePerPerson","price","groupThreshold1","groupDiscount1","groupThreshold2","groupDiscount2","itinerary","pricePerPerson","privatePricePerPerson","departureSlots","pickupRadiusKm","pickupExtraFeePerPerson","languages","providerId"];
     for (const key of allowed) { if (rest[key] !== undefined) data[key] = rest[key]; }
     if (providerContact !== undefined) data.providerContact = providerContact;
     if (data.price) data.price = Number(data.price);
