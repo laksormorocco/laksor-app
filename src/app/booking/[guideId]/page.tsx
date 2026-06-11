@@ -214,8 +214,8 @@ export default function BookingPage() {
           <>
             <div className="bg-white rounded-2xl border border-sand-300 p-4">
               <div className="flex items-center gap-2 mb-3">
-                <CalendarBlank size={14} className="text-bronze-500" />
-                <span className="text-[10px] font-bold text-charcoal-800 uppercase tracking-widest">Choisissez vos dates</span>
+                <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0" style={{background:"rgba(184,138,68,0.12)"}}><CalendarBlank size={15} weight="duotone" className="text-bronze-500" /></div>
+                <div><div className="font-display text-sm font-semibold text-charcoal-800">Choisissez vos dates</div></div>
               </div>
               {isExperience ? (
                 <div className="flex flex-col gap-3">
@@ -269,8 +269,8 @@ export default function BookingPage() {
 
             <div className="bg-white rounded-2xl border border-sand-300 p-4">
               <div className="flex items-center gap-2 mb-3">
-                <Users size={14} className="text-bronze-500" />
-                <span className="text-[10px] font-bold text-charcoal-800 uppercase tracking-widest">Participants</span>
+                <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0" style={{background:"rgba(184,138,68,0.12)"}}><Users size={15} weight="duotone" className="text-bronze-500" /></div>
+                <div><div className="font-display text-sm font-semibold text-charcoal-800">Participants</div></div>
               </div>
               {[
                 { label:"Adultes", desc:"12 ans +", Icon: Users, val: adults, set: setAdults, min: 1 },
@@ -318,7 +318,7 @@ export default function BookingPage() {
                 Dans Marrakech (&lt;10km)
               </button>
               <button onClick={() => { setHotelLocation("outside"); setTransport(true); }}
-                className={"flex-1 py-2 rounded-xl text-xs font-bold border transition-all " + (hotelLocation === "outside" ? "bg-amber-500 text-white border-amber-500" : "bg-white text-charcoal-600 border-sand-300")}>
+                className={"flex-1 py-2 rounded-xl text-xs font-bold border transition-all " + (hotelLocation === "outside" ? "bg-sage-300 text-white border-sage-300" : "bg-white text-charcoal-600 border-sand-300")}>
                 Hors Marrakech
               </button>
             </div>
@@ -366,7 +366,7 @@ export default function BookingPage() {
                     </div>
                   )}
                   <div className="flex justify-between text-sm">
-                    <span className="text-charcoal-400">Frais de service</span>
+                    <span className="text-charcoal-400">Frais de service <span className="text-[9px] opacity-60">(plateforme)</span></span>
                     <span className="font-semibold text-charcoal-800">+{convert(serviceFee)}</span>
                   </div>
                   <div className="flex justify-between pt-2 border-t border-sand-300">
