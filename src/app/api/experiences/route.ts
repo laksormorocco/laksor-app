@@ -36,6 +36,7 @@ export async function GET(req: Request) {
   }));
 
   const guideExperiences = await prisma.guideExperience.findMany({
+      orderBy: { bookingCount: "desc" },
     where: { isActive: true, status: "APPROVED" },
     include: { guide: { select: { id: true, displayName: true, city: true } } }
   });
