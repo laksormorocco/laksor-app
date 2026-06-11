@@ -249,19 +249,31 @@ export default function ExperiencesPage() {
                     <Heart size={14} className="text-charcoal-400" />
                   </button>
 
-                  {/* Bottom image content */}
-                  <div className="absolute bottom-0 left-0 right-0 px-3.5 pb-3.5">
-                    <div className="text-[10px] font-semibold uppercase tracking-widest mb-1" style={{color:"#B88A44", letterSpacing:1.5}}>
-                      {t.isGuideExperience ? "Experience" : (EMOJI[t.tourType] || "") + " Tour"}
+                  {/* TITRE EN HAUT */}
+                  <div className="absolute top-12 left-0 right-0 px-3.5">
+                    <div className="font-display text-lg font-bold text-white" style={{lineHeight:1.2, textShadow:"0 2px 8px rgba(0,0,0,0.5)"}}>{t.title}</div>
+                  </div>
+                  {/* BAS IMAGE — infos + bouton desc */}
+                  <div className="absolute bottom-0 left-0 right-0 px-3.5 pb-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5">
+                        {t.duration && <span className="text-[10px] font-medium px-2 py-0.5 rounded-full text-white/90" style={{background:"rgba(255,255,255,0.18)", border:"1px solid rgba(255,255,255,0.2)"}}>⏱ {t.duration}</span>}
+                        {t.groupSize && <span className="text-[10px] font-medium px-2 py-0.5 rounded-full text-white/90" style={{background:"rgba(255,255,255,0.18)", border:"1px solid rgba(255,255,255,0.2)"}}>👥 {t.groupSize}</span>}
+                        {t.languages?.slice(0,2).map((l:string) => <span key={l} className="text-sm leading-none">{l==="Français"?"🇫🇷":l==="Anglais"?"🇬🇧":l==="Espagnol"?"🇪🇸":l==="Allemand"?"🇩🇪":l==="Arabe"?"🇲🇦":l==="Italien"?"🇮🇹":l==="Russe"?"🇷🇺":"🏳️"}</span>)}
+                      </div>
+                      {t.description && (
+                        <button onClick={e => { e.preventDefault(); setOpenId(openId === t.id ? null : t.id); }}
+                          className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold text-white"
+                          style={{background:"rgba(255,255,255,0.2)", backdropFilter:"blur(8px)", border:"1px solid rgba(255,255,255,0.3)"}}>
+                          📖 Desc.
+                        </button>
+                      )}
                     </div>
-                    <div className="font-display text-lg font-bold text-white mb-1" style={{lineHeight:1.2}}>{t.title}</div>
-                    {t.description && <div className="text-[11px] mb-2 leading-relaxed line-clamp-3" style={{color:"rgba(255,255,255,0.85)"}}>{t.description}</div>}
-                    <div className="flex items-center gap-2">
-                      {t.duration && <span className="text-[10px] font-medium px-2 py-0.5 rounded-full text-white/90" style={{background:"rgba(255,255,255,0.18)", border:"1px solid rgba(255,255,255,0.2)"}}>⏱ {t.duration}</span>}
-                      {t.groupSize && <span className="text-[10px] font-medium px-2 py-0.5 rounded-full text-white/90" style={{background:"rgba(255,255,255,0.18)", border:"1px solid rgba(255,255,255,0.2)"}}>👥 {t.groupSize}</span>}
-                      {t.languages?.slice(0,3).map((l:string) => <span key={l} className="text-sm leading-none">{l==="Français"?"🇫🇷":l==="Anglais"?"🇬🇧":l==="Espagnol"?"🇪🇸":l==="Allemand"?"🇩🇪":l==="Arabe"?"🇲🇦":l==="Italien"?"🇮🇹":l==="Russe"?"🇷🇺":"🏳️"}</span>)}
-
-                    </div>
+                    {openId === t.id && t.description && (
+                      <div className="mt-2 p-2.5 rounded-xl text-[11px] leading-relaxed" style={{background:"rgba(0,0,0,0.6)", backdropFilter:"blur(8px)", color:"rgba(255,255,255,0.9)"}}>
+                        {t.description}
+                      </div>
+                    )}
                   </div>
                 </div>
 
