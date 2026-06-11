@@ -75,7 +75,18 @@ export default function ExperiencesPage() {
         <Link href="/" className="no-underline flex items-center gap-2">
           <img src="/logo7.png" alt="Laksor" style={{height:32,width:"auto",objectFit:"contain",maxWidth:110}} />
         </Link>
-        <span className="text-sm font-medium text-charcoal-800" style={{opacity:0.5}}>Experiences</span>
+        <div className="flex items-center gap-3">
+          <Link href="/search" className="no-underline">
+            <div className="w-9 h-9 rounded-full flex items-center justify-center active:scale-95 transition-all"
+              style={{background:"rgba(184,138,68,0.1)", border:"1.5px solid #EADCC8"}}>
+              <MagnifyingGlass size={15} weight="bold" className="text-bronze-500" />
+            </div>
+          </Link>
+          <div className="w-9 h-9 rounded-full flex items-center justify-center"
+            style={{background:"rgba(184,138,68,0.1)", border:"1.5px solid #EADCC8"}}>
+            <span className="text-base">🇲🇦</span>
+          </div>
+        </div>
       </div>
 
       {/* HERO — carousel dynamique */}
@@ -143,15 +154,15 @@ export default function ExperiencesPage() {
 
         {/* CITY FILTERS */}
         <div className="flex gap-2 overflow-x-auto pb-1 mb-3" style={{scrollbarWidth:"none"}}>
-          {CITIES.map(c => (
-            <button key={c} onClick={() => setCity(city === c ? null : c)}
-              className="flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all"
+          {[{name:"Toutes",emoji:"✨"},{name:"Marrakech",emoji:"🌹"},{name:"Fes",emoji:"🕌"},{name:"Essaouira",emoji:"🌊"},{name:"Chefchaouen",emoji:"💙"},{name:"Agadir",emoji:"🏖️"}].map(c => (
+            <button key={c.name} onClick={() => setCity(c.name === "Toutes" ? null : (city === c.name ? null : c.name))}
+              className="flex-shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all"
               style={{
-                background: city === c ? "#B88A44" : "white",
-                color: city === c ? "white" : "#111",
-                border: city === c ? "1.5px solid #B88A44" : "1.5px solid #EADCC8"
+                background: (c.name === "Toutes" && !city) || city === c.name ? "#111111" : "white",
+                color: (c.name === "Toutes" && !city) || city === c.name ? "white" : "#111",
+                border: (c.name === "Toutes" && !city) || city === c.name ? "1.5px solid #111" : "1.5px solid #EADCC8"
               }}>
-              {CITY_EMOJIS[c] || ""} {c}
+              <span>{c.emoji}</span> {c.name}
             </button>
           ))}
         </div>
