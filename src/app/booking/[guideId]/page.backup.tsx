@@ -149,64 +149,65 @@ export default function BookingPage() {
     <div className="min-h-screen bg-sand-200">
 
       {/* HEADER */}
-      <div className="sticky top-0 z-30 px-4 py-3" style={{background:"rgba(246,241,232,0.92)", backdropFilter:"blur(16px)", borderBottom:"1px solid rgba(184,138,68,0.12)"}}>
-        <div className="flex items-center justify-between mb-2.5">
-          <button onClick={() => step === "dates" ? router.back() : setStep(STEPS[stepIndex-1] as Step)}
-            className="w-9 h-9 rounded-full bg-white flex items-center justify-center active:scale-95 transition-all"
-            style={{border:"1.5px solid #EADCC8", boxShadow:"0 1px 4px rgba(0,0,0,0.06)"}}>
-            <ArrowLeft size={15} weight="bold" className="text-charcoal-800" />
-          </button>
-          <div className="text-center">
-            <div className="text-[10px] text-charcoal-400 uppercase tracking-wide">Réservation</div>
-            <div className="font-display text-sm font-bold text-charcoal-800">{isExperience && experience ? experience.title : guide?.displayName}</div>
-          </div>
-          <div className="w-9" />
+      <div className="sticky top-0 z-30 bg-white border-b border-sand-300 px-4 h-14 flex items-center gap-3">
+        <button onClick={() => step === "dates" ? router.back() : setStep(STEPS[stepIndex-1] as Step)}
+          className="w-9 h-9 rounded-full border border-sand-300 flex items-center justify-center">
+          <ArrowLeft size={16} weight="bold" className="text-charcoal-800" />
+        </button>
+        <div className="flex-1">
+          <div className="text-xs text-charcoal-400">Réservation avec</div>
+          <div className="font-display text-sm font-bold text-charcoal-800">{guide?.displayName}</div>
         </div>
-        <div className="flex items-center justify-center gap-1">
+        <div className="flex items-center gap-1.5">
           {["Dates","Infos","Récap"].map((s, i) => (
             <div key={s} className="flex items-center gap-1">
-              <div className={"w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all " + (i < stepIndex ? "bg-sage-300 text-white" : i === stepIndex ? "text-white" : "bg-sand-200 text-charcoal-400")}
-                style={i === stepIndex ? {background:"linear-gradient(135deg, #B88A44, #9A7238)", boxShadow:"0 0 0 3px rgba(184,138,68,0.2)"} : {}}>
+              <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold transition-all
+                ${i < stepIndex ? "bg-sage-300 text-white" : i === stepIndex ? "bg-bronze-500 text-white" : "bg-sand-300 text-charcoal-400"}`}>
                 {i < stepIndex ? "✓" : i+1}
               </div>
-              {i < 2 && <div className={"w-8 h-0.5 rounded-full transition-all " + (i < stepIndex ? "bg-sage-300" : "bg-sand-200")} />}
+              {i < 2 && <div className={`w-3 h-px ${i < stepIndex ? "bg-sage-300" : "bg-sand-300"}`} />}
             </div>
           ))}
         </div>
       </div>
 
-      {/* RECAP CARD */}
-      <div className="mx-4 mt-3 rounded-2xl bg-white flex items-center gap-3 p-3.5 animate-fade-up"
-        style={{boxShadow:"0 2px 16px rgba(0,0,0,0.08)", border:"1px solid #F0EDE7"}}>
-        <div className="w-12 h-12 rounded-2xl overflow-hidden flex-shrink-0"
-          style={{background:"rgba(184,138,68,0.12)", border:"2px solid #EADCC8"}}>
+      {/* GUIDE MINI CARD */}
+      <div className="bg-white border-b border-sand-300 px-4 py-3 flex items-center gap-3">
+        <div className="w-12 h-12 rounded-xl overflow-hidden bg-sand-300 flex-shrink-0">
           {guide?.avatar
             ? <img src={guide.avatar} className="w-full h-full object-cover" alt={guide.displayName} />
-            : <div className="w-full h-full flex items-center justify-center font-display text-xl font-bold" style={{color:"#B88A44"}}>{guide?.displayName?.[0] || "L"}</div>
+            : <div className="w-full h-full flex items-center justify-center font-bold text-charcoal-500 text-lg">{guide?.displayName?.[0]}</div>
           }
         </div>
-        <div className="flex-1 min-w-0">
-          <div className="font-display text-sm font-bold text-charcoal-800 truncate">
-            {isExperience && experience ? experience.title : guide?.displayName}
+        <div className="flex-1">
+          <div className="flex items-center gap-2">
+            <span className="font-display text-sm font-bold text-charcoal-800">{guide?.displayName}</span>
+            {guide?.avgRating > 0 && (
+              <span className="flex items-center gap-1 text-[11px] text-amber-500 font-bold">
+                <Star size={11} weight="fill" /> {guide.avgRating}
+              </span>
+            )}
           </div>
-          <div className="flex items-center gap-1.5 mt-0.5">
-            <MapPin size={10} className="text-charcoal-400 flex-shrink-0" />
-            <span className="text-[11px] text-charcoal-400">{guide?.city || "Marrakech"}</span>
-            <span className="text-[11px] font-semibold" style={{color:"#7D8F69"}}>✦ Certifié</span>
+          <div className="flex items-center gap-1 text-[11px] text-charcoal-400">
+            <MapPin size={11} /> {guide?.city}
           </div>
         </div>
-        <div className="text-right flex-shrink-0">
-          <div className="font-display text-lg font-bold leading-tight" style={{color:"#B88A44"}}>
-            {(adjustedTotal > 0 || isExperience) ? convert(adjustedTotal) : <PriceDisplay mad={priceWithCommission(Number(guide?.halfDayPrice || 0))} size="lg" />}
-          </div>
-          <div className="text-[10px] text-charcoal-400">{(adjustedTotal > 0 || isExperience) ? adjustedTotal + " MAD" : "pour 2 pers."}</div>
-          {payment === "deposit" && adjustedTotal > 0 && (
-            <div className="text-[10px] font-semibold" style={{color:"#B88A44"}}>Acompte {convert(deposit)}</div>
+        <div className="text-right">
+          {(adjustedTotal > 0 || isExperience) ? (
+            <>
+              <div className="font-display text-lg font-bold text-charcoal-800">{convert(adjustedTotal)} <span className="text-xs font-normal text-charcoal-400">(~{adjustedTotal} MAD)</span></div>
+              {payment === "deposit" && <div className="text-[10px] text-bronze-500">Acompte : {convert(deposit)}</div>}
+            </>
+          ) : (
+            <>
+              <div className="font-display text-lg font-bold text-charcoal-800"><PriceDisplay mad={priceWithCommission(Number(guide?.halfDayPrice || 0))} size="lg" /></div>
+              <div className="text-[10px] text-charcoal-400">pour 2 pers.</div>
+            </>
           )}
         </div>
       </div>
 
-      <div className="px-4 pt-4 pb-36 max-w-lg mx-auto flex flex-col gap-3">
+      <div className="px-4 pt-4 pb-8 max-w-lg mx-auto flex flex-col gap-3">
 
         {/* STEP 1 */}
         {step === "dates" && (
@@ -290,8 +291,7 @@ export default function BookingPage() {
                     </button>
                     <span className="font-display text-base font-bold text-charcoal-800 w-4 text-center">{p.val}</span>
                     <button onClick={() => p.set(Math.min(20, p.val+1))}
-                      className="w-8 h-8 rounded-full flex items-center justify-center transition-all active:scale-95"
-                      style={{background:"linear-gradient(135deg, #B88A44, #9A7238)", boxShadow:"0 3px 8px rgba(184,138,68,0.3)"}}>
+                      className="w-8 h-8 rounded-full bg-charcoal-800 flex items-center justify-center hover:bg-charcoal-600 transition-colors">
                       <Plus size={12} weight="bold" className="text-white" />
                     </button>
                   </div>
@@ -376,19 +376,11 @@ export default function BookingPage() {
                 </div>
               </div>
             )}
-            <div className="fixed bottom-0 left-0 right-0 z-40 px-4 pb-8 pt-3" style={{background:"linear-gradient(to top, #F6F1E8 80%, transparent)"}}>
-              <button onClick={() => selectedDates.length > 0 && setStep("info")}
-                className="w-full py-4 rounded-full text-sm font-bold transition-all flex items-center justify-center gap-2 text-white active:scale-[0.98]"
-                style={{background: selectedDates.length > 0 ? "linear-gradient(135deg, #B88A44, #9A7238)" : "#D4C9B8", boxShadow: selectedDates.length > 0 ? "0 6px 20px rgba(184,138,68,0.4)" : "none", cursor: selectedDates.length > 0 ? "pointer" : "not-allowed"}}>
-                {selectedDates.length === 0 ? "Choisir une date" : (bookingType === "group" && experience?.departureSlots?.length > 0 && !selectedSlot) ? "⏰ Choisir un créneau" : <><CheckCircle size={16} weight="fill" /> Continuer → Vos coordonnées</>}
-              </button>
-              {selectedDates.length > 0 && (
-                <div className="text-center text-[11px] text-charcoal-400 mt-2">
-                  <span style={{color:"#B88A44"}}>{new Date(selectedDates[0]+"T00:00:00").toLocaleDateString("fr-FR", {weekday:"long", day:"numeric", month:"long"})}</span>
-                  {selectedSlot && <span> · {selectedSlot}</span>}
-                </div>
-              )}
-            </div>
+            <button onClick={() => selectedDates.length > 0 && setStep("info")}
+              className={`w-full py-4 rounded-full text-sm font-bold transition-all flex items-center justify-center gap-2
+                ${selectedDates.length > 0 ? "bg-bronze-500 hover:bg-bronze-600 text-white shadow-lg" : "bg-sand-300 text-charcoal-400 cursor-not-allowed"}`}>
+              {selectedDates.length > 0 ? <><CheckCircle size={16} weight="fill" /> Continuer → Vos coordonnées</> : "Sélectionnez une date"}
+            </button>
           </>
         )}
 
