@@ -71,19 +71,22 @@ export default function ExperiencesPage() {
   return (
     <div className="min-h-screen pb-24" style={{background:"#F6F1E8"}}>
 
-      {/* NAVBAR AIRBNB STYLE */}
-      <div className="sticky top-0 z-30 flex items-center gap-3 px-4 py-2.5" style={{background:"rgba(246,241,232,0.92)", backdropFilter:"blur(16px)", borderBottom:"1px solid rgba(184,138,68,0.12)"}}>
-        <Link href="/" className="no-underline flex-shrink-0">
-          <img src="/logo7.png" alt="Laksor" style={{height:28,width:"auto",objectFit:"contain",maxWidth:80}} />
+      {/* NAVBAR */}
+      <div className="sticky top-0 z-30 flex items-center justify-between px-5 py-3.5" style={{background:"rgba(246,241,232,0.88)", backdropFilter:"blur(16px)", borderBottom:"1px solid rgba(184,138,68,0.12)"}}>
+        <Link href="/" className="no-underline flex items-center gap-2">
+          <img src="/logo7.png" alt="Laksor" style={{height:32,width:"auto",objectFit:"contain",maxWidth:110}} />
         </Link>
-        <div className="flex-1 flex items-center gap-2 bg-white rounded-full px-4 h-10" style={{border:"1.5px solid #EADCC8", boxShadow:"0 2px 8px rgba(0,0,0,0.06)"}}>
-          <MagnifyingGlass size={14} className="text-bronze-500 flex-shrink-0" />
-          <input readOnly placeholder="Que voulez-vous découvrir ?" className="flex-1 text-xs bg-transparent outline-none" style={{color:"rgba(17,17,17,0.5)"}} />
-          <button onClick={() => setShowSort(!showSort)}
-            className="flex items-center gap-1 h-7 px-2.5 rounded-full text-[11px] font-semibold flex-shrink-0"
-            style={{background:"#EADCC8", color:"#111"}}>
-            <SlidersHorizontal size={10} weight="bold" /> Trier
-          </button>
+        <div className="flex items-center gap-3">
+          <Link href="/search" className="no-underline">
+            <div className="w-9 h-9 rounded-full flex items-center justify-center active:scale-95 transition-all"
+              style={{background:"rgba(184,138,68,0.1)", border:"1.5px solid #EADCC8"}}>
+              <MagnifyingGlass size={15} weight="bold" className="text-bronze-500" />
+            </div>
+          </Link>
+          <div className="w-9 h-9 rounded-full flex items-center justify-center"
+            style={{background:"rgba(184,138,68,0.1)", border:"1.5px solid #EADCC8"}}>
+            <span className="text-base">🇲🇦</span>
+          </div>
         </div>
       </div>
 
@@ -111,33 +114,44 @@ export default function ExperiencesPage() {
         )}
         <div className="absolute inset-0" style={{background:"linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.82) 100%)"}} />
         <div className="absolute bottom-0 left-0 right-0 px-5 pb-6">
-          <div className="text-[10px] font-bold tracking-widest uppercase mb-2" style={{color:"rgba(255,255,255,0.9)",letterSpacing:2, textShadow:"0 1px 4px rgba(0,0,0,0.5)"}}>✦ Maroc Authentique</div>
+          <div className="text-xs font-semibold tracking-widest uppercase mb-1.5" style={{color:"#B88A44",letterSpacing:2}}>Maroc Authentique</div>
           <h1 className="font-display text-3xl font-bold text-white mb-1.5" style={{lineHeight:1.2}}>Vivez le Maroc<br/>de l'intérieur</h1>
           <p className="text-sm text-white/70 mb-3">Guides certifiés · Expériences uniques</p>
-          <div className="flex items-center gap-4 mb-3">
-            <div className="flex items-center gap-1.5 text-xs" style={{color:"rgba(255,255,255,0.85)"}}>
-              <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{background:"#4ade80", boxShadow:"0 0 6px #4ade80"}} />
+          <div className="flex gap-4">
+            <div className="flex items-center gap-1.5 text-xs text-white/80">
+              <div className="w-1.5 h-1.5 rounded-full bg-sage-300 animate-pulse" />
               {tours.length} expériences
             </div>
-            <div className="text-xs" style={{color:"rgba(255,255,255,0.85)"}}>🇲🇦 5 villes</div>
+            <div className="text-xs text-white/80">🇲🇦 5 villes</div>
           </div>
-
         </div>
       </div>
 
-      <div className="px-4 pt-4 pb-2 max-w-lg mx-auto">
+      <div className="px-5 pt-4 pb-2 max-w-lg mx-auto">
 
-        {showSort && (
-          <div className="absolute right-4 top-14 bg-white rounded-2xl shadow-lg z-50 overflow-hidden" style={{width:176, border:"1px solid #EADCC8"}}>
-            {[{id:"popular",label:"Populaires"},{id:"recent",label:"Plus récents"},{id:"price_asc",label:"Prix croissant"},{id:"price_desc",label:"Prix décroissant"}].map(s => (
-              <button key={s.id} onClick={() => { setSortBy(s.id as any); setShowSort(false); }}
-                className="w-full text-left px-4 py-3 text-xs font-medium"
-                style={{color: sortBy === s.id ? "#B88A44" : "#111", fontWeight: sortBy === s.id ? 700 : 500}}>
-                {sortBy === s.id && "✓ "}{s.label}
-              </button>
-            ))}
+        {/* SEARCH BAR */}
+        <div className="flex items-center gap-3 bg-white rounded-full px-4 py-3 mb-4" style={{border:"1.5px solid #EADCC8", boxShadow:"0 2px 12px rgba(0,0,0,0.06)"}}>
+          <MagnifyingGlass size={15} className="text-bronze-500 flex-shrink-0" />
+          <span className="text-sm flex-1" style={{color:"rgba(17,17,17,0.4)"}}>Que voulez-vous découvrir ?</span>
+          <div className="relative">
+            <button onClick={() => setShowSort(!showSort)}
+              className={"flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all " + (sortBy !== "popular" ? "bg-bronze-500 text-white" : "text-charcoal-600")}
+              style={{background: sortBy !== "popular" ? "#B88A44" : "#EADCC8"}}>
+              <SlidersHorizontal size={11} weight="bold" /> Trier
+            </button>
+            {showSort && (
+              <div className="absolute right-0 top-9 bg-white rounded-2xl shadow-lg z-20 overflow-hidden" style={{width:176, border:"1px solid #EADCC8"}}>
+                {[{id:"popular",label:"Populaires"},{id:"recent",label:"Plus récents"},{id:"price_asc",label:"Prix croissant"},{id:"price_desc",label:"Prix décroissant"}].map(s => (
+                  <button key={s.id} onClick={() => { setSortBy(s.id as any); setShowSort(false); }}
+                    className="w-full text-left px-4 py-3 text-xs font-medium transition-colors hover:bg-sand-100"
+                    style={{color: sortBy === s.id ? "#B88A44" : "#111", fontWeight: sortBy === s.id ? 700 : 500}}>
+                    {sortBy === s.id && "✓ "}{s.label}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
-        )}
+        </div>
 
         {/* CITY FILTERS */}
         <div className="flex gap-2 overflow-x-auto pb-1 mb-3" style={{scrollbarWidth:"none"}}>
@@ -330,7 +344,7 @@ export default function ExperiencesPage() {
                     </div>
                     <div className="flex items-center gap-1.5 text-white font-bold px-4 py-2.5 rounded-full text-xs no-underline active:scale-95 transition-transform"
                       style={{background:"linear-gradient(135deg, #B88A44, #9A7238)", boxShadow:"0 4px 14px rgba(184,138,68,0.3)"}}>
-                      Réserver <ArrowRight size={11} weight="bold" />
+                      {t.isGuideExperience ? "Réserver" : "Voir les guides"} <ArrowRight size={11} weight="bold" />
                     </div>
                   </div>
 
