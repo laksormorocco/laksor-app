@@ -90,7 +90,7 @@ export default function ExperiencesPage() {
       </div>
 
       {/* HERO — carousel dynamique */}
-      <div className="relative overflow-hidden" style={{height:260}}>
+      <div className="relative overflow-hidden" style={{height:190}}>
         {heroPhotos.length > 0 ? (
           <>
             {heroPhotos.map((photo, i) => (
@@ -111,7 +111,7 @@ export default function ExperiencesPage() {
         ) : (
           <img src="https://images.unsplash.com/photo-1539020140153-e479b8c22e70?w=800&q=80" alt="Maroc" className="w-full h-full object-cover" />
         )}
-        <div className="absolute inset-0" style={{background:"linear-gradient(to bottom, rgba(0,0,0,0) 20%, rgba(17,11,4,0.72) 100%)"}} />
+        <div className="absolute inset-0" style={{background:"linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.82) 100%)"}} />
         <div className="absolute bottom-0 left-0 right-0 px-5 pb-6">
           <div className="text-xs font-semibold tracking-widest uppercase mb-1.5" style={{color:"#B88A44",letterSpacing:2}}>Maroc Authentique</div>
           <h1 className="font-display text-3xl font-bold text-white mb-1.5" style={{lineHeight:1.2}}>Vivez le Maroc<br/>de l'intérieur</h1>
@@ -254,7 +254,7 @@ export default function ExperiencesPage() {
                       {t.isGuideExperience ? "Experience" : (EMOJI[t.tourType] || "") + " Tour"}
                     </div>
                     <div className="font-display text-lg font-bold text-white mb-1" style={{lineHeight:1.2}}>{t.title}</div>
-                    {t.description && <div className="text-[10px] text-white/70 mb-2 line-clamp-2 leading-relaxed">{t.description}</div>}
+                    {t.description && <div className="text-[11px] mb-2 leading-relaxed line-clamp-3" style={{color:"rgba(255,255,255,0.85)"}}>{t.description}</div>}
                     <div className="flex items-center gap-2">
                       {t.duration && <span className="text-[10px] font-medium px-2 py-0.5 rounded-full text-white/90" style={{background:"rgba(255,255,255,0.18)", border:"1px solid rgba(255,255,255,0.2)"}}>⏱ {t.duration}</span>}
                       {t.groupSize && <span className="text-[10px] font-medium px-2 py-0.5 rounded-full text-white/90" style={{background:"rgba(255,255,255,0.18)", border:"1px solid rgba(255,255,255,0.2)"}}>👥 {t.groupSize}</span>}
