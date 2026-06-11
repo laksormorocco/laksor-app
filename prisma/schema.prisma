@@ -359,6 +359,8 @@ model GuideExperience {
   pickupExtraFeePerPerson Float?      
   languages            String[]       
   isLaksorExp     Boolean  @default(false)
+  bookingCount           Int               @default(0)
+  viewCount              Int               @default(0)
   providerId              String?
   provider                Provider?  @relation("ProviderExperiences", fields: [providerId], references: [id])
   providerContact String?

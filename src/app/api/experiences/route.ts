@@ -7,7 +7,7 @@ export async function GET(req: Request) {
   const city = searchParams.get("city");
   const templates = await prisma.tourTemplate.findMany({
     where: { isActive: true },
-    orderBy: { createdAt: "desc" },
+    orderBy: { bookingCount: "desc" },
     include: {
       guideTours: {
         where: {
