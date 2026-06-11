@@ -121,13 +121,11 @@ export default function ExperiencesPage() {
             </div>
             <div className="text-xs" style={{color:"rgba(255,255,255,0.85)"}}>🇲🇦 5 villes</div>
           </div>
-          <button className="flex items-center gap-2 h-10 px-5 rounded-full text-sm font-semibold text-white" style={{background:"#B88A44", boxShadow:"0 4px 20px rgba(184,138,68,0.5)"}}>
-            Explorer <ArrowRight size={14} weight="bold" />
-          </button>
+
         </div>
       </div>
 
-      <div className="px-5 pt-4 pb-2 max-w-lg mx-auto">
+      <div className="px-4 pt-4 pb-2 max-w-lg mx-auto">
 
         {showSort && (
           <div className="absolute right-4 top-14 bg-white rounded-2xl shadow-lg z-50 overflow-hidden" style={{width:176, border:"1px solid #EADCC8"}}>
