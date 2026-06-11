@@ -127,10 +127,10 @@ export default function ExperiencesPage() {
         </div>
       </div>
 
-      <div className="px-5 pt-4 pb-2 max-w-lg mx-auto">
+      <div className="px-4 pt-4 pb-2 w-full">
 
         {/* SEARCH BAR */}
-        <div className="flex items-center gap-3 bg-white rounded-full px-4 py-3 mb-4" style={{border:"1.5px solid #EADCC8", boxShadow:"0 2px 12px rgba(0,0,0,0.06)"}}>
+        <div className="flex items-center gap-3 bg-white rounded-full px-4 py-3 mb-4 w-full" style={{border:"1.5px solid #EADCC8", boxShadow:"0 2px 12px rgba(0,0,0,0.06)"}}>
           <MagnifyingGlass size={15} className="text-bronze-500 flex-shrink-0" />
           <span className="text-sm flex-1" style={{color:"rgba(17,17,17,0.4)"}}>Que voulez-vous découvrir ?</span>
           <div className="relative">
