@@ -111,16 +111,19 @@ export default function ExperiencesPage() {
         )}
         <div className="absolute inset-0" style={{background:"linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.82) 100%)"}} />
         <div className="absolute bottom-0 left-0 right-0 px-5 pb-6">
-          <div className="text-xs font-semibold tracking-widest uppercase mb-1.5" style={{color:"#B88A44",letterSpacing:2}}>Maroc Authentique</div>
+          <div className="text-[10px] font-bold tracking-widest uppercase mb-2" style={{color:"rgba(255,255,255,0.9)",letterSpacing:2, textShadow:"0 1px 4px rgba(0,0,0,0.5)"}}>✦ Maroc Authentique</div>
           <h1 className="font-display text-3xl font-bold text-white mb-1.5" style={{lineHeight:1.2}}>Vivez le Maroc<br/>de l'intérieur</h1>
           <p className="text-sm text-white/70 mb-3">Guides certifiés · Expériences uniques</p>
-          <div className="flex gap-4">
-            <div className="flex items-center gap-1.5 text-xs text-white/80">
-              <div className="w-1.5 h-1.5 rounded-full bg-sage-300 animate-pulse" />
+          <div className="flex items-center gap-4 mb-3">
+            <div className="flex items-center gap-1.5 text-xs" style={{color:"rgba(255,255,255,0.85)"}}>
+              <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{background:"#4ade80", boxShadow:"0 0 6px #4ade80"}} />
               {tours.length} expériences
             </div>
-            <div className="text-xs text-white/80">🇲🇦 5 villes</div>
+            <div className="text-xs" style={{color:"rgba(255,255,255,0.85)"}}>🇲🇦 5 villes</div>
           </div>
+          <button className="flex items-center gap-2 h-10 px-5 rounded-full text-sm font-semibold text-white" style={{background:"#B88A44", boxShadow:"0 4px 20px rgba(184,138,68,0.5)"}}>
+            Explorer <ArrowRight size={14} weight="bold" />
+          </button>
         </div>
       </div>
 
@@ -329,7 +332,7 @@ export default function ExperiencesPage() {
                     </div>
                     <div className="flex items-center gap-1.5 text-white font-bold px-4 py-2.5 rounded-full text-xs no-underline active:scale-95 transition-transform"
                       style={{background:"linear-gradient(135deg, #B88A44, #9A7238)", boxShadow:"0 4px 14px rgba(184,138,68,0.3)"}}>
-                      {t.isGuideExperience ? "Réserver" : "Voir les guides"} <ArrowRight size={11} weight="bold" />
+                      Réserver <ArrowRight size={11} weight="bold" />
                     </div>
                   </div>
 
