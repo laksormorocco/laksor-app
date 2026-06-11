@@ -17,6 +17,7 @@ const TABS = [
   { id:"crm",     Icon: UsersThree,    label:"CRM"       },
   { id:"tourists", Icon: UserCircle,    label:"Clients"   },
   { id:"experiences", Icon: Sparkle, label:"Exp." },
+  { id:"providers",   Icon: UsersThree, label:"Presta." },
 ];
 
 const TOUR_TYPES = [
@@ -76,6 +77,7 @@ export default function AdminDashboard() {
   const [tourists,     setTourists]     = useState<any[]>([]);
   const [touristSearch,setTouristSearch]= useState("");
   const [touristSel,   setTouristSel]   = useState<any>(null);
+  const [providers,    setProviders]    = useState<any[]>([]);
 
   useEffect(() => { if (auth) { fetchAll(); fetchTemplates(); } }, [auth]);
   useEffect(() => { if (auth && active === "guides") fetchGuides(); }, [guideTab, active, auth]);
@@ -976,7 +978,46 @@ export default function AdminDashboard() {
 
 
         {/* ══ TOURISTES ══ */}
-        {active === "tourists" && (
+  
+      {active === "providers" && (
+        <div className="flex flex-col gap-3">
+          <div className="font-display text-lg font-semibold text-charcoal-800 mb-2">Prestataires ({providers.length})</div>
+          {providers.length === 0 ? (
+            <div className="bg-white rounded-2xl p-8 text-center border border-sand-200">
+              <div className="text-sm text-charcoal-400">Aucun prestataire inscrit</div>
+            </div>
+          ) : providers.map((p: any) => (
+            <div key={p.id} className="bg-white rounded-2xl p-4 border border-sand-200">
+              <div className="flex items-start justify-between mb-3">
+                <div>
+                  <div className="font-display text-sm font-bold text-charcoal-800">{p.displayName}</div>
+                  <div className="text-xs text-charcoal-400 mt-0.5">{p.email} · {p.phone}</div>
+                  <div className="text-xs text-charcoal-400">{p.city}</div>
+                </div>
+                <span className={statusBadge(p.status).cls}>{statusBadge(p.status).label}</span>
+              </div>
+              <div className="text-xs text-charcoal-500 mb-3">{p.experiences?.length || 0} expérience(s) soumise(s)</div>
+              {p.status === "PENDING" && (
+                <div className="flex gap-2">
+                  <button onClick={async () => {
+                    await fetch("/api/admin/providers", {method:"PATCH", headers:{"Content-Type":"application/json"}, body:JSON.stringify({id:p.id, status:"APPROVED"})});
+                    setProviders((prev:any[]) => prev.map((x:any) => x.id===p.id ? {...x, status:"APPROVED"} : x));
+                  }} className="flex-1 py-2 rounded-full text-xs font-bold text-white" style={{background:"#7D8F69"}}>
+                    ✓ Approuver
+                  </button>
+                  <button onClick={async () => {
+                    await fetch("/api/admin/providers", {method:"PATCH", headers:{"Content-Type":"application/json"}, body:JSON.stringify({id:p.id, status:"REJECTED"})});
+                    setProviders((prev:any[]) => prev.map((x:any) => x.id===p.id ? {...x, status:"REJECTED"} : x));
+                  }} className="flex-1 py-2 rounded-full text-xs font-bold text-white" style={{background:"#ef4444"}}>
+                    ✗ Refuser
+                  </button>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+      {active === "tourists" && (
           <div className="flex flex-col gap-3">
 
             {/* Search */}
