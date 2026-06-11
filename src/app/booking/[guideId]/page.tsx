@@ -122,7 +122,9 @@ export default function BookingPage() {
           totalPrice: adjustedTotal,
           paymentMethod: payment,
           transport,
-          notes: selectedDates.length > 1 ? "Dates: " + selectedDates.join(", ") : ""
+          notes: selectedDates.length > 1 ? "Dates: " + selectedDates.join(", ") : "",
+        expId: expId || null,
+        startTime: selectedSlot || startHour
         })
       });
       const data = await res.json();
@@ -484,6 +486,13 @@ export default function BookingPage() {
                   <span className="text-charcoal-400">Paiement</span>
                   <span className="font-semibold text-charcoal-800">{payment === "deposit" ? "Acompte 30%" : payment === "full" ? "100% en ligne" : "Cash"}</span>
                 </div>
+                {isExperience && experience?.providerContact && (
+                  <div className="flex items-center gap-2 text-sm mt-2 pt-2 border-t border-sand-200">
+                    <span className="text-charcoal-400">📞 Contact</span>
+                    <a href={"https://wa.me/" + experience.providerContact.replace(/[^0-9]/g, "")}
+                      className="font-semibold text-sage-300 no-underline">{experience.providerContact}</a>
+                  </div>
+                )}
                 {isExperience && experience?.included?.length > 0 && (
                   <div className="mt-2 pt-2 border-t border-sand-200">
                     <div className="text-[10px] font-bold text-sage-300 mb-1.5">✓ Inclus</div>
