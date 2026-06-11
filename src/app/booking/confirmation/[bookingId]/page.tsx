@@ -61,7 +61,7 @@ export default function ConfirmationPage() {
   const total = Number(booking.totalPrice);
   const deposit = Math.round(total * 0.3);
   const dateStr = new Date(booking.date).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
-  const duration = booking.duration === "FULL_DAY" ? "Journee complete (8h)" : "Demi-journee (4h)";
+  const duration = experience?.duration || (booking.duration === "FULL_DAY" ? "Journee complete (8h)" : "Demi-journee (4h)");
   const paymentLabel = booking.paymentMethod === "deposit" ? "Acompte 30%" : booking.paymentMethod === "full" ? "100% en ligne" : "Cash le jour J";
   const hasPhone = tourist?.email?.includes("@guest") === false && booking.notes?.includes("whatsapp");
   const hasTransport = booking.notes?.includes("Transport") || false;
@@ -141,7 +141,8 @@ export default function ConfirmationPage() {
             </div>
           )}
 
-          {/* GUIDE */}
+          {/* GUIDE — masqué pour expériences Laksor */}
+          {!experience && (
           <div className="bg-white rounded-2xl border border-sand-300 p-4">
             <div className="text-[10px] font-bold text-charcoal-800 uppercase tracking-widest mb-3">Votre guide</div>
             <div className="flex items-center gap-3 mb-3">
@@ -183,6 +184,7 @@ export default function ConfirmationPage() {
             </div>
 
           </div>
+          )}
 
           {/* DETAILS VISITE */}
           <div className="bg-white rounded-2xl border border-sand-300 p-4">
@@ -250,8 +252,8 @@ export default function ConfirmationPage() {
             </div>
           )}
 
-          {/* UPSELL TRANSPORT */}
-          {!hasTransport && (
+          {/* UPSELL TRANSPORT — masqué pour expériences */}
+          {!hasTransport && !experience && (
             <div className="bg-white rounded-2xl border border-bronze-500/30 p-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-bronze-500/10 rounded-xl flex items-center justify-center flex-shrink-0">
