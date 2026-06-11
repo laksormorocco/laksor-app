@@ -199,7 +199,7 @@ export default function ConfirmationPage() {
                   <div key={i} className="flex items-center gap-2">
                     <Compass size={16} className="text-bronze-500 flex-shrink-0" />
                     <span className="text-sm text-charcoal-800">
-                      {new Date(s.date).toLocaleDateString("fr-FR", {weekday:"short", day:"numeric", month:"short"})} - {s.duration === "full" ? "Journee complete (8h)" : "Demi-journee (4h)"}
+                      {new Date(s.date).toLocaleDateString("fr-FR", {weekday:"short", day:"numeric", month:"short"})} - {experience?.duration || (s.duration === "full" ? "Journee complete (8h)" : "Demi-journee (4h)")}
                     </span>
                   </div>
                 ))
