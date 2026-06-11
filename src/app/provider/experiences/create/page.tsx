@@ -99,6 +99,8 @@ export default function ProviderCreateExperience() {
     setSaving(false);
   }
 
+  }
+
   return (
     <div className="min-h-screen pb-10" style={{background:"#F6F1E8"}}>
       <div className="flex items-center justify-between px-4 py-3 sticky top-0 z-30"
