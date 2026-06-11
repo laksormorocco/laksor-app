@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
 import { ArrowLeft, Image, MapPin, CurrencyDollar, ListBullets, Tag, Clock } from "@phosphor-icons/react";
@@ -34,7 +35,8 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 
 export default function ProviderEditExperience() {
   const router = useRouter();
-  const expId = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("id") : null;
+  const searchParams = useSearchParams();
+  const expId = searchParams.get("id");
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({
     title: "", description: "", price: "", city: "Marrakech",
