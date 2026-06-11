@@ -37,9 +37,20 @@ export default function ExperiencesPage() {
   const [selectedType, setSelectedType] = useState<Record<string,"group"|"private">>({});
   const [photoIdx, setPhotoIdx] = useState<Record<string,number>>({});
   const [showInfo, setShowInfo] = useState(false);
+  const [heroIdx, setHeroIdx] = useState(0);
+  const [animatedId, setAnimatedId] = useState<string|null>(null);
   const { convert } = useExchangeRate();
 
   const CITIES = ["Marrakech", "Fes", "Essaouira", "Chefchaouen", "Agadir"];
+
+  // Hero photos = toutes les photos des expériences chargées
+  const heroPhotos = tours.flatMap(t => t.photos || []).filter(Boolean).slice(0, 8);
+
+  useEffect(() => {
+    if (heroPhotos.length <= 1) return;
+    const interval = setInterval(() => setHeroIdx(i => (i + 1) % heroPhotos.length), 4000);
+    return () => clearInterval(interval);
+  }, [heroPhotos.length]);
 
   useEffect(() => {
     const params = new URLSearchParams();
@@ -67,9 +78,28 @@ export default function ExperiencesPage() {
         <span className="text-sm font-medium text-charcoal-800" style={{opacity:0.5}}>Experiences</span>
       </div>
 
-      {/* HERO */}
+      {/* HERO — carousel dynamique */}
       <div className="relative overflow-hidden" style={{height:260}}>
-        <img src="https://images.unsplash.com/photo-1539020140153-e479b8c22e70?w=800&q=80" alt="Maroc" className="w-full h-full object-cover" />
+        {heroPhotos.length > 0 ? (
+          <>
+            {heroPhotos.map((photo, i) => (
+              <img key={i} src={photo} alt="Expérience Laksor"
+                className="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000"
+                style={{opacity: i === heroIdx ? 1 : 0}} />
+            ))}
+            {/* Dots */}
+            {heroPhotos.length > 1 && (
+              <div className="absolute bottom-20 left-0 right-0 flex justify-center gap-1 z-10">
+                {heroPhotos.map((_, i) => (
+                  <button key={i} onClick={() => setHeroIdx(i)}
+                    className={"rounded-full transition-all " + (i === heroIdx ? "w-4 h-1.5 bg-white" : "w-1.5 h-1.5 bg-white/50")} />
+                ))}
+              </div>
+            )}
+          </>
+        ) : (
+          <img src="https://images.unsplash.com/photo-1539020140153-e479b8c22e70?w=800&q=80" alt="Maroc" className="w-full h-full object-cover" />
+        )}
         <div className="absolute inset-0" style={{background:"linear-gradient(to bottom, rgba(0,0,0,0) 20%, rgba(17,11,4,0.72) 100%)"}} />
         <div className="absolute bottom-0 left-0 right-0 px-5 pb-6">
           <div className="text-xs font-semibold tracking-widest uppercase mb-1.5" style={{color:"#B88A44",letterSpacing:2}}>Maroc Authentique</div>
