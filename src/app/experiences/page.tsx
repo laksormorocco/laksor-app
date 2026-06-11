@@ -56,6 +56,7 @@ export default function ExperiencesPage() {
     const params = new URLSearchParams();
     if (city) params.set("city", city);
     params.set("sort", sortBy);
+    if (category && category !== "all") params.set("category", category);
     fetch("/api/experiences?" + params.toString())
       .then(r => r.json())
       .then(d => {
@@ -65,7 +66,7 @@ export default function ExperiencesPage() {
         if (sortBy === "recent") t = [...t].sort((a,b) => new Date(b.createdAt||0).getTime() - new Date(a.createdAt||0).getTime());
         setTours(t); setLoading(false);
       });
-  }, [city, sortBy]);
+  }, [city, sortBy, category]);
 
   return (
     <div className="min-h-screen pb-24" style={{background:"#F6F1E8"}}>
