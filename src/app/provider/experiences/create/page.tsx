@@ -99,7 +99,6 @@ export default function ProviderCreateExperience() {
     setSaving(false);
   }
 
-  }
 
   return (
     <div className="min-h-screen pb-10" style={{background:"#F6F1E8"}}>
