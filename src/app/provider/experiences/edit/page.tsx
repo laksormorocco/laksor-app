@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
 import { ArrowLeft, Image, MapPin, CurrencyDollar, ListBullets, Tag, Clock } from "@phosphor-icons/react";
@@ -33,7 +34,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 
-export default function ProviderEditExperience() {
+function ProviderEditExperienceInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const expId = searchParams.get("id");
@@ -259,5 +260,13 @@ export default function ProviderEditExperience() {
         </button>
       </div>
     </div>
+  );
+}
+
+export default function ProviderEditExperience() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center" style={{background:"#F6F1E8"}}><div className="w-10 h-10 border-4 border-bronze-500 border-t-transparent rounded-full animate-spin" /></div>}>
+      <ProviderEditExperienceInner />
+    </Suspense>
   );
 }
