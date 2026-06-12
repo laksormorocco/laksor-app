@@ -1,8 +1,8 @@
 "use client";
 import { useState, useEffect } from "react";
 import {
-  ChartBar, Compass, CalendarCheck, EnvelopeSimple, MapTrifold, UsersThree, UserCircle,
-  Check, X, Trash, WhatsappLogo, PaperPlaneTilt, Plus, PencilSimple,
+  ChartBar, Compass, CalendarCheck, UsersThree, UserCircle, PaperPlaneTilt,
+  Check, X, Trash, WhatsappLogo, Plus, PencilSimple,
   ToggleLeft, ToggleRight, SignOut, Sparkle
 } from "@phosphor-icons/react";
 
@@ -12,9 +12,6 @@ const TABS = [
   { id:"overview", Icon: ChartBar,       label:"Overview"  },
   { id:"guides",   Icon: Compass,        label:"Guides"    },
   { id:"bookings", Icon: CalendarCheck,  label:"Réserv."   },
-  { id:"tours",    Icon: MapTrifold,     label:"Tours"     },
-  { id:"email",    Icon: EnvelopeSimple, label:"Email"     },
-  { id:"crm",     Icon: UsersThree,    label:"CRM"       },
   { id:"tourists", Icon: UserCircle,    label:"Clients"   },
   { id:"experiences", Icon: Sparkle, label:"Exp." },
   { id:"providers",   Icon: UsersThree, label:"Presta." },
