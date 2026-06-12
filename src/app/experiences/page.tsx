@@ -88,7 +88,7 @@ export default function ExperiencesPage() {
           <div className="w-8 h-8 rounded-full bg-bronze-500 flex items-center justify-center flex-shrink-0">
             <MagnifyingGlass size={13} weight="bold" color="#fff" />
           </div>
-        </Link>
+        </button>
       </div>
 
       {/* HERO — carousel dynamique */}
@@ -479,8 +479,10 @@ export default function ExperiencesPage() {
               <div className="text-xs font-semibold text-charcoal-400 uppercase tracking-widest mb-2">Ville</div>
               <div className="flex gap-2 flex-wrap">
                 {[{name:"Toutes",emoji:"✨"},{name:"Marrakech",emoji:"🌹"},{name:"Fes",emoji:"🕌"},{name:"Essaouira",emoji:"🌊"},{name:"Chefchaouen",emoji:"💙"},{name:"Agadir",emoji:"🏖️"}].map(c => (
-                  <button key={c.name} onClick={() => setSearchCity(c.name === "Toutes" ? "" : c.name)}
-                    {c.emoji} {c.name}
+          <button key={c.name} onClick={() => setSearchCity(c.name === "Toutes" ? "" : c.name)}
+            className={"flex items-center gap-1.5 px-3 py-2 rounded-full text-sm font-medium transition-all " + ((c.name === "Toutes" && !searchCity) || searchCity === c.name ? "text-white" : "text-charcoal-600")}
+            style={{background: (c.name === "Toutes" && !searchCity) || searchCity === c.name ? "#111" : "white", border: "1.5px solid #EADCC8"}}>
+            {c.emoji} {c.name}
                   </button>
                 ))}
               </div>
