@@ -486,6 +486,12 @@ export default function BookingPage() {
               )}
               <div className="font-display text-sm font-semibold text-charcoal-800 mb-3">Récapitulatif</div>
               <div className="flex flex-col gap-2.5">
+                {tourTypeParam && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-charcoal-400">Type de visite</span>
+                    <span className="font-semibold text-charcoal-800">{({MEDINA_SECRETS:"Médina",GASTRONOMIE:"Gastronomie",HISTOIRE_MONUMENTS:"Histoire",DESERT_NATURE:"Désert",SHOPPING_ARTISANAT:"Shopping",COUCHER_SOLEIL:"Coucher soleil",PHOTO_INSTAGRAM:"Photo Instagram"} as any)[tourTypeParam] || tourTypeParam}</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-sm">
                   <span className="text-charcoal-400">Date</span>
                   <span className="font-semibold text-charcoal-800 capitalize">{selectedDates[0] ? new Date(selectedDates[0] + "T00:00:00").toLocaleDateString("fr-FR", {weekday:"long", day:"numeric", month:"long"}) : "-"}</span>
