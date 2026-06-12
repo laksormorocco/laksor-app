@@ -115,7 +115,7 @@ export default function BookingPage() {
           date: selectedDates[0], duration: "HALF_DAY", persons,
           totalPrice: adjustedTotal, paymentMethod: payment, transport,
           notes: selectedDates.length > 1 ? "Dates: " + selectedDates.join(", ") : "",
-          expId: expId || null, startTime: selectedSlot || startHour
+          expId: expId || null, startTime: selectedSlot || startHour, tourType: tourTypeParam || null
         })
       });
       const data = await res.json();
