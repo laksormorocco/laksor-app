@@ -83,10 +83,11 @@ export default function AdminDashboard() {
   useEffect(() => { if (auth && active === "tourists") fetchTourists(); }, [active, auth, touristSearch]);
 
   async function fetchAll() {
-    const [sRes, bRes, pRes] = await Promise.all([fetch("/api/admin/stats"), fetch("/api/admin/bookings"), fetch("/api/admin/providers")]);
+    const [sRes, bRes, pRes, eRes] = await Promise.all([fetch("/api/admin/stats"), fetch("/api/admin/bookings"), fetch("/api/admin/providers"), fetch("/api/admin/experiences")]);
     setStats(await sRes.json());
     setBookings((await bRes.json()).bookings || []);
     setProviders((await pRes.json()).providers || []);
+    setAllExperiences((await eRes.json()).experiences || []);
     fetchGuides();
   }
 
