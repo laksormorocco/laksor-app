@@ -177,41 +177,42 @@ export default async function HomePage() {
       </AnimatedSection>
 
       {/* JOIN */}
-<AnimatedSection className="mt-8 px-4 max-w-2xl mx-auto pb-4" delay={400}>
-        <div className="relative rounded-3xl overflow-hidden" style={{background:"linear-gradient(135deg, #111111 0%, #2a1f0e 100%)"}}>
-          <div className="absolute inset-0 opacity-10" style={{backgroundImage:"url(https://images.unsplash.com/photo-1647878501041-1609141a7fb1?q=80&w=1971&auto=format&fit=crop)", backgroundSize:"cover", backgroundPosition:"center"}} />
+      <AnimatedSection className="mt-8 px-4 max-w-2xl mx-auto pb-4" delay={400}>
+        <div className="rounded-3xl overflow-hidden" style={{background:"linear-gradient(135deg, #7D8F69 0%, #B88A44 100%)", boxShadow:"0 8px 32px rgba(184,138,68,0.25)"}}>
           <div className="relative p-6">
-            <div className="inline-flex items-center gap-1.5 bg-bronze-500/20 border border-bronze-500/30 rounded-full px-3 py-1 mb-4">
-              <span className="text-bronze-500 text-[10px] font-bold uppercase tracking-widest">Devenez partenaire</span>
+            <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 mb-4" style={{background:"rgba(255,255,255,0.15)", border:"1px solid rgba(255,255,255,0.25)"}}>
+              <span className="text-white text-[10px] font-bold uppercase tracking-widest">Devenez partenaire</span>
             </div>
-            <div className="font-display text-2xl font-bold text-white mb-2 leading-tight">Partagez le Maroc<br/>avec le monde</div>
-            <p className="text-sm text-white/60 mb-5 leading-relaxed">
-              Rejoignez notre communaute de guides et chauffeurs certifies. Gagnez plus, voyagez mieux.
+            <div className="font-display text-2xl font-bold text-white mb-2 leading-tight">Partagez le Maroc<br/><em className="not-italic" style={{color:"rgba(255,255,255,0.8)"}}>avec le monde</em></div>
+            <p className="text-sm mb-5 leading-relaxed" style={{color:"rgba(255,255,255,0.75)"}}>
+              Rejoignez notre communauté de guides et prestataires certifiés. Gagnez plus, voyagez mieux.
             </p>
-            <div className="flex gap-3">
+            <div className="flex gap-3 mb-5">
               <a href="/auth/register?role=guide"
-                className="flex-1 flex items-center justify-center gap-2 bg-bronze-500 text-white text-sm font-bold py-3 rounded-full no-underline transition-colors" style={{boxShadow:"0 4px 14px rgba(184,138,68,0.4)"}}>
+                className="flex-1 flex items-center justify-center gap-2 text-sm font-bold py-3 rounded-full no-underline active:scale-[0.98] transition-all"
+                style={{background:"white", color:"#B88A44", boxShadow:"0 4px 14px rgba(0,0,0,0.15)"}}>
                 Je suis guide
               </a>
-              <a href="/auth/register?role=driver"
-                className="flex-1 flex items-center justify-center gap-2 bg-white/10 border border-white/20 text-white text-sm font-bold py-3 rounded-full no-underline backdrop-blur-sm">
-                Je suis chauffeur
+              <a href="/provider/register"
+                className="flex-1 flex items-center justify-center gap-2 text-white text-sm font-bold py-3 rounded-full no-underline active:scale-[0.98] transition-all"
+                style={{background:"rgba(255,255,255,0.2)", border:"1.5px solid rgba(255,255,255,0.4)", backdropFilter:"blur(8px)"}}>
+                Je suis prestataire
               </a>
             </div>
-            <div className="flex items-center justify-center gap-4 mt-4 pt-4 border-t border-white/10">
+            <div className="flex items-center justify-center gap-4 pt-4" style={{borderTop:"1px solid rgba(255,255,255,0.2)"}}>
               <div className="text-center">
                 <div className="font-display text-lg font-bold text-white">+50</div>
-                <div className="text-[10px] text-white/50">Guides actifs</div>
+                <div className="text-[10px]" style={{color:"rgba(255,255,255,0.6)"}}>Guides actifs</div>
               </div>
-              <div className="w-px h-8 bg-white/10" />
+              <div className="w-px h-8" style={{background:"rgba(255,255,255,0.2)"}} />
               <div className="text-center">
                 <div className="font-display text-lg font-bold text-white">5</div>
-                <div className="text-[10px] text-white/50">Villes</div>
+                <div className="text-[10px]" style={{color:"rgba(255,255,255,0.6)"}}>Villes</div>
               </div>
-              <div className="w-px h-8 bg-white/10" />
+              <div className="w-px h-8" style={{background:"rgba(255,255,255,0.2)"}} />
               <div className="text-center">
                 <div className="font-display text-lg font-bold text-white">4.9★</div>
-                <div className="text-[10px] text-white/50">Note moyenne</div>
+                <div className="text-[10px]" style={{color:"rgba(255,255,255,0.6)"}}>Note moyenne</div>
               </div>
             </div>
           </div>
