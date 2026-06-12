@@ -283,7 +283,7 @@ export default function AdminDashboard() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="text-xs font-semibold text-charcoal-800 truncate">{b.tourist?.name || b.guestName || "Client"}</div>
-                    <div className="text-[10px] text-charcoal-400">{b.ref || b.id?.slice(0,8)} · {b.paymentMethod}</div>
+                    <div className="text-[10px] text-charcoal-400">{b.ref || b.id?.slice(0,8)} · {b.notes?.match(/EXP:([a-z0-9]+)/i) ? "Expérience" : b.guide?.displayName || "Guide"} · {b.paymentMethod}</div>
                   </div>
                   <div className="font-display text-sm font-bold flex-shrink-0" style={{color:"#B88A44"}}>{b.totalPrice} MAD</div>
                 </div>
@@ -559,6 +559,7 @@ export default function AdminDashboard() {
                       <div className="grid grid-cols-3 gap-2">
                         {[
                           ["Date", new Date(b.date).toLocaleDateString("fr-FR")],
+                    ...(b.notes?.match(/EXP:([a-z0-9]+)/i) ? [["Expérience", allExperiences.find((e:any) => e.id === b.notes.match(/EXP:([a-z0-9]+)/i)?.[1])?.title || "Expérience Laksor"]] : []),
                           ["Durée", b.duration==="HALF_DAY"?"4h":"8h"],
                           ["Pers.", String(b.persons||1)],
                           ["Paiement", b.paymentMethod||"cash"],
