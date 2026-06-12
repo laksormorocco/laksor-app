@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { MagnifyingGlass, SlidersHorizontal, Star, ArrowRight, SealCheck, CaretDown, CaretUp, Heart, Users, Lock, CaretLeft, CaretRight } from "@phosphor-icons/react";
+import { MagnifyingGlass, SlidersHorizontal, Star, ArrowRight, SealCheck, CaretDown, CaretUp, Heart, Users, Lock, CaretLeft, CaretRight, MapPin, Tag } from "@phosphor-icons/react";
 import BottomNav from "@/components/BottomNav";
 import { useExchangeRate } from "@/hooks/useExchangeRate";
 import PriceDisplay from "@/components/PriceDisplay";
@@ -435,42 +435,55 @@ export default function ExperiencesPage() {
       {showSearchModal && (
         <div className="fixed inset-0 z-50 flex items-end" style={{background:"rgba(0,0,0,0.5)", backdropFilter:"blur(4px)"}}
           onClick={() => setShowSearchModal(false)}>
-          <div className="bg-white rounded-t-3xl w-full max-w-lg mx-auto p-5 pb-10" onClick={e => e.stopPropagation()}>
-            <div className="w-10 h-1 bg-sand-300 rounded-full mx-auto mb-5" />
-            <div className="font-display text-lg font-bold text-charcoal-800 mb-4">Rechercher une expérience</div>
-            <div className="mb-4">
-              <div className="text-xs font-semibold text-charcoal-400 uppercase tracking-widest mb-2">Ville</div>
-              <div className="flex gap-2 flex-wrap">
-                {[{name:"Toutes",emoji:"✨"},{name:"Marrakech",emoji:"🌹"},{name:"Fes",emoji:"🕌"},{name:"Essaouira",emoji:"🌊"},{name:"Chefchaouen",emoji:"💙"},{name:"Agadir",emoji:"🏖️"}].map(c => (
-          <button key={c.name} onClick={() => setSearchCity(c.name === "Toutes" ? "" : c.name)}
-            className={"flex items-center gap-1.5 px-3 py-2 rounded-full text-sm font-medium transition-all " + ((c.name === "Toutes" && !searchCity) || searchCity === c.name ? "text-white" : "text-charcoal-600")}
-            style={{background: (c.name === "Toutes" && !searchCity) || searchCity === c.name ? "#111" : "white", border: "1.5px solid #EADCC8"}}>
-            {c.emoji} {c.name}
+          <div className="bg-white rounded-t-3xl w-full max-w-lg mx-auto pb-8" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-center pt-3 pb-4">
+              <div className="w-10 h-1 bg-sand-300 rounded-full" />
+            </div>
+            <div className="flex items-center justify-between px-5 mb-5">
+              <div className="font-display text-lg font-bold text-charcoal-800">Filtrer les expériences</div>
+              <button onClick={() => { setSearchCity(""); setSearchCat("all"); }}
+                className="text-xs font-semibold" style={{color:"#B88A44"}}>
+                Effacer
+              </button>
+            </div>
+            <div className="px-5 mb-5">
+              <div className="flex items-center gap-1.5 mb-2.5">
+                <MapPin size={13} weight="duotone" className="text-bronze-500" />
+                <span className="text-[11px] font-bold text-charcoal-400 uppercase tracking-widest">Ville</span>
+              </div>
+              <div className="flex gap-2 overflow-x-auto pb-1" style={{scrollbarWidth:"none"}}>
+                {[{name:"Toutes",emoji:"✦"},{name:"Marrakech",emoji:"🌹"},{name:"Fes",emoji:"🕌"},{name:"Essaouira",emoji:"🌊"},{name:"Chefchaouen",emoji:"💙"},{name:"Agadir",emoji:"🏖️"}].map(c => (
+                  <button key={c.name} onClick={() => setSearchCity(c.name === "Toutes" ? "" : c.name)}
+                    className={"flex-shrink-0 flex items-center gap-1.5 h-8 px-3 rounded-full text-xs font-semibold transition-all " + ((c.name === "Toutes" && !searchCity) || searchCity === c.name ? "text-white" : "text-charcoal-600")}
+                    style={(c.name === "Toutes" && !searchCity) || searchCity === c.name ? {background:"linear-gradient(135deg,#B88A44,#9A7238)", boxShadow:"0 2px 8px rgba(184,138,68,0.3)"} : {background:"white", border:"1.5px solid #EADCC8"}}>
+                    {c.emoji} {c.name}
                   </button>
                 ))}
               </div>
             </div>
-            <div className="mb-6">
-              <div className="text-xs font-semibold text-charcoal-400 uppercase tracking-widest mb-2">Catégorie</div>
+            <div className="px-5 mb-6">
+              <div className="flex items-center gap-1.5 mb-2.5">
+                <Tag size={13} weight="duotone" className="text-bronze-500" />
+                <span className="text-[11px] font-bold text-charcoal-400 uppercase tracking-widest">Catégorie</span>
+              </div>
               <div className="flex gap-2 flex-wrap">
                 {[{id:"all",label:"Toutes",emoji:"✨"},{id:"desert",label:"Désert",emoji:"🐪"},{id:"gastronomie",label:"Gastro",emoji:"🍽️"},{id:"art",label:"Art",emoji:"🎨"},{id:"medina",label:"Médina",emoji:"🕌"},{id:"nature",label:"Nature",emoji:"🌄"},{id:"photo",label:"Photo",emoji:"📸"}].map(cat => (
                   <button key={cat.id} onClick={() => setSearchCat(cat.id)}
-                    className={"flex items-center gap-1.5 px-3 py-2 rounded-full text-sm font-medium transition-all " + (searchCat === cat.id ? "text-white" : "text-charcoal-600")}
-                    style={searchCat === cat.id ? {background:"linear-gradient(135deg, #B88A44, #9A7238)"} : {background:"white", border:"1.5px solid #EADCC8"}}>
+                    className={"flex items-center gap-1.5 h-8 px-3 rounded-full text-xs font-semibold transition-all mb-2 " + (searchCat === cat.id ? "text-white" : "text-charcoal-600")}
+                    style={searchCat === cat.id ? {background:"linear-gradient(135deg,#B88A44,#9A7238)", boxShadow:"0 2px 8px rgba(184,138,68,0.3)"} : {background:"white", border:"1.5px solid #EADCC8"}}>
                     {cat.emoji} {cat.label}
                   </button>
                 ))}
               </div>
             </div>
-            <button onClick={() => {
-                setCity(searchCity || null);
-                setCategory(searchCat);
-                setShowSearchModal(false);
-              }}
-              className="w-full py-4 rounded-full text-sm font-bold text-white flex items-center justify-center gap-2"
-              style={{background:"linear-gradient(135deg, #B88A44, #9A7238)", boxShadow:"0 6px 20px rgba(184,138,68,0.4)"}}>
-              <MagnifyingGlass size={16} weight="bold" /> Rechercher
-            </button>
+            <div className="px-5">
+              <button onClick={() => { setCity(searchCity || null); setCategory(searchCat); setShowSearchModal(false); }}
+                className="w-full py-3.5 rounded-full text-sm font-bold text-white flex items-center justify-center gap-2 active:scale-[0.98]"
+                style={{background:"linear-gradient(135deg, #B88A44, #9A7238)", boxShadow:"0 4px 16px rgba(184,138,68,0.4)"}}>
+                <MagnifyingGlass size={15} weight="bold" />
+                Voir {tours.length} expérience{tours.length > 1 ? "s" : ""}
+              </button>
+            </div>
           </div>
         </div>
       )}
