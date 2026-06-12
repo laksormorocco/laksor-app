@@ -462,7 +462,7 @@ function TourCard({ guideTour, guideId }: { guideTour: any; guideId: string }) {
             <PriceDisplay mad={priceWithCommission(Number(guideTour.price))} size="lg" />
             <div className="text-[10px] text-charcoal-400">/ / groupe · 1-4 pers. · +200 MAD/pers. suppl.</div>
           </div>
-          <a href={"/booking/" + guideId + "?tourId=" + t.id + "&tourPrice=" + priceWithCommission(Number(guideTour.price))}
+          <a href={"/booking/" + guideId + "?tourId=" + t.id + "&tourPrice=" + priceWithCommission(Number(guideTour.price)) + "&tourType=" + (t.tourType || "")}
             className="flex items-center gap-1.5 text-white font-semibold px-5 py-3 rounded-full text-sm no-underline"
             style={{ background: "linear-gradient(135deg, #B88A44, #9A7238)", boxShadow: "0 4px 14px rgba(184,138,68,0.3)" }}>
             Reserver <ArrowRight size={14} weight="bold" />
