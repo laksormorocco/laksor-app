@@ -154,20 +154,6 @@ export default function ExperiencesPage() {
           </div>
         </div>
 
-        {/* CITY FILTERS */}
-        <div className="flex gap-2 overflow-x-auto pb-1 mb-3" style={{scrollbarWidth:"none"}}>
-          {[{name:"Toutes",emoji:"✨"},{name:"Marrakech",emoji:"🌹"},{name:"Fes",emoji:"🕌"},{name:"Essaouira",emoji:"🌊"},{name:"Chefchaouen",emoji:"💙"},{name:"Agadir",emoji:"🏖️"}].map(c => (
-            <button key={c.name} onClick={() => setCity(c.name === "Toutes" ? null : (city === c.name ? null : c.name))}
-              className="flex-shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all"
-              style={{
-                background: (c.name === "Toutes" && !city) || city === c.name ? "#111111" : "white",
-                color: (c.name === "Toutes" && !city) || city === c.name ? "white" : "#111",
-                border: (c.name === "Toutes" && !city) || city === c.name ? "1.5px solid #111" : "1.5px solid #EADCC8"
-              }}>
-              <span>{c.emoji}</span> {c.name}
-            </button>
-          ))}
-        </div>
 
         {/* SECTION HEADER */}
         <div className="flex items-baseline justify-between mb-4">
