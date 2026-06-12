@@ -5,8 +5,9 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   Plus, Star, CalendarBlank, ChartBar, SealCheck,
-  SignOut, PencilSimple, Eye, Clock, CheckCircle,
-  XCircle, Warning, ArrowRight, Users, CurrencyDollar
+  SignOut, PencilSimple, Clock, CheckCircle,
+  XCircle, Warning, Users, CurrencyDollar, Eye,
+  WhatsappLogo, MapPin, ArrowRight
 } from "@phosphor-icons/react";
 
 const supabase = createClient(
@@ -33,31 +34,23 @@ export default function ProviderDashboard() {
   const router = useRouter();
   const [provider, setProvider] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"experiences"|"stats"|"profile">("experiences");
+  const [activeTab, setActiveTab] = useState<"experiences"|"bookings"|"profile">("experiences");
+  const [bookings, setBookings] = useState<any[]>([]);
+
+  const loadProvider = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) { router.push("/auth/login"); return; }
+    const res = await fetch("/api/provider/me?supabaseId=" + session.user.id);
+    const d = await res.json();
+    if (d.provider) { setProvider(d.provider); setBookings(d.bookings || []); setLoading(false); }
+    else router.push("/provider/register");
+  };
 
   useEffect(() => {
-    const handleFocus = () => {
-      supabase.auth.getSession().then(({ data: { session } }) => {
-        if (!session) return;
-        fetch("/api/provider/me?supabaseId=" + session.user.id)
-          .then(r => r.json())
-          .then(d => { if (d.provider) setProvider(d.provider); });
-      });
-    };
+    loadProvider();
+    const handleFocus = () => loadProvider();
     window.addEventListener("focus", handleFocus);
     return () => window.removeEventListener("focus", handleFocus);
-  }, []);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) { router.push("/auth/login"); return; }
-      fetch("/api/provider/me?supabaseId=" + session.user.id)
-        .then(r => r.json())
-        .then(d => {
-          if (d.provider) { setProvider(d.provider); setLoading(false); }
-          else { router.push("/provider/register"); }
-        });
-    });
   }, []);
 
   async function handleSignOut() {
@@ -74,6 +67,15 @@ export default function ProviderDashboard() {
   const experiences = provider?.experiences || [];
   const approved = experiences.filter((e: any) => e.status === "APPROVED").length;
   const pending = experiences.filter((e: any) => e.status === "PENDING").length;
+  const rejected = experiences.filter((e: any) => e.status === "REJECTED").length;
+
+  // Calcul revenus nets (sans commission Laksor 25% + 25 MAD)
+  const allBookings = bookings.map((b: any) => { const exp = experiences.find((e:any) => b.notes?.includes("EXP:" + e.id)); return {...b, expTitle: exp?.title || "Expérience"}; });
+  const totalRevenue = allBookings.reduce((sum: number, b: any) => sum + Math.round((Number(b.totalPrice || 0) - 25) / 1.25), 0);
+  const thisMonth = new Date().getMonth();
+  const monthlyRevenue = allBookings
+    .filter((b: any) => new Date(b.createdAt).getMonth() === thisMonth)
+    .reduce((sum: number, b: any) => sum + Math.round((Number(b.totalPrice || 0) - 25) / 1.25), 0);
 
   return (
     <div className="min-h-screen pb-24" style={{background:"#F6F1E8"}}>
@@ -83,7 +85,7 @@ export default function ProviderDashboard() {
         style={{background:"rgba(246,241,232,0.92)", backdropFilter:"blur(16px)", borderBottom:"1px solid rgba(184,138,68,0.12)"}}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl overflow-hidden flex-shrink-0"
+            <div className="w-11 h-11 rounded-2xl overflow-hidden flex-shrink-0"
               style={{background:"rgba(184,138,68,0.12)", border:"2px solid #EADCC8"}}>
               {provider.avatar
                 ? <img src={provider.avatar} className="w-full h-full object-cover" />
@@ -101,7 +103,7 @@ export default function ProviderDashboard() {
             </div>
           </div>
           <button onClick={handleSignOut}
-            className="w-9 h-9 rounded-full bg-white flex items-center justify-center active:scale-95 transition-all"
+            className="w-9 h-9 rounded-full bg-white flex items-center justify-center active:scale-95"
             style={{border:"1.5px solid #EADCC8"}}>
             <SignOut size={15} className="text-charcoal-500" />
           </button>
@@ -110,7 +112,7 @@ export default function ProviderDashboard() {
 
       <div className="px-4 pt-4 max-w-lg mx-auto">
 
-        {/* PROVIDER NOT APPROVED WARNING */}
+        {/* BANNER PENDING */}
         {provider.status === "PENDING" && (
           <div className="rounded-2xl p-4 mb-4 flex items-start gap-3"
             style={{background:"rgba(184,138,68,0.08)", border:"1px solid rgba(184,138,68,0.25)"}}>
@@ -119,36 +121,49 @@ export default function ProviderDashboard() {
               <div className="text-sm font-bold text-bronze-500 mb-0.5">Candidature en cours d'examen</div>
               <div className="text-[11px] text-charcoal-500 leading-relaxed">
                 Notre équipe examine votre profil. Vous recevrez une réponse sur WhatsApp sous 24h.
-                Vous pouvez déjà préparer vos expériences.
               </div>
             </div>
           </div>
         )}
 
         {/* STATS CARDS */}
-        <div className="grid grid-cols-3 gap-3 mb-4">
-          {[
-            { label: "Expériences", value: experiences.length, icon: Star, color: "#B88A44" },
-            { label: "Approuvées", value: approved, icon: CheckCircle, color: "#7D8F69" },
-            { label: "En attente", value: pending, icon: Clock, color: "#F59E0B" },
-          ].map(s => (
-            <div key={s.label} className="bg-white rounded-2xl p-3 text-center"
-              style={{boxShadow:"0 2px 12px rgba(0,0,0,0.06)"}}>
-              <div className="w-8 h-8 rounded-xl flex items-center justify-center mx-auto mb-2"
-                style={{background: s.color + "15"}}>
-                <s.icon size={16} weight="duotone" style={{color: s.color}} />
-              </div>
-              <div className="font-display text-xl font-bold text-charcoal-800">{s.value}</div>
-              <div className="text-[10px] text-charcoal-400">{s.label}</div>
+        <div className="grid grid-cols-2 gap-3 mb-4">
+          <div className="bg-white rounded-2xl p-4" style={{boxShadow:"0 2px 12px rgba(0,0,0,0.06)"}}>
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-2" style={{background:"rgba(184,138,68,0.1)"}}>
+              <CurrencyDollar size={18} weight="duotone" className="text-bronze-500" />
             </div>
-          ))}
+            <div className="font-display text-xl font-bold" style={{color:"#B88A44"}}>{totalRevenue} MAD</div>
+            <div className="text-[10px] text-charcoal-400 mt-0.5">Revenus nets totaux</div>
+          </div>
+          <div className="bg-white rounded-2xl p-4" style={{boxShadow:"0 2px 12px rgba(0,0,0,0.06)"}}>
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-2" style={{background:"rgba(184,138,68,0.1)"}}>
+              <ChartBar size={18} weight="duotone" className="text-bronze-500" />
+            </div>
+            <div className="font-display text-xl font-bold text-charcoal-800">{monthlyRevenue} MAD</div>
+            <div className="text-[10px] text-charcoal-400 mt-0.5">Ce mois-ci</div>
+          </div>
+          <div className="bg-white rounded-2xl p-4" style={{boxShadow:"0 2px 12px rgba(0,0,0,0.06)"}}>
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-2" style={{background:"rgba(125,143,105,0.1)"}}>
+              <Star size={18} weight="duotone" className="text-sage-300" />
+            </div>
+            <div className="font-display text-xl font-bold text-charcoal-800">{experiences.length}</div>
+            <div className="text-[10px] text-charcoal-400 mt-0.5">{approved} approuvées · {pending} en attente</div>
+          </div>
+          <div className="bg-white rounded-2xl p-4" style={{boxShadow:"0 2px 12px rgba(0,0,0,0.06)"}}>
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-2" style={{background:"rgba(125,143,105,0.1)"}}>
+              <CalendarBlank size={18} weight="duotone" className="text-sage-300" />
+            </div>
+            <div className="font-display text-xl font-bold text-charcoal-800">{allBookings.length}</div>
+            <div className="text-[10px] text-charcoal-400 mt-0.5">Réservations confirmées</div>
+          </div>
         </div>
 
         {/* TABS */}
         <div className="flex p-1 rounded-2xl mb-4" style={{background:"rgba(184,138,68,0.08)"}}>
           {[
             {id:"experiences", label:"Mes expériences"},
-            {id:"profile", label:"Mon profil"},
+            {id:"bookings", label:"Réservations"},
+            {id:"profile", label:"Profil"},
           ].map(tab => (
             <button key={tab.id} onClick={() => setActiveTab(tab.id as any)}
               className={"flex-1 py-2.5 rounded-xl text-xs font-semibold transition-all " + (activeTab === tab.id ? "text-white" : "text-charcoal-500")}
@@ -162,11 +177,10 @@ export default function ProviderDashboard() {
         {activeTab === "experiences" && (
           <>
             <Link href="/provider/experiences/create"
-              className="flex items-center justify-center gap-2 w-full py-4 text-white rounded-full text-sm font-bold no-underline mb-4 active:scale-[0.98] transition-all"
+              className="flex items-center justify-center gap-2 w-full py-4 text-white rounded-full text-sm font-bold no-underline mb-4 active:scale-[0.98]"
               style={{background:"linear-gradient(135deg, #B88A44, #9A7238)", boxShadow:"0 6px 20px rgba(184,138,68,0.4)"}}>
               <Plus size={16} weight="bold" /> Créer une expérience
             </Link>
-
             {experiences.length === 0 ? (
               <div className="bg-white rounded-2xl p-8 text-center" style={{boxShadow:"0 2px 12px rgba(0,0,0,0.06)"}}>
                 <div className="text-4xl mb-3">🎭</div>
@@ -179,26 +193,77 @@ export default function ProviderDashboard() {
                   <div key={exp.id} className="bg-white rounded-2xl overflow-hidden"
                     style={{boxShadow:"0 2px 12px rgba(0,0,0,0.06)"}}>
                     {exp.photos?.[0] && (
-                      <div className="h-32 overflow-hidden">
+                      <div className="h-36 overflow-hidden relative">
                         <img src={exp.photos[0]} alt={exp.title} className="w-full h-full object-cover" />
+                        <div className="absolute inset-0" style={{background:"linear-gradient(to top, rgba(0,0,0,0.5), transparent)"}} />
+                        <div className="absolute bottom-2 left-3">
+                          <StatusBadge status={exp.status} />
+                        </div>
                       </div>
                     )}
                     <div className="p-4">
-                      <div className="flex items-start justify-between mb-2">
-                        <div className="flex-1 min-w-0">
-                          <div className="font-display text-sm font-bold text-charcoal-800 truncate">{exp.title}</div>
-                          <div className="text-[11px] text-charcoal-400 mt-0.5">{exp.city} · {exp.duration}</div>
-                        </div>
-                        <StatusBadge status={exp.status} />
+                      <div className="flex items-start justify-between mb-1">
+                        <div className="font-display text-sm font-bold text-charcoal-800 flex-1 pr-2">{exp.title}</div>
+                        {!exp.photos?.[0] && <StatusBadge status={exp.status} />}
+                      </div>
+                      <div className="flex items-center gap-2 text-[11px] text-charcoal-400 mb-3">
+                        <MapPin size={10} /> {exp.city}
+                        {exp.duration && <><span>·</span><Clock size={10} /> {exp.duration}</>}
+                        {exp.bookings?.length > 0 && <><span>·</span><span className="text-sage-300 font-semibold">{exp.bookings.length} réserv.</span></>}
                       </div>
                       <div className="flex items-center justify-between">
-                        <div className="font-display text-base font-bold" style={{color:"#B88A44"}}>{exp.price} MAD/pers.</div>
+                        <div>
+                          <div className="font-display text-base font-bold" style={{color:"#B88A44"}}>{exp.price} MAD/pers.</div>
+                          {exp.privatePricePerPerson && <div className="text-[10px] text-charcoal-400">Privé : {exp.privatePricePerPerson} MAD/pers.</div>}
+                        </div>
                         <Link href={"/provider/experiences/edit?id=" + exp.id}
-                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold no-underline transition-all active:scale-95"
+                          className="flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-semibold no-underline transition-all active:scale-95"
                           style={{background:"rgba(184,138,68,0.1)", color:"#B88A44"}}>
                           <PencilSimple size={12} weight="bold" /> Modifier
                         </Link>
                       </div>
+                      {exp.status === "REJECTED" && (
+                        <div className="mt-2 p-2 rounded-xl text-[11px]" style={{background:"rgba(239,68,68,0.06)", color:"#ef4444"}}>
+                          ✗ Refusée par l'équipe Laksor — modifiez et resoumettez
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
+        )}
+
+        {/* TAB RESERVATIONS */}
+        {activeTab === "bookings" && (
+          <>
+            {allBookings.length === 0 ? (
+              <div className="bg-white rounded-2xl p-8 text-center" style={{boxShadow:"0 2px 12px rgba(0,0,0,0.06)"}}>
+                <div className="text-4xl mb-3">📅</div>
+                <div className="font-display text-sm font-bold text-charcoal-800 mb-1">Aucune réservation</div>
+                <div className="text-xs text-charcoal-400">Vos réservations apparaîtront ici</div>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-3">
+                {allBookings.sort((a:any, b:any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).map((b: any, i: number) => (
+                  <div key={i} className="bg-white rounded-2xl p-4" style={{boxShadow:"0 2px 12px rgba(0,0,0,0.06)"}}>
+                    <div className="flex items-start justify-between mb-2">
+                      <div>
+                        <div className="font-display text-sm font-bold text-charcoal-800">{b.expTitle}</div>
+                        <div className="text-[11px] text-charcoal-400 mt-0.5">
+                          {new Date(b.createdAt).toLocaleDateString("fr-FR", {day:"numeric", month:"long", year:"numeric"})}
+                        </div>
+                      </div>
+                      <div className="font-display text-base font-bold" style={{color:"#B88A44"}}>
+                        {Math.round((Number(b.totalPrice || 0) - 25) / 1.25)} MAD
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 text-[11px] text-charcoal-400">
+                      <Users size={11} /> {b.persons} pers.
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold" style={{background:"rgba(125,143,105,0.1)", color:"#7D8F69"}}>
+                        Confirmée
+                      </span>
                     </div>
                   </div>
                 ))}
@@ -209,27 +274,43 @@ export default function ProviderDashboard() {
 
         {/* TAB PROFILE */}
         {activeTab === "profile" && (
-          <div className="bg-white rounded-2xl p-4" style={{boxShadow:"0 2px 12px rgba(0,0,0,0.06)"}}>
-            <div className="font-display text-sm font-semibold text-charcoal-800 mb-4">Mon profil</div>
-            <div className="flex flex-col gap-3">
-              {[
-                { label: "Nom", value: provider.displayName },
-                { label: "Email", value: provider.email },
-                { label: "WhatsApp", value: provider.phone },
-                { label: "Ville", value: provider.city },
-              ].map(f => (
-                <div key={f.label} className="flex justify-between items-center py-2.5 border-b border-sand-100 last:border-0">
-                  <span className="text-[11px] font-semibold text-charcoal-400 uppercase tracking-wide">{f.label}</span>
-                  <span className="text-sm font-semibold text-charcoal-800">{f.value}</span>
-                </div>
-              ))}
-              {provider.description && (
-                <div className="pt-2">
-                  <div className="text-[11px] font-semibold text-charcoal-400 uppercase tracking-wide mb-2">Description</div>
-                  <div className="text-xs text-charcoal-600 leading-relaxed">{provider.description}</div>
-                </div>
-              )}
+          <div className="flex flex-col gap-3">
+            <div className="bg-white rounded-2xl p-4" style={{boxShadow:"0 2px 12px rgba(0,0,0,0.06)"}}>
+              <div className="font-display text-sm font-semibold text-charcoal-800 mb-4">Informations</div>
+              <div className="flex flex-col gap-0">
+                {[
+                  { label: "Nom", value: provider.displayName },
+                  { label: "Email", value: provider.email },
+                  { label: "WhatsApp", value: provider.phone },
+                  { label: "Ville", value: provider.city },
+                  { label: "Statut", value: provider.status === "APPROVED" ? "✅ Vérifié" : "⏳ En attente" },
+                ].map(f => (
+                  <div key={f.label} className="flex justify-between items-center py-3 border-b border-sand-100 last:border-0">
+                    <span className="text-[11px] font-semibold text-charcoal-400 uppercase tracking-wide">{f.label}</span>
+                    <span className="text-sm font-semibold text-charcoal-800">{f.value}</span>
+                  </div>
+                ))}
+                {provider.description && (
+                  <div className="pt-3">
+                    <div className="text-[11px] font-semibold text-charcoal-400 uppercase tracking-widest mb-2">Description</div>
+                    <div className="text-xs text-charcoal-600 leading-relaxed">{provider.description}</div>
+                  </div>
+                )}
+              </div>
             </div>
+
+            <div className="rounded-2xl p-4" style={{background:"rgba(184,138,68,0.08)", border:"1px solid rgba(184,138,68,0.2)"}}>
+              <div className="text-xs font-bold text-bronze-500 mb-1">Commission Laksor</div>
+              <div className="text-[11px] text-charcoal-500 leading-relaxed">
+                Laksor prend 25% + 25 MAD de commission sur chaque réservation. Vos revenus affichés sont nets de commission.
+              </div>
+            </div>
+
+            <a href="https://wa.me/212657436342"
+              className="flex items-center justify-center gap-2 w-full py-3.5 rounded-full text-sm font-bold no-underline active:scale-[0.98]"
+              style={{background:"#25D366", color:"white"}}>
+              <WhatsappLogo size={16} weight="fill" /> Contacter le support Laksor
+            </a>
           </div>
         )}
       </div>

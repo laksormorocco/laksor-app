@@ -13,7 +13,18 @@ export async function GET(req: Request) {
     });
 
     if (!provider) return NextResponse.json({ error: "Prestataire introuvable" }, { status: 404 });
-    return NextResponse.json({ provider });
+    // Récupérer les bookings liés aux expériences du provider
+    const providerWithExp = provider as any;
+    const expIds = providerWithExp.experiences?.map((e: any) => e.id) || [];
+    const bookings = await prisma.booking.findMany({
+      where: {
+        status: "CONFIRMED",
+        notes: { contains: "EXP:" }
+      },
+      select: { totalPrice: true, persons: true, createdAt: true, notes: true }
+    }).then(bs => bs.filter(b => expIds.some((id: string) => b.notes?.includes("EXP:" + id))));
+
+    return NextResponse.json({ provider, bookings });
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 });
   }
