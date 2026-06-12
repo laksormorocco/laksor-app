@@ -85,7 +85,7 @@ export default function GuidePageClient({ guide }: { guide: any }) {
   const allItems = [
     ...activeTours.map((gt: any) => ({
       id: gt.id, type: "tour", title: gt.template?.title, price: gt.price,
-      duration: gt.template?.duration, bookings: gt.totalBookings || 0, data: gt
+      tourType: gt.template?.tourType, duration: gt.template?.duration, bookings: gt.totalBookings || 0, data: gt
     })),
     ...activeExperiences.map((exp: any) => ({
       id: exp.id, type: "experience", title: exp.title, price: exp.price,
