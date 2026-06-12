@@ -130,29 +130,6 @@ export default function ExperiencesPage() {
 
       <div className="px-4 pt-4 pb-2">
 
-        {/* SEARCH BAR */}
-        <div className="flex items-center gap-3 bg-white rounded-full px-4 py-3 mb-4" style={{border:"1.5px solid #EADCC8", boxShadow:"0 2px 12px rgba(0,0,0,0.06)"}}>
-          <MagnifyingGlass size={15} className="text-bronze-500 flex-shrink-0" />
-          <span className="text-sm flex-1" style={{color:"rgba(17,17,17,0.4)"}}>Que voulez-vous découvrir ?</span>
-          <div className="relative">
-            <button onClick={() => setShowSort(!showSort)}
-              className={"flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all " + (sortBy !== "popular" ? "bg-bronze-500 text-white" : "text-charcoal-600")}
-              style={{background: sortBy !== "popular" ? "#B88A44" : "#EADCC8"}}>
-              <SlidersHorizontal size={11} weight="bold" /> Trier
-            </button>
-            {showSort && (
-              <div className="absolute right-0 top-9 bg-white rounded-2xl shadow-lg z-20 overflow-hidden" style={{width:176, border:"1px solid #EADCC8"}}>
-                {[{id:"popular",label:"Populaires"},{id:"recent",label:"Plus récents"},{id:"price_asc",label:"Prix croissant"},{id:"price_desc",label:"Prix décroissant"}].map(s => (
-                  <button key={s.id} onClick={() => { setSortBy(s.id as any); setShowSort(false); }}
-                    className="w-full text-left px-4 py-3 text-xs font-medium transition-colors hover:bg-sand-100"
-                    style={{color: sortBy === s.id ? "#B88A44" : "#111", fontWeight: sortBy === s.id ? 700 : 500}}>
-                    {sortBy === s.id && "✓ "}{s.label}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
 
 
         {/* SECTION HEADER */}
