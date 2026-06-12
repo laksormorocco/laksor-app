@@ -137,7 +137,7 @@ export default function GuidePageClient({ guide }: { guide: any }) {
           <PriceDisplay mad={price} size="md" />
           <div className="text-[10px] text-charcoal-400">/ groupe · 1-4 pers.</div>
         </div>
-        <a href={activeTours.length > 0 ? "/booking/" + guide.id + "?tourId=" + activeTours[0]?.id + "&tourPrice=" + priceWithCommission(Number(activeTours[0]?.price || guide.halfDayPrice)) : "/booking/" + guide.id}
+        <a href={activeTours.length > 0 ? "/booking/" + guide.id + "?tourId=" + activeTours[0]?.id + "&tourPrice=" + priceWithCommission(Number(activeTours[0]?.price || guide.halfDayPrice)) + "&tourType=" + (activeTours[0]?.tourType || "") : "/booking/" + guide.id}
           className="flex items-center gap-2 text-white font-bold px-6 py-3.5 rounded-full text-sm no-underline"
           style={{background:"linear-gradient(135deg, #B88A44, #9A7238)", boxShadow:"0 4px 14px rgba(184,138,68,0.3)"}}>
           Réserver <ArrowRight size={14} weight="bold" />
