@@ -35,7 +35,7 @@ export async function GET(req: Request) {
 
   const totalRevenue = guide.bookings
     .filter((b) => b.status === "CONFIRMED" || b.status === "COMPLETED")
-    .reduce((sum, b) => sum + Number(b.totalPrice), 0);
+    .reduce((sum, b) => sum + Math.round((Number(b.totalPrice) - 25) / 1.25), 0);
 
   return NextResponse.json({
     guide: { ...guide, bookings: formattedBookings },
