@@ -161,7 +161,7 @@ export default async function HomePage() {
         </div>
         <div className="flex gap-3 px-4 overflow-x-auto pb-2" style={{ scrollbarWidth: "none" }}>
           {experiences.slice(0,6).map((exp: any) => (
-            <a key={exp.id} href={`/experiences/${exp.id}`}
+            <a key={exp.id} href={`/experiences/detail/${exp.id}`}
               className="relative flex-shrink-0 rounded-2xl overflow-hidden no-underline active:scale-95 transition-all"
               style={{width:140, height:170, boxShadow:"0 2px 12px rgba(0,0,0,0.12)"}}>
               {exp.photos?.[0]
