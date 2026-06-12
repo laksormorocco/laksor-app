@@ -76,19 +76,16 @@ export default function ExperiencesPage() {
         <Link href="/" className="no-underline flex items-center gap-2">
           <img src="/logo7.png" alt="Laksor" style={{height:32,width:"auto",objectFit:"contain",maxWidth:110}} />
         </Link>
-        <div className="flex items-center gap-3">
-          <Link href="/search" className="no-underline">
-            <div className="w-9 h-9 rounded-full flex items-center justify-center active:scale-95 transition-all"
-              style={{background:"rgba(184,138,68,0.1)", border:"1.5px solid #EADCC8"}}>
-              <MagnifyingGlass size={15} weight="bold" className="text-bronze-500" />
-            </div>
-          </Link>
-          <div className="w-9 h-9 rounded-full flex items-center justify-center"
-            style={{background:"rgba(184,138,68,0.1)", border:"1.5px solid #EADCC8"}}>
-            <span className="text-base">🇲🇦</span>
+        <Link href="/search" className="flex-1 flex items-center gap-2 bg-white border border-sand-300 rounded-full pl-3 pr-1.5 py-1.5 shadow-sm no-underline min-w-0">
+          <MagnifyingGlass size={13} weight="bold" className="text-charcoal-400 flex-shrink-0" />
+          <div className="flex-1 min-w-0">
+            <span className="block text-[12px] font-bold text-charcoal-800 truncate">Commencer ma recherche</span>
+            <span className="block text-[10px] text-charcoal-400 truncate">{city || "Toutes les villes"} · Expériences</span>
           </div>
-        </div>
-      </div>
+          <div className="w-8 h-8 rounded-full bg-bronze-500 flex items-center justify-center flex-shrink-0">
+            <MagnifyingGlass size={13} weight="bold" color="#fff" />
+          </div>
+        </Link>
 
       {/* HERO — carousel dynamique */}
       <div className="relative overflow-hidden" style={{height:190}}>
