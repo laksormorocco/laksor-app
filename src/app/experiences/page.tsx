@@ -86,6 +86,7 @@ export default function ExperiencesPage() {
             <MagnifyingGlass size={13} weight="bold" color="#fff" />
           </div>
         </Link>
+      </div>
 
       {/* HERO — carousel dynamique */}
       <div className="relative overflow-hidden" style={{height:190}}>
