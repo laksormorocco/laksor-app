@@ -31,7 +31,9 @@ export default function BookingPage() {
   const router = useRouter();
   const params = useParams();
   const guideId = params.guideId as string;
-  const searchParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
+  const [searchParams] = typeof window !== "undefined" ? [new URLSearchParams(window.location.search)] : [null];
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const expId = searchParams?.get("expId") || null;
   const tourPriceParam = searchParams?.get("tourPrice") ? Number(searchParams.get("tourPrice")) : null;
   const isExperience = !!expId;
