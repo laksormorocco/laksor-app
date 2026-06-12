@@ -191,12 +191,12 @@ export default async function HomePage() {
               <a href="/auth/register?role=guide"
                 className="flex-1 flex items-center justify-center gap-2 text-sm font-bold py-3 rounded-full no-underline active:scale-[0.98] transition-all"
                 style={{background:"white", color:"#B88A44", boxShadow:"0 4px 14px rgba(0,0,0,0.15)"}}>
-                Je suis guide
+                Guide
               </a>
               <a href="/provider/register"
                 className="flex-1 flex items-center justify-center gap-2 text-white text-sm font-bold py-3 rounded-full no-underline active:scale-[0.98] transition-all"
                 style={{background:"rgba(255,255,255,0.2)", border:"1.5px solid rgba(255,255,255,0.4)", backdropFilter:"blur(8px)"}}>
-                Je suis prestataire
+                Prestataire
               </a>
             </div>
             <div className="flex items-center justify-center gap-4 pt-4" style={{borderTop:"1px solid rgba(255,255,255,0.2)"}}>
