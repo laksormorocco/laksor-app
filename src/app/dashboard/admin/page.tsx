@@ -560,7 +560,7 @@ export default function AdminDashboard() {
                       <div className="grid grid-cols-3 gap-2">
                         {[
                           ["Date", new Date(b.date).toLocaleDateString("fr-FR")],
-                    ...(b.notes?.match(/EXP:([a-z0-9]+)/i) ? [["Expérience", allExperiences.find((e:any) => e.id === b.notes.match(/EXP:([a-z0-9]+)/i)?.[1])?.title || "Expérience Laksor"]] : [["Guide", b.guide?.displayName || "Guide Laksor"], ["Type", b.tourType || "Visite guidée"]]),
+                    ...(b.notes?.match(/EXP:([a-z0-9]+)/i) ? [["Expérience", allExperiences.find((e:any) => e.id === b.notes.match(/EXP:([a-z0-9]+)/i)?.[1])?.title || "Expérience Laksor"]] : [["Guide", b.guide?.displayName || "Guide Laksor"], ["Type", {MEDINA_SECRETS:"Médina & Secrets", GASTRONOMIE:"Gastronomie", HISTOIRE_MONUMENTS:"Histoire", DESERT_NATURE:"Désert & Nature", SHOPPING_ARTISANAT:"Shopping", COUCHER_SOLEIL:"Coucher de soleil", PHOTO_INSTAGRAM:"Photo Instagram"}[b.tourType] || b.tourType || "Visite guidée"]]),
                           ["Durée", b.duration==="HALF_DAY"?"4h":"8h"],
                           ["Pers.", String(b.persons||1)],
                           ["Paiement", b.paymentMethod||"cash"],
