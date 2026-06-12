@@ -41,7 +41,6 @@ export async function GET(req: Request) {
     isActive: true,
     status: "APPROVED",
     ...(city ? { city } : {}),
-    ...(category && category !== "all" ? { tags: { has: category } } : {}),
   },
     include: { guide: { select: { id: true, displayName: true, city: true } } }
   });
