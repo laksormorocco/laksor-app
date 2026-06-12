@@ -40,7 +40,15 @@ const TRUST = [
 
 export default async function HomePage() {
   let guides: any[] = [];
+  let experiences: any[] = [];
   try {
+    const expData = await prisma.guideExperience.findMany({
+      where: { status: "APPROVED", isActive: true },
+      orderBy: { bookingCount: "desc" },
+      take: 6,
+      select: { id: true, title: true, price: true, photos: true, guideId: true, duration: true }
+    });
+    experiences = expData;
     guides = await prisma.guideProfile.findMany({
       where: { status: "APPROVED" },
       take: 4,
@@ -145,17 +153,25 @@ export default async function HomePage() {
         </div>
       </AnimatedSection>
 
-      {/* VILLES */}
+      {/* EXPERIENCES */}
       <AnimatedSection className="mt-10 max-w-2xl mx-auto" delay={200}>
-        <h2 className="font-display text-xl font-semibold text-charcoal-800 mb-4 px-4 animate-fade-up">Explorer par ville</h2>
-        <div className="flex gap-3 px-4 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }}>
-          {CITIES.map((c) => (
-            <a key={c.name} href={`/search?city=${encodeURIComponent(c.name)}`}
-              className="relative flex-shrink-0 w-24 h-28 rounded-2xl overflow-hidden no-underline">
-              <img src={c.img} alt={c.name} className="w-full h-full object-cover" loading="lazy" />
-              <div className="absolute inset-0 bg-black/35" />
-              <div className="absolute bottom-2 left-0 right-0 text-center">
-                <span className="text-white text-xs font-bold">{c.name}</span>
+        <div className="flex items-center justify-between px-4 mb-4">
+          <h2 className="font-display text-xl font-semibold text-charcoal-800">Expériences populaires</h2>
+          <a href="/experiences" className="text-xs font-semibold no-underline" style={{color:"#B88A44"}}>Voir tout →</a>
+        </div>
+        <div className="flex gap-3 px-4 overflow-x-auto pb-2" style={{ scrollbarWidth: "none" }}>
+          {experiences.slice(0,6).map((exp: any) => (
+            <a key={exp.id} href={`/booking/${exp.guideId}?expId=${exp.id}&tourPrice=${Math.ceil((exp.price || 400) * 1.25)}`}
+              className="relative flex-shrink-0 rounded-2xl overflow-hidden no-underline active:scale-95 transition-all"
+              style={{width:140, height:170, boxShadow:"0 2px 12px rgba(0,0,0,0.12)"}}>
+              {exp.photos?.[0]
+                ? <img src={exp.photos[0]} alt={exp.title} className="w-full h-full object-cover" loading="lazy" />
+                : <div className="w-full h-full" style={{background:"linear-gradient(135deg,#7D8F69,#B88A44)"}} />
+              }
+              <div className="absolute inset-0" style={{background:"linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 50%)"}} />
+              <div className="absolute bottom-0 left-0 right-0 p-2.5">
+                <div className="text-white text-xs font-bold line-clamp-2" style={{lineHeight:1.2}}>{exp.title}</div>
+                <div className="text-[10px] font-semibold mt-1" style={{color:"#D4A96A"}}>{toEur(exp.price || 400)}/pers.</div>
               </div>
             </a>
           ))}
