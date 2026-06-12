@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { guideId, supabaseId, date, duration, persons, totalPrice, notes, paymentMethod, startTime, transport, guestName, guestContact, expId } = body;
+    const { guideId, supabaseId, date, duration, persons, totalPrice, notes, paymentMethod, startTime, transport, guestName, guestContact, expId, tourType } = body;
 
     if (!guideId) return NextResponse.json({ error: "Données manquantes" }, { status: 400 });
 
@@ -40,7 +40,7 @@ export async function POST(req: Request) {
         totalPrice: totalPrice || price,
         commission,
         status: "CONFIRMED",
-    notes: (notes || "") + " | REF:" + bookingRef + (expId ? " | EXP:" + expId : "") + " | CLIENT:" + (guestName || "") + " | CONTACT:" + (guestContact || ""),
+    notes: (notes || "") + " | REF:" + bookingRef + (expId ? " | EXP:" + expId : "") + (tourType ? " | TYPE:" + tourType : "") + " | CLIENT:" + (guestName || "") + " | CONTACT:" + (guestContact || ""),
         slots: {
           create: [{
             date: new Date(date),
