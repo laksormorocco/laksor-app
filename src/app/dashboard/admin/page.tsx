@@ -240,19 +240,55 @@ export default function AdminDashboard() {
         {/* ══ OVERVIEW ══ */}
         {active === "overview" && (
           <div className="flex flex-col gap-3">
+            {/* STATS CARDS */}
             <div className="grid grid-cols-2 gap-3">
-              {[
-                { icon:"🧭", label:"Guides approuvés", val:stats?.approvedGuides||0,  color:"text-bronze-500"  },
-                { icon:"⏳", label:"En attente",        val:stats?.pendingGuides||0,   color:"text-charcoal-600"},
-                { icon:"📋", label:"Réservations",      val:stats?.totalBookings||0,   color:"text-sage-300"    },
-                { icon:"💰", label:"Commission",        val:Math.round((stats?.totalRevenue||0)*0.25)+" MAD", color:"text-charcoal-800" },
-              ].map(s => (
-                <div key={s.label} className="bg-white rounded-2xl border border-sand-300 p-4">
-                  <div className="text-2xl mb-2">{s.icon}</div>
-                  <div className={`font-display text-xl font-bold ${s.color}`}>{s.val}</div>
-                  <div className="text-[10px] text-charcoal-400 mt-0.5">{s.label}</div>
+              <div className="bg-white rounded-2xl p-4" style={{boxShadow:"0 2px 12px rgba(0,0,0,0.06)"}}>
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3" style={{background:"rgba(184,138,68,0.1)"}}>
+                  <Compass size={20} weight="duotone" className="text-bronze-500" />
+                </div>
+                <div className="font-display text-2xl font-bold" style={{color:"#B88A44"}}>{stats?.approvedGuides||0}</div>
+                <div className="text-[11px] text-charcoal-400 mt-0.5">Guides approuvés</div>
+              </div>
+              <div className="bg-white rounded-2xl p-4" style={{boxShadow:"0 2px 12px rgba(0,0,0,0.06)"}}>
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3" style={{background:"rgba(125,143,105,0.1)"}}>
+                  <CalendarCheck size={20} weight="duotone" className="text-sage-300" />
+                </div>
+                <div className="font-display text-2xl font-bold" style={{color:"#7D8F69"}}>{stats?.totalBookings||0}</div>
+                <div className="text-[11px] text-charcoal-400 mt-0.5">Réservations</div>
+              </div>
+              <div className="bg-white rounded-2xl p-4" style={{boxShadow:"0 2px 12px rgba(0,0,0,0.06)"}}>
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3" style={{background:"rgba(184,138,68,0.1)"}}>
+                  <ChartBar size={20} weight="duotone" className="text-bronze-500" />
+                </div>
+                <div className="font-display text-2xl font-bold text-charcoal-800">{Math.round((stats?.totalRevenue||0)*0.25)} MAD</div>
+                <div className="text-[11px] text-charcoal-400 mt-0.5">Commission totale</div>
+              </div>
+              <div className="bg-white rounded-2xl p-4" style={{boxShadow:"0 2px 12px rgba(0,0,0,0.06)"}}>
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3" style={{background:"rgba(239,68,68,0.08)"}}>
+                  <UsersThree size={20} weight="duotone" className="text-red-400" />
+                </div>
+                <div className="font-display text-2xl font-bold text-red-400">{stats?.pendingGuides||0}</div>
+                <div className="text-[11px] text-charcoal-400 mt-0.5">En attente validation</div>
+              </div>
+            </div>
+
+            {/* ACTIVITE RECENTE */}
+            <div className="bg-white rounded-2xl p-4" style={{boxShadow:"0 2px 12px rgba(0,0,0,0.06)"}}>
+              <div className="font-display text-sm font-semibold text-charcoal-800 mb-3">Activité récente</div>
+              {bookings.slice(0,5).map((b:any) => (
+                <div key={b.id} className="flex items-center gap-3 py-2.5 border-b border-sand-100 last:border-0">
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+                    style={{background:b.paymentMethod==="cash"?"rgba(125,143,105,0.1)":"rgba(184,138,68,0.1)"}}>
+                    <CalendarCheck size={14} weight="duotone" className={b.paymentMethod==="cash"?"text-sage-300":"text-bronze-500"} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-xs font-semibold text-charcoal-800 truncate">{b.tourist?.name || b.guestName || "Client"}</div>
+                    <div className="text-[10px] text-charcoal-400">{b.ref || b.id?.slice(0,8)} · {b.paymentMethod}</div>
+                  </div>
+                  <div className="font-display text-sm font-bold flex-shrink-0" style={{color:"#B88A44"}}>{b.totalPrice} MAD</div>
                 </div>
               ))}
+              {bookings.length === 0 && <div className="text-xs text-charcoal-400">Aucune réservation</div>}
             </div>
 
             {BARS.length > 0 && (
