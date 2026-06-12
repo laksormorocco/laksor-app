@@ -319,7 +319,7 @@ export default function GuideDashboard() {
                     </div>
                   </div>
                   <div className="text-right flex-shrink-0">
-                    <div className="text-sm font-bold text-bronze-500">{b.totalPrice} MAD</div>
+                    <div className="text-sm font-bold text-bronze-500">{Math.round(((b.totalPrice || 0) - 25) / 1.25)} MAD</div>
                     <div className="flex gap-1 mt-1.5 justify-end">
                       <button onClick={() => updateBooking(b.id,"CONFIRMED")} className="bg-sage-300 text-white rounded-full px-2.5 py-1 text-[10px] font-bold flex items-center gap-1">
                         <Check size={10} weight="bold" /> Acc.
@@ -355,7 +355,7 @@ export default function GuideDashboard() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-sm font-bold text-sage-300">{b.totalPrice} MAD</div>
+                    <div className="text-sm font-bold text-sage-300">{Math.round(((b.totalPrice || 0) - 25) / 1.25)} MAD</div>
                     <span className="text-[9px] bg-sage-50 text-sage-300 border border-sage-300/30 px-2 py-0.5 rounded-full font-bold">✓ Confirmé</span>
                   </div>
                 </div>
@@ -391,7 +391,7 @@ export default function GuideDashboard() {
                   </div>
                 </div>
                 <div className="text-right flex-shrink-0">
-                  <div className="text-sm font-bold text-sage-300">{b.totalPrice} MAD</div>
+                  <div className="text-sm font-bold text-sage-300">{Math.round(((b.totalPrice || 0) - 25) / 1.25)} MAD</div>
                   <span className={statusBadge(b.status)}>
                     {b.status==="CONFIRMED"?"Confirmé":b.status==="PENDING"?"En attente":"Annulé"}
                   </span>
