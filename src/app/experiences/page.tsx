@@ -39,6 +39,9 @@ export default function ExperiencesPage() {
   const [showInfo, setShowInfo] = useState(false);
   const [heroIdx, setHeroIdx] = useState(0);
   const [animatedId, setAnimatedId] = useState<string|null>(null);
+  const [showSearchModal, setShowSearchModal] = useState(false);
+  const [searchCity, setSearchCity] = useState("");
+  const [searchCat, setSearchCat] = useState("all");
   const { convert } = useExchangeRate();
 
   const CITIES = ["Marrakech", "Fes", "Essaouira", "Chefchaouen", "Agadir"];
@@ -76,7 +79,7 @@ export default function ExperiencesPage() {
         <Link href="/" className="no-underline flex items-center gap-2">
           <img src="/logo7.png" alt="Laksor" style={{height:32,width:"auto",objectFit:"contain",maxWidth:110}} />
         </Link>
-        <Link href="/search" className="flex-1 flex items-center gap-2 bg-white border border-sand-300 rounded-full pl-3 pr-1.5 py-1.5 shadow-sm no-underline min-w-0">
+        <button onClick={() => setShowSearchModal(true)} className="flex-1 flex items-center gap-2 bg-white border border-sand-300 rounded-full pl-3 pr-1.5 py-1.5 shadow-sm min-w-0">
           <MagnifyingGlass size={13} weight="bold" className="text-charcoal-400 flex-shrink-0" />
           <div className="flex-1 min-w-0">
             <span className="block text-[12px] font-bold text-charcoal-800 truncate">Commencer ma recherche</span>
@@ -461,6 +464,47 @@ export default function ExperiencesPage() {
               className="w-full py-3.5 text-white font-bold rounded-full text-sm"
               style={{background:"linear-gradient(135deg, #B88A44, #9A7238)"}}>
               Compris !
+            </button>
+          </div>
+        </div>
+      )}
+      {/* MODAL RECHERCHE */}
+      {showSearchModal && (
+        <div className="fixed inset-0 z-50 flex items-end" style={{background:"rgba(0,0,0,0.5)", backdropFilter:"blur(4px)"}}
+          onClick={() => setShowSearchModal(false)}>
+          <div className="bg-white rounded-t-3xl w-full max-w-lg mx-auto p-5 pb-10" onClick={e => e.stopPropagation()}>
+            <div className="w-10 h-1 bg-sand-300 rounded-full mx-auto mb-5" />
+            <div className="font-display text-lg font-bold text-charcoal-800 mb-4">Rechercher une expérience</div>
+            <div className="mb-4">
+              <div className="text-xs font-semibold text-charcoal-400 uppercase tracking-widest mb-2">Ville</div>
+              <div className="flex gap-2 flex-wrap">
+                {[{name:"Toutes",emoji:"✨"},{name:"Marrakech",emoji:"🌹"},{name:"Fes",emoji:"🕌"},{name:"Essaouira",emoji:"🌊"},{name:"Chefchaouen",emoji:"💙"},{name:"Agadir",emoji:"🏖️"}].map(c => (
+                  <button key={c.name} onClick={() => setSearchCity(c.name === "Toutes" ? "" : c.name)}
+                    {c.emoji} {c.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="mb-6">
+              <div className="text-xs font-semibold text-charcoal-400 uppercase tracking-widest mb-2">Catégorie</div>
+              <div className="flex gap-2 flex-wrap">
+                {[{id:"all",label:"Toutes",emoji:"✨"},{id:"desert",label:"Désert",emoji:"🐪"},{id:"gastronomie",label:"Gastro",emoji:"🍽️"},{id:"art",label:"Art",emoji:"🎨"},{id:"medina",label:"Médina",emoji:"🕌"},{id:"nature",label:"Nature",emoji:"🌄"},{id:"photo",label:"Photo",emoji:"📸"}].map(cat => (
+                  <button key={cat.id} onClick={() => setSearchCat(cat.id)}
+                    className={"flex items-center gap-1.5 px-3 py-2 rounded-full text-sm font-medium transition-all " + (searchCat === cat.id ? "text-white" : "text-charcoal-600")}
+                    style={searchCat === cat.id ? {background:"linear-gradient(135deg, #B88A44, #9A7238)"} : {background:"white", border:"1.5px solid #EADCC8"}}>
+                    {cat.emoji} {cat.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <button onClick={() => {
+                setCity(searchCity || null);
+                setCategory(searchCat);
+                setShowSearchModal(false);
+              }}
+              className="w-full py-4 rounded-full text-sm font-bold text-white flex items-center justify-center gap-2"
+              style={{background:"linear-gradient(135deg, #B88A44, #9A7238)", boxShadow:"0 6px 20px rgba(184,138,68,0.4)"}}>
+              <MagnifyingGlass size={16} weight="bold" /> Rechercher
             </button>
           </div>
         </div>
