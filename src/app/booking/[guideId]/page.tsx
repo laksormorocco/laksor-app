@@ -36,6 +36,7 @@ export default function BookingPage() {
   const tourPriceParam = searchParams?.get("tourPrice") ? Number(searchParams.get("tourPrice")) : null;
   const isExperience = !!expId;
   const bookingType = searchParams?.get("bookingType") || "group";
+  const tourTypeParam = searchParams?.get("tourType") || null;
 
   const [guide, setGuide] = useState<any>(null);
   const [loading, setLoading] = useState(true);
