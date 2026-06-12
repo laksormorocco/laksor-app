@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { createClient } from "@supabase/supabase-js";
-import { useRouter, useParams } from "next/navigation";
+import { useRouter, useParams, useSearchParams } from "next/navigation";
 import { useExchangeRate } from "@/hooks/useExchangeRate";
 import { priceWithCommission, priceWithFees, expTotalPrice } from "@/lib/pricing";
 import PriceDisplay from "@/components/PriceDisplay";
@@ -31,14 +31,12 @@ export default function BookingPage() {
   const router = useRouter();
   const params = useParams();
   const guideId = params.guideId as string;
-  const [searchParams] = typeof window !== "undefined" ? [new URLSearchParams(window.location.search)] : [null];
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-  const expId = searchParams?.get("expId") || null;
-  const tourPriceParam = searchParams?.get("tourPrice") ? Number(searchParams.get("tourPrice")) : null;
+  const searchParamsHook = useSearchParams();
+  const expId = searchParamsHook?.get("expId") || null;
+  const tourPriceParam = searchParamsHook?.get("tourPrice") ? Number(searchParamsHook.get("tourPrice")) : null;
   const isExperience = !!expId;
-  const bookingType = searchParams?.get("bookingType") || "group";
-  const tourTypeParam = searchParams?.get("tourType") || null;
+  const bookingType = searchParamsHook?.get("bookingType") || "group";
+  const tourTypeParam = searchParamsHook?.get("tourType") || null;
 
   const [guide, setGuide] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -79,12 +77,12 @@ export default function BookingPage() {
   }, [guideId]);
 
   const persons = adults + children;
-  const expPricePerPerson = searchParams?.get("pricePerPerson") === "true";
-  const expMaxPersons = Number(searchParams?.get("maxPersons") || 1);
-  const t1 = experience ? (experience.groupThreshold1 || null) : (searchParams?.get("t1") ? Number(searchParams.get("t1")) : null);
-  const d1 = experience ? (experience.groupDiscount1 || null) : (searchParams?.get("d1") ? Number(searchParams.get("d1")) : null);
-  const t2 = experience ? (experience.groupThreshold2 || null) : (searchParams?.get("t2") ? Number(searchParams.get("t2")) : null);
-  const d2 = experience ? (experience.groupDiscount2 || null) : (searchParams?.get("d2") ? Number(searchParams.get("d2")) : null);
+  const expPricePerPerson = searchParamsHook?.get("pricePerPerson") === "true";
+  const expMaxPersons = Number(searchParamsHook?.get("maxPersons") || 1);
+  const t1 = experience ? (experience.groupThreshold1 || null) : (searchParamsHook?.get("t1") ? Number(searchParamsHook.get("t1")) : null);
+  const d1 = experience ? (experience.groupDiscount1 || null) : (searchParamsHook?.get("d1") ? Number(searchParamsHook.get("d1")) : null);
+  const t2 = experience ? (experience.groupThreshold2 || null) : (searchParamsHook?.get("t2") ? Number(searchParamsHook.get("t2")) : null);
+  const d2 = experience ? (experience.groupDiscount2 || null) : (searchParamsHook?.get("d2") ? Number(searchParamsHook.get("d2")) : null);
   const expBasePrice = isExperience && tourPriceParam ? expTotalPrice(tourPriceParam, persons, t1, d1, t2, d2) : 0;
   const expFullPrice = isExperience && tourPriceParam ? (tourPriceParam * persons) : 0;
   const expDiscount = expFullPrice - expBasePrice;
