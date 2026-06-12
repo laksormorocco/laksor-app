@@ -41,7 +41,12 @@ export default function LoginPage() {
       const meData = await res.json();
       if (meData.role === "GUIDE") window.location.href = "/dashboard/guide?id=" + meData.guideId;
       else if (meData.role === "ADMIN") window.location.href = "/dashboard/admin";
-      else window.location.href = "/dashboard/tourist";
+        else {
+          const provRes = await fetch("/api/provider/me?supabaseId=" + session.user.id);
+          const provData = await provRes.json();
+          if (provData.provider) window.location.href = "/provider/dashboard";
+          else window.location.href = "/dashboard/tourist";
+        }
     }
     setLoading(false);
   }
