@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import MessageChat from "@/components/MessageChat";
 import GuideStats from "@/components/GuideStats";
 import ProfileEditor from "@/components/ProfileEditor";
 import {
@@ -55,6 +56,7 @@ export default function GuideDashboard() {
   const [experiences, setExperiences] = useState<any[]>([]);
   const [expLoading, setExpLoading] = useState(false);
   const [expForm, setExpForm] = useState<any>(null);
+  const [selectedBookingId, setSelectedBookingId] = useState<string|null>(null);
   const [editPrice, setEditPrice] = useState<Record<string,string>>({});
 
   useEffect(() => {
@@ -636,26 +638,38 @@ export default function GuideDashboard() {
 
       {active === "messages" && (
         <div className="flex flex-col gap-3">
-          <div className="font-display text-lg font-semibold text-charcoal-800 mb-2">Mes conversations</div>
-          {confirmed.length === 0 ? (
-            <div className="bg-white rounded-2xl p-8 text-center border border-sand-200">
-              <ChatCircle size={32} weight="duotone" className="text-charcoal-300 mx-auto mb-2" />
-              <div className="text-sm text-charcoal-400">Aucune conversation</div>
-            </div>
-          ) : confirmed.map((b: any) => (
-            <a key={b.id} href={"/messages/" + b.id}
-              className="bg-white rounded-2xl p-4 flex items-center gap-3 no-underline border border-sand-200 active:scale-[0.98] transition-all">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-white flex-shrink-0"
-                style={{background:"linear-gradient(135deg, #B88A44, #9A7238)"}}>
-                {b.tourist?.name?.[0] || "T"}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="font-display text-sm font-bold text-charcoal-800">{b.tourist?.name || "Touriste"}</div>
-                <div className="text-[10px] text-charcoal-400">{new Date(b.date).toLocaleDateString("fr-FR", {day:"numeric", month:"short"})} · {b.notes?.match(/REF:([A-Z0-9-]+)/)?.[1]}</div>
-              </div>
-              <ChatCircle size={18} className="text-bronze-500 flex-shrink-0" weight="duotone" />
-            </a>
-          ))}
+          {!selectedBookingId ? (
+            <>
+              <div className="font-display text-lg font-semibold text-charcoal-800 mb-2">Mes conversations</div>
+              {confirmed.length === 0 ? (
+                <div className="bg-white rounded-2xl p-8 text-center border border-sand-200">
+                  <ChatCircle size={32} weight="duotone" className="text-charcoal-300 mx-auto mb-2" />
+                  <div className="text-sm text-charcoal-400">Aucune conversation</div>
+                </div>
+              ) : confirmed.map((b: any) => (
+                <button key={b.id} onClick={() => setSelectedBookingId(b.id)}
+                  className="bg-white rounded-2xl p-4 flex items-center gap-3 border border-sand-200 active:scale-[0.98] transition-all text-left w-full">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-white flex-shrink-0"
+                    style={{background:"linear-gradient(135deg, #B88A44, #9A7238)"}}>
+                    {b.tourist?.name?.[0] || "T"}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="font-display text-sm font-bold text-charcoal-800">{b.tourist?.name || "Touriste"}</div>
+                    <div className="text-[10px] text-charcoal-400">{new Date(b.date).toLocaleDateString("fr-FR", {day:"numeric", month:"short"})}</div>
+                  </div>
+                  <ChatCircle size={18} className="text-bronze-500 flex-shrink-0" weight="duotone" />
+                </button>
+              ))}
+            </>
+          ) : (
+            <>
+              <button onClick={() => setSelectedBookingId(null)}
+                className="flex items-center gap-2 text-sm font-semibold text-charcoal-500 mb-2">
+                &larr; Retour
+              </button>
+              <MessageChat bookingId={selectedBookingId} currentUserId={guideId} currentRole="GUIDE" />
+            </>
+          )}
         </div>
       )}
 
