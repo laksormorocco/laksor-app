@@ -54,9 +54,7 @@ export async function POST(req: Request) {
     const isPaid = paymentMethod === "deposit" || paymentMethod === "full";
 
     let whatsappUrl = null; // WhatsApp désactivé - notifications par email uniquement
-    }
 
-    }
 
     // Envoyer email de confirmation
     const dateStr = new Date(date).toLocaleDateString("fr-FR");

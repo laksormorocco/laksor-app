@@ -123,10 +123,10 @@ model GuideProfile {
   nationalIdBack String?
   docsStatus     String      @default("PENDING")
 
-  halfDayPrice     Float @default(350)
+  halfDayPrice     Float   @default(350)
   slug             String? @unique
-  extraPersonPrice Float @default(200)
-  fullDayPrice     Float @default(650)
+  extraPersonPrice Float   @default(200)
+  fullDayPrice     Float   @default(650)
 
   status       GuideStatus @default(PENDING)
   avgRating    Float       @default(0)
@@ -170,6 +170,7 @@ model Booking {
   commission  Float         @default(0)
   slots       BookingSlot[]
   tourBooking TourBooking?
+  Message     Message[]
 
   @@map("bookings")
 }
@@ -333,43 +334,43 @@ model TourBooking {
 }
 
 model GuideExperience {
-  id                String       @id @default(cuid())
-  guideId           String
-  guide             GuideProfile @relation(fields: [guideId], references: [id])
-  title             String
-  description       String
-  duration          String       @default("4h")
-  groupSize         String       @default("1-6 pers.")
-  difficulty        String       @default("Facile")
-  price             Int          @default(0)
-  city              String       @default("")
-  meetingPoint      String       @default("")
-  included          String[]     @default([])
-  notIncluded       String[]     @default([])
-  itinerary         Json[]       @default([])
-  photos            String[]     @default([])
-  tags              String[]     @default([])
-  transportRequired Boolean      @default(false)
-  status            String       @default("PENDING")
-  isActive          Boolean      @default(false)
-  pricePerPerson       Float?
-  privatePricePerPerson Float?
-  departureSlots       String[]       
-  pickupRadiusKm       Int?           
-  pickupExtraFeePerPerson Float?      
-  languages            String[]       
-  isLaksorExp     Boolean  @default(false)
-  bookingCount           Int               @default(0)
-  viewCount              Int               @default(0)
+  id                      String       @id @default(cuid())
+  guideId                 String
+  guide                   GuideProfile @relation(fields: [guideId], references: [id])
+  title                   String
+  description             String
+  duration                String       @default("4h")
+  groupSize               String       @default("1-6 pers.")
+  difficulty              String       @default("Facile")
+  price                   Int          @default(0)
+  city                    String       @default("")
+  meetingPoint            String       @default("")
+  included                String[]     @default([])
+  notIncluded             String[]     @default([])
+  itinerary               Json[]       @default([])
+  photos                  String[]     @default([])
+  tags                    String[]     @default([])
+  transportRequired       Boolean      @default(false)
+  status                  String       @default("PENDING")
+  isActive                Boolean      @default(false)
+  pricePerPerson          Float?
+  privatePricePerPerson   Float?
+  departureSlots          String[]
+  pickupRadiusKm          Int?
+  pickupExtraFeePerPerson Float?
+  languages               String[]
+  isLaksorExp             Boolean      @default(false)
+  bookingCount            Int          @default(0)
+  viewCount               Int          @default(0)
   providerId              String?
-  provider                Provider?  @relation("ProviderExperiences", fields: [providerId], references: [id])
-  providerContact String?
-  groupThreshold1 Int?
-  groupDiscount1  Float?
-  groupThreshold2 Int?
-  groupDiscount2  Float?
-  createdAt         DateTime     @default(now())
-  updatedAt         DateTime     @updatedAt
+  provider                Provider?    @relation("ProviderExperiences", fields: [providerId], references: [id])
+  providerContact         String?
+  groupThreshold1         Int?
+  groupDiscount1          Float?
+  groupThreshold2         Int?
+  groupDiscount2          Float?
+  createdAt               DateTime     @default(now())
+  updatedAt               DateTime     @updatedAt
 }
 
 model Transporter {
@@ -449,17 +450,28 @@ model TourReview {
 // Ces champs doivent être dans le modèle GuideExperience
 
 model Provider {
-  id              String    @id @default(cuid())
-  email           String    @unique
-  password        String?
-  displayName     String
-  phone           String
-  city            String
-  description     String?
-  avatar          String?
-  status          String    @default("PENDING")
-  supabaseId      String?   @unique
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  experiences     GuideExperience[]  @relation("ProviderExperiences")
+  id          String            @id @default(cuid())
+  email       String            @unique
+  password    String?
+  displayName String
+  phone       String
+  city        String
+  description String?
+  avatar      String?
+  status      String            @default("PENDING")
+  supabaseId  String?           @unique
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  experiences GuideExperience[] @relation("ProviderExperiences")
+}
+
+model Message {
+  id         String   @id @default(cuid())
+  bookingId  String
+  booking    Booking  @relation(fields: [bookingId], references: [id])
+  senderId   String
+  senderRole String // GUIDE, TOURIST, ADMIN
+  content    String
+  read       Boolean  @default(false)
+  createdAt  DateTime @default(now())
 }
