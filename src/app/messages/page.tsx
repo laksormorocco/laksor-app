@@ -33,6 +33,7 @@ export default function MessagesPage() {
   );
 
   return (
+    <>
     <div className="min-h-screen pb-24" style={{background:"#F6F1E8"}}>
       {/* HEADER */}
       <div className="sticky top-0 z-30 px-5 py-4"
@@ -86,5 +87,6 @@ export default function MessagesPage() {
       </div>
     </div>
     <BottomNav />
+    </>
   );
 }
