@@ -16,14 +16,11 @@ const supabase = createClient(
 );
 
 const TABS = [
-  { id:"home",         Icon: House,        label:"Dashboard"    },
+  { id:"home",         Icon: House,         label:"Dashboard"    },
   { id:"reservations", Icon: CalendarCheck, label:"Réservations" },
-  { id: "experiences", Icon: Sparkle, label: "Experiences" },
-  { id:"stats",        Icon: ChartBar,      label:"Stats"        },
+  { id:"experiences",  Icon: Sparkle,       label:"Expériences"  },
+  { id:"messages",     Icon: ChatCircle,    label:"Messages"     },
   { id:"profil",       Icon: User,          label:"Profil"       },
-  { id:"services",  Icon: MapTrifold, label:"Services" },
-  { id:"documents", Icon: IdentificationCard, label:"Documents" },
-  { id:"messages",   Icon: ChatCircle,         label:"Messages"  },
 ];
 
 function statusBadge(status: string) {
