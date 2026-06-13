@@ -472,12 +472,6 @@ export default function AdminDashboard() {
                     <span className={badge.cls}>{badge.label}</span>
                   </div>
                   <div className="flex gap-2 flex-wrap">
-                    {g.phone && (
-                      <a href={"https://wa.me/"+g.phone.replace(/[^0-9]/g,"")} target="_blank"
-                        className="bg-sage-300 text-white rounded-full px-3 py-1.5 text-xs font-bold no-underline flex items-center gap-1">
-                        <WhatsappLogo size={12} weight="fill" /> WA
-                      </a>
-                    )}
                     {g.user?.email && (
                       <button onClick={() => { setEmailForm({to:g.user.email,subject:"Message Laksor",message:""}); setActive("email"); }}
                         className="bg-sand-200 text-charcoal-600 rounded-full px-3 py-1.5 text-xs font-bold border border-sand-300">
@@ -601,12 +595,6 @@ export default function AdminDashboard() {
                               className="bg-sand-200 text-charcoal-600 rounded-full px-3 py-1.5 text-xs font-bold border border-sand-300">
                               📧
                             </button>
-                          )}
-                          {b.guide?.phone && (
-                            <a href={"https://wa.me/"+b.guide.phone.replace(/[^0-9]/g,"")} target="_blank"
-                              className="bg-sage-300 text-white rounded-full px-3 py-1.5 text-xs font-bold no-underline">
-                              💬
-                            </a>
                           )}
                         </div>
                       </div>
@@ -962,12 +950,6 @@ export default function AdminDashboard() {
                       ))}
                     </div>
                     <div className="flex gap-2 mt-1 flex-wrap">
-                      {b.guide?.phone && (
-                        <a href={"https://wa.me/"+b.guide.phone.replace(/[^0-9]/g,"")+"?text=Ref: "+b.bookingRef}
-                          className="flex items-center gap-1 bg-sage-300 text-white font-bold px-3 py-1.5 rounded-full text-xs no-underline">
-                          WA Guide
-                        </a>
-                      )}
                       {b.whatsapp && (
                         <a href={"https://wa.me/"+b.whatsapp.replace(/[^0-9]/g,"")+"?text=Bonjour, ref reservation: "+b.bookingRef}
                           className="flex items-center gap-1 bg-bronze-500 text-white font-bold px-3 py-1.5 rounded-full text-xs no-underline">
