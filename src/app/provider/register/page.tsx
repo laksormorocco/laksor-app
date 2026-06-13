@@ -36,7 +36,7 @@ export default function ProviderRegisterPage() {
         password: form.password,
         options: { data: { displayName: form.displayName, role: "provider" } }
       });
-      if (error) { alert(error.message); setLoading(false); return; }
+      if (error) { if (error.message.includes("already")) alert("Cet email est déjà utilisé. Connectez-vous sur /auth/login."); else alert(error.message); setLoading(false); return; }
 
       // 2. Créer profil prestataire
       const res = await fetch("/api/provider/register", {
