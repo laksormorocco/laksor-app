@@ -45,10 +45,10 @@ export default function LoginPage() {
             const s2 = signInData?.session;
             if (s2) {
                 const provRes = await fetch("/api/provider/me?supabaseId=" + s2.user.id);
-                const provData = await provRes.json();
-                if (provData.provider) window.location.href = "/provider/dashboard";
-                else window.location.href = "/dashboard/tourist";
-            } else window.location.href = "/dashboard/tourist";
+        const provData = await provRes.json();
+                if (provData.provider) { setTimeout(() => { window.location.href = "/provider/dashboard"; }, 300); return; }
+                else setTimeout(() => { window.location.href = "/dashboard/tourist"; }, 300);
+    }
         }
     }
     setLoading(false);
