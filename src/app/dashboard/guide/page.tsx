@@ -22,6 +22,7 @@ const TABS = [
   { id:"profil",       Icon: User,          label:"Profil"       },
   { id:"services",  Icon: MapTrifold, label:"Services" },
   { id:"documents", Icon: IdentificationCard, label:"Documents" },
+  { id:"messages",   Icon: ChatCircle,         label:"Messages"  },
 ];
 
 function statusBadge(status: string) {
