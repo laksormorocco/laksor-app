@@ -632,12 +632,14 @@ export default function GuideDashboard() {
 
       {active === "profil" && guide && (
         <>
-          <div className="px-4 mb-3">
-            <a href="/guide/change-password"
-              className="flex items-center justify-center w-full py-3.5 rounded-full text-sm font-bold text-bronze-500 border-2 border-bronze-500 active:scale-[0.98] no-underline">
-              🔒 Changer le mot de passe
-            </a>
-          </div>
+          {guide?.user?.app_metadata?.provider !== "google" && (
+            <div className="px-4 mb-3">
+              <a href="/guide/change-password"
+                className="flex items-center justify-center w-full py-3.5 rounded-full text-sm font-bold text-bronze-500 border-2 border-bronze-500 active:scale-[0.98] no-underline">
+                🔒 Changer le mot de passe
+              </a>
+            </div>
+          )}
           <ProfileEditor guide={guide} guideId={guideId} onSaved={() => fetchData(guideId)} />
         </>
       )}
