@@ -681,6 +681,20 @@ export default function GuideDashboard() {
               </a>
             </div>
           )}
+          {/* Accès rapide aux sections secondaires */}
+          <div className="grid grid-cols-3 gap-2 px-4 mb-3">
+            {[
+              { id:"stats",     icon:"📊", label:"Stats"     },
+              { id:"services",  icon:"🗺️", label:"Services"  },
+              { id:"documents", icon:"📄", label:"Documents" },
+            ].map(item => (
+              <button key={item.id} onClick={() => setActive(item.id)}
+                className="bg-white rounded-xl py-3 flex flex-col items-center gap-1 border border-sand-200 active:scale-95 transition-all">
+                <span className="text-xl">{item.icon}</span>
+                <span className="text-[10px] font-semibold text-charcoal-600">{item.label}</span>
+              </button>
+            ))}
+          </div>
           <ProfileEditor guide={guide} guideId={guideId} onSaved={() => fetchData(guideId)} />
         </>
       )}
