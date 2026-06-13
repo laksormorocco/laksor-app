@@ -7,8 +7,9 @@ import {
   Plus, Star, CalendarBlank, ChartBar, SealCheck,
   SignOut, PencilSimple, Clock, CheckCircle,
   XCircle, Warning, Users, CurrencyDollar,
-  WhatsappLogo, MapPin
+  WhatsappLogo, MapPin, ChatCircle
 } from "@phosphor-icons/react";
+import MessageChat from "@/components/MessageChat";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || "",
@@ -32,7 +33,8 @@ function StatusBadge({ status }: { status: string }) {
 
 export default function ProviderDashboardClient({ provider, bookings }: { provider: any; bookings: any[] }) {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<"experiences"|"bookings"|"profile">("experiences");
+  const [activeTab, setActiveTab] = useState<"experiences"|"bookings"|"profile"|"messages">("experiences");
+  const [selectedBookingId, setSelectedBookingId] = useState<string|null>(null);
   const [showPwd, setShowPwd] = useState(false);
   const [pwd, setPwd] = useState("");
   const [pwdConfirm, setPwdConfirm] = useState("");
@@ -131,7 +133,7 @@ export default function ProviderDashboardClient({ provider, bookings }: { provid
         </div>
 
         <div className="flex p-1 rounded-2xl mb-4" style={{background:"rgba(184,138,68,0.08)"}}>
-          {[{id:"experiences",label:"Mes expériences"},{id:"bookings",label:"Réservations"},{id:"profile",label:"Profil"}].map(tab => (
+          {[{id:"experiences",label:"Expériences"},{id:"bookings",label:"Réservations"},{id:"messages",label:"Messages"},{id:"profile",label:"Profil"}].map(tab => (
             <button key={tab.id} onClick={() => setActiveTab(tab.id as any)}
               className={"flex-1 py-2.5 rounded-xl text-xs font-semibold transition-all " + (activeTab === tab.id ? "text-white" : "text-charcoal-500")}
               style={activeTab === tab.id ? {background:"linear-gradient(135deg, #B88A44, #9A7238)", boxShadow:"0 3px 8px rgba(184,138,68,0.3)"} : {}}>
@@ -230,6 +232,44 @@ export default function ProviderDashboardClient({ provider, bookings }: { provid
               </div>
             )}
           </>
+        )}
+
+        {activeTab === "messages" && (
+          <div className="flex flex-col gap-3">
+            {!selectedBookingId ? (
+              <>
+                <div className="font-display text-lg font-semibold text-charcoal-800 mb-2">Mes conversations</div>
+                {bookings.length === 0 ? (
+                  <div className="bg-white rounded-2xl p-8 text-center" style={{boxShadow:"0 2px 12px rgba(0,0,0,0.06)"}}>
+                    <ChatCircle size={32} weight="duotone" className="text-charcoal-300 mx-auto mb-2" />
+                    <div className="text-sm text-charcoal-400">Aucune conversation</div>
+                  </div>
+                ) : bookings.map((b: any, i: number) => (
+                  <button key={i} onClick={() => setSelectedBookingId(b.bookingId)}
+                    className="bg-white rounded-2xl p-4 flex items-center gap-3 text-left w-full active:scale-[0.98] transition-all"
+                    style={{boxShadow:"0 2px 12px rgba(0,0,0,0.06)"}}>
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-white flex-shrink-0"
+                      style={{background:"linear-gradient(135deg, #B88A44, #9A7238)"}}>
+                      {b.expTitle?.[0] || "E"}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-display text-sm font-bold text-charcoal-800 truncate">{b.expTitle}</div>
+                      <div className="text-[10px] text-charcoal-400">{new Date(b.createdAt).toLocaleDateString("fr-FR", {day:"numeric", month:"short"})}</div>
+                    </div>
+                    <ChatCircle size={18} className="text-bronze-500 flex-shrink-0" weight="duotone" />
+                  </button>
+                ))}
+              </>
+            ) : (
+              <>
+                <button onClick={() => setSelectedBookingId(null)}
+                  className="flex items-center gap-2 text-sm font-semibold text-charcoal-500 mb-2">
+                  &larr; Retour
+                </button>
+                <MessageChat bookingId={selectedBookingId} currentUserId={provider.supabaseId} currentRole="PROVIDER" />
+              </>
+            )}
+          </div>
         )}
 
         {activeTab === "profile" && (
