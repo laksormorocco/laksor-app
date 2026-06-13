@@ -32,7 +32,7 @@ export default function LoginPage() {
   async function handleLogin() {
     setLoading(true);
     setError("");
-        const { data: signInData, error } = await supabase.auth.signInWithPassword({ email, password });
+        const { data: signInData, error } = await supabase.auth.signInWithPassword({ email: email.toLowerCase(), password });
     if (error) {
       if (error.message.includes("Invalid")) setError("Mot de passe incorrect");
       else setError(error.message);

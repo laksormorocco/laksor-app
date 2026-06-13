@@ -32,7 +32,7 @@ export default function ProviderRegisterPage() {
     try {
       // 1. Créer compte Supabase
       const { data, error } = await supabase.auth.signUp({
-        email: form.email,
+        email: form.email.toLowerCase(),
         password: form.password,
         options: { data: { displayName: form.displayName, role: "provider" } }
       });
@@ -43,7 +43,7 @@ export default function ProviderRegisterPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          email: form.email,
+          email: form.email.toLowerCase(),
           displayName: form.displayName,
           phone: form.phone,
           city: form.city,
