@@ -35,7 +35,7 @@ export default function LoginPage() {
         const { data: signInData, error } = await supabase.auth.signInWithPassword({ email: email.toLowerCase(), password });
     if (error) {
       if (error.message.includes("Invalid")) setError("Mot de passe incorrect");
-      else setError(error.message);
+      else if (error.message.includes("Invalid")) setError("Email ou mot de passe incorrect. Si vous vous êtes inscrit avec Google, utilisez le bouton Google."); else setError(error.message);
     } else {
       const res = await fetch("/api/auth/me?email=" + encodeURIComponent(email));
       const meData = await res.json();
