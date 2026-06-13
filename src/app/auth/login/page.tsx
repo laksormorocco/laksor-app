@@ -155,7 +155,7 @@ export default function LoginPage() {
             </button>
             <button onClick={async () => {
               if (!email) return setError("Entrez votre email d abord");
-              const {error} = await supabase.auth.resetPasswordForEmail(email, {redirectTo: window.location.origin + "/auth/callback"});
+              const {error} = await supabase.auth.resetPasswordForEmail(email, {redirectTo: window.location.origin + "/auth/reset-password"});
               if (error) setError(error.message);
               else setSuccess("Email envoye ! Verifiez votre boite mail.");
             }} className="text-xs text-charcoal-400 underline text-center block w-full">
