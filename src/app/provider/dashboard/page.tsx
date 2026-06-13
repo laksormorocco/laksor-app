@@ -37,21 +37,24 @@ export default function ProviderDashboard() {
   const [activeTab, setActiveTab] = useState<"experiences"|"bookings"|"profile">("experiences");
   const [bookings, setBookings] = useState<any[]>([]);
 
-  const loadProvider = async () => {
-        let { data: { session } } = await supabase.auth.getSession();
-        if (!session) { await new Promise(r => setTimeout(r, 800)); const retry = await supabase.auth.getSession(); session = retry.data.session; }
-    if (!session) { router.push("/auth/login"); return; }
-    const res = await fetch("/api/provider/me?supabaseId=" + session.user.id);
+  const loadProvider = async (userId: string) => {
+    const res = await fetch("/api/provider/me?supabaseId=" + userId);
     const d = await res.json();
     if (d.provider) { setProvider(d.provider); setBookings(d.bookings || []); setLoading(false); }
     else router.push("/provider/register");
   };
 
   useEffect(() => {
-    loadProvider();
-    const handleFocus = () => loadProvider();
-    window.addEventListener("focus", handleFocus);
-    return () => window.removeEventListener("focus", handleFocus);
+    let initialized = false;
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) { loadProvider(session.user.id); initialized = true; }
+      else setTimeout(() => { if (!initialized) router.push("/auth/login"); }, 2000);
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session && !initialized) { loadProvider(session.user.id); initialized = true; }
+      else if (!session && initialized) router.push("/auth/login");
+    });
+    return () => subscription.unsubscribe();
   }, []);
 
   async function handleSignOut() {
