@@ -33,6 +33,11 @@ function StatusBadge({ status }: { status: string }) {
 export default function ProviderDashboardClient({ provider, bookings }: { provider: any; bookings: any[] }) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<"experiences"|"bookings"|"profile">("experiences");
+  const [showPwd, setShowPwd] = useState(false);
+  const [pwd, setPwd] = useState("");
+  const [pwdConfirm, setPwdConfirm] = useState("");
+  const [pwdError, setPwdError] = useState("");
+  const [pwdDone, setPwdDone] = useState(false);
 
   async function handleSignOut() {
     await supabase.auth.signOut();
@@ -50,9 +55,8 @@ export default function ProviderDashboardClient({ provider, bookings }: { provid
     .reduce((sum: number, b: any) => sum + Math.round((Number(b.totalPrice || 0) - 25) / 1.25), 0);
 
   return (
+    <>
     <div className="min-h-screen pb-24" style={{background:"#F6F1E8"}}>
-
-      {/* HEADER */}
       <div className="sticky top-0 z-30 px-5 py-3"
         style={{background:"rgba(246,241,232,0.92)", backdropFilter:"blur(16px)", borderBottom:"1px solid rgba(184,138,68,0.12)"}}>
         <div className="flex items-center justify-between">
@@ -90,14 +94,11 @@ export default function ProviderDashboardClient({ provider, bookings }: { provid
             <Clock size={18} weight="duotone" className="text-bronze-500 flex-shrink-0 mt-0.5" />
             <div>
               <div className="text-sm font-bold text-bronze-500 mb-0.5">Candidature en cours d'examen</div>
-              <div className="text-[11px] text-charcoal-500 leading-relaxed">
-                Notre équipe examine votre profil. Vous recevrez une réponse sur WhatsApp sous 24h.
-              </div>
+              <div className="text-[11px] text-charcoal-500 leading-relaxed">Notre équipe examine votre profil. Réponse sous 24h.</div>
             </div>
           </div>
         )}
 
-        {/* STATS */}
         <div className="grid grid-cols-2 gap-3 mb-4">
           <div className="bg-white rounded-2xl p-4" style={{boxShadow:"0 2px 12px rgba(0,0,0,0.06)"}}>
             <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-2" style={{background:"rgba(184,138,68,0.1)"}}>
@@ -129,13 +130,8 @@ export default function ProviderDashboardClient({ provider, bookings }: { provid
           </div>
         </div>
 
-        {/* TABS */}
         <div className="flex p-1 rounded-2xl mb-4" style={{background:"rgba(184,138,68,0.08)"}}>
-          {[
-            {id:"experiences", label:"Mes expériences"},
-            {id:"bookings", label:"Réservations"},
-            {id:"profile", label:"Profil"},
-          ].map(tab => (
+          {[{id:"experiences",label:"Mes expériences"},{id:"bookings",label:"Réservations"},{id:"profile",label:"Profil"}].map(tab => (
             <button key={tab.id} onClick={() => setActiveTab(tab.id as any)}
               className={"flex-1 py-2.5 rounded-xl text-xs font-semibold transition-all " + (activeTab === tab.id ? "text-white" : "text-charcoal-500")}
               style={activeTab === tab.id ? {background:"linear-gradient(135deg, #B88A44, #9A7238)", boxShadow:"0 3px 8px rgba(184,138,68,0.3)"} : {}}>
@@ -144,7 +140,6 @@ export default function ProviderDashboardClient({ provider, bookings }: { provid
           ))}
         </div>
 
-        {/* TAB EXPERIENCES */}
         {activeTab === "experiences" && (
           <>
             <Link href="/provider/experiences/create"
@@ -161,8 +156,7 @@ export default function ProviderDashboardClient({ provider, bookings }: { provid
             ) : (
               <div className="flex flex-col gap-3">
                 {experiences.map((exp: any) => (
-                  <div key={exp.id} className="bg-white rounded-2xl overflow-hidden"
-                    style={{boxShadow:"0 2px 12px rgba(0,0,0,0.06)"}}>
+                  <div key={exp.id} className="bg-white rounded-2xl overflow-hidden" style={{boxShadow:"0 2px 12px rgba(0,0,0,0.06)"}}>
                     {exp.photos?.[0] && (
                       <div className="h-36 overflow-hidden relative">
                         <img src={exp.photos[0]} alt={exp.title} className="w-full h-full object-cover" />
@@ -203,7 +197,6 @@ export default function ProviderDashboardClient({ provider, bookings }: { provid
           </>
         )}
 
-        {/* TAB RESERVATIONS */}
         {activeTab === "bookings" && (
           <>
             {bookings.length === 0 ? (
@@ -238,17 +231,16 @@ export default function ProviderDashboardClient({ provider, bookings }: { provid
           </>
         )}
 
-        {/* TAB PROFILE */}
         {activeTab === "profile" && (
           <div className="flex flex-col gap-3">
             <div className="bg-white rounded-2xl p-4" style={{boxShadow:"0 2px 12px rgba(0,0,0,0.06)"}}>
               <div className="font-display text-sm font-semibold text-charcoal-800 mb-4">Informations</div>
               {[
-                { label: "Nom", value: provider.displayName },
-                { label: "Email", value: provider.email },
-                { label: "WhatsApp", value: provider.phone },
-                { label: "Ville", value: provider.city },
-                { label: "Statut", value: provider.status === "APPROVED" ? "✅ Vérifié" : "⏳ En attente" },
+                {label:"Nom", value:provider.displayName},
+                {label:"Email", value:provider.email},
+                {label:"WhatsApp", value:provider.phone},
+                {label:"Ville", value:provider.city},
+                {label:"Statut", value:provider.status === "APPROVED" ? "✅ Vérifié" : "⏳ En attente"},
               ].map(f => (
                 <div key={f.label} className="flex justify-between items-center py-3 border-b border-sand-100 last:border-0">
                   <span className="text-[11px] font-semibold text-charcoal-400 uppercase tracking-wide">{f.label}</span>
@@ -262,11 +254,13 @@ export default function ProviderDashboardClient({ provider, bookings }: { provid
                 </div>
               )}
             </div>
+            <button onClick={() => setShowPwd(true)}
+              className="w-full py-3.5 rounded-full text-sm font-bold text-bronze-500 border-2 border-bronze-500 active:scale-[0.98]">
+              🔒 Changer le mot de passe
+            </button>
             <div className="rounded-2xl p-4" style={{background:"rgba(184,138,68,0.08)", border:"1px solid rgba(184,138,68,0.2)"}}>
               <div className="text-xs font-bold text-bronze-500 mb-1">Commission Laksor</div>
-              <div className="text-[11px] text-charcoal-500 leading-relaxed">
-                Laksor prend 25% + 25 MAD de commission sur chaque réservation. Vos revenus affichés sont nets.
-              </div>
+              <div className="text-[11px] text-charcoal-500 leading-relaxed">Laksor prend 25% + 25 MAD de commission. Vos revenus affichés sont nets.</div>
             </div>
             <a href="https://wa.me/212657436342"
               className="flex items-center justify-center gap-2 w-full py-3.5 rounded-full text-sm font-bold no-underline"
@@ -277,5 +271,43 @@ export default function ProviderDashboardClient({ provider, bookings }: { provid
         )}
       </div>
     </div>
+
+    {showPwd && (
+      <div className="fixed inset-0 z-50 flex items-end" style={{background:"rgba(0,0,0,0.5)", backdropFilter:"blur(4px)"}}
+        onClick={() => setShowPwd(false)}>
+        <div className="bg-white rounded-t-3xl w-full max-w-lg mx-auto p-5 pb-10" onClick={e => e.stopPropagation()}>
+          <div className="w-10 h-1 bg-sand-300 rounded-full mx-auto mb-5" />
+          <div className="font-display text-lg font-bold text-charcoal-800 mb-4">Changer le mot de passe</div>
+          {pwdDone ? (
+            <div className="text-center py-4">
+              <div className="text-4xl mb-2">✅</div>
+              <div className="font-semibold text-sage-300">Mot de passe mis à jour !</div>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-3">
+              <input type="password" value={pwd} onChange={e => setPwd(e.target.value)}
+                placeholder="Nouveau mot de passe" className="w-full border-2 border-sand-300 rounded-xl px-4 py-3 text-sm outline-none bg-sand-100" />
+              <input type="password" value={pwdConfirm} onChange={e => setPwdConfirm(e.target.value)}
+                placeholder="Confirmer le mot de passe" className="w-full border-2 border-sand-300 rounded-xl px-4 py-3 text-sm outline-none bg-sand-100" />
+              {pwdError && <div className="text-xs text-red-400 font-semibold">{pwdError}</div>}
+              <button onClick={async () => {
+                  setPwdError("");
+                  if (pwd !== pwdConfirm) { setPwdError("Les mots de passe ne correspondent pas"); return; }
+                  if (pwd.length < 6) { setPwdError("Minimum 6 caractères"); return; }
+                  const { error } = await supabase.auth.updateUser({ password: pwd });
+                  if (error) { setPwdError(error.message); return; }
+                  setPwdDone(true);
+                  setTimeout(() => { setShowPwd(false); setPwdDone(false); setPwd(""); setPwdConfirm(""); }, 2000);
+                }}
+                className="w-full py-4 rounded-full text-sm font-bold text-white"
+                style={{background:"linear-gradient(135deg, #B88A44, #9A7238)", boxShadow:"0 4px 16px rgba(184,138,68,0.4)"}}>
+                Mettre à jour
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    )}
+    </>
   );
 }

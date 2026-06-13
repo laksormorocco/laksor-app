@@ -44,6 +44,11 @@ export default function GuideDashboard() {
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [loading, setLoading] = useState(true);
   const [guideId, setGuideId] = useState("");
+  const [showPwd, setShowPwd] = useState(false);
+  const [pwd, setPwd] = useState("");
+  const [pwdConfirm, setPwdConfirm] = useState("");
+  const [pwdError, setPwdError] = useState("");
+  const [pwdDone, setPwdDone] = useState(false);
   const [guideTours, setGuideTours] = useState<any[]>([]);
   const [toursLoading, setToursLoading] = useState(false);
   const [experiences, setExperiences] = useState<any[]>([]);
@@ -158,6 +163,7 @@ export default function GuideDashboard() {
 
 
   return (
+    <>
     <div className="bg-sand-200 min-h-screen pb-24">
 
       {/* HEADER */}
@@ -624,7 +630,17 @@ export default function GuideDashboard() {
           </div>
         )}
 
-      {active === "profil" && guide && <ProfileEditor guide={guide} guideId={guideId} onSaved={() => fetchData(guideId)} />}
+      {active === "profil" && guide && (
+        <>
+          <div className="px-4 mb-3">
+            <button onClick={() => setShowPwd(true)}
+              className="w-full py-3.5 rounded-full text-sm font-bold text-bronze-500 border-2 border-bronze-500 active:scale-[0.98]">
+              🔒 Changer le mot de passe
+            </button>
+          </div>
+          <ProfileEditor guide={guide} guideId={guideId} onSaved={() => fetchData(guideId)} />
+        </>
+      )}
 
       </div>
 
@@ -744,5 +760,43 @@ export default function GuideDashboard() {
         </div>
       )}
     </div>
+
+      {/* MODAL MOT DE PASSE */}
+      {showPwd && (
+        <div className="fixed inset-0 z-50 flex items-end" style={{background:"rgba(0,0,0,0.5)", backdropFilter:"blur(4px)"}}
+          onClick={() => setShowPwd(false)}>
+          <div className="bg-white rounded-t-3xl w-full max-w-lg mx-auto p-5 pb-10" onClick={e => e.stopPropagation()}>
+            <div className="w-10 h-1 bg-sand-300 rounded-full mx-auto mb-5" />
+            <div className="font-display text-lg font-bold text-charcoal-800 mb-4">Changer le mot de passe</div>
+            {pwdDone ? (
+              <div className="text-center py-4">
+                <div className="text-4xl mb-2">✅</div>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-3">
+                <input type="password" value={pwd} onChange={e => setPwd(e.target.value)}
+                  placeholder="Nouveau mot de passe" className="w-full border-2 border-sand-300 rounded-xl px-4 py-3 text-sm outline-none bg-sand-100" />
+                <input type="password" value={pwdConfirm} onChange={e => setPwdConfirm(e.target.value)}
+                  placeholder="Confirmer le mot de passe" className="w-full border-2 border-sand-300 rounded-xl px-4 py-3 text-sm outline-none bg-sand-100" />
+                {pwdError && <div className="text-xs text-red-400 font-semibold">{pwdError}</div>}
+                <button onClick={async () => {
+                    setPwdError("");
+                    if (pwd !== pwdConfirm) { setPwdError("Les mots de passe ne correspondent pas"); return; }
+                    if (pwd.length < 6) { setPwdError("Minimum 6 caractères"); return; }
+                    const { error } = await supabase.auth.updateUser({ password: pwd });
+                    if (error) { setPwdError(error.message); return; }
+                    setPwdDone(true);
+                    setTimeout(() => { setShowPwd(false); setPwdDone(false); setPwd(""); setPwdConfirm(""); }, 2000);
+                  }}
+                  className="w-full py-4 rounded-full text-sm font-bold text-white"
+                  style={{background:"linear-gradient(135deg, #B88A44, #9A7238)", boxShadow:"0 4px 16px rgba(184,138,68,0.4)"}}>
+                  Mettre à jour
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </>
   );
 }
