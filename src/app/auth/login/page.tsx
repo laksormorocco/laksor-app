@@ -46,8 +46,8 @@ export default function LoginPage() {
             if (s2) {
                 const provRes = await fetch("/api/provider/me?supabaseId=" + s2.user.id);
         const provData = await provRes.json();
-                if (provData.provider) { setTimeout(() => { window.location.href = "/provider/dashboard"; }, 300); return; }
-                else setTimeout(() => { window.location.href = "/dashboard/tourist"; }, 300);
+                if (provData.provider) { setTimeout(() => { window.location.href = "/provider/dashboard"; }, 1000); return; }
+                else setTimeout(() => { window.location.href = "/dashboard/tourist"; }, 1000);
     }
         }
     }
