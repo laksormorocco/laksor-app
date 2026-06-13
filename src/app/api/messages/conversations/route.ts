@@ -26,7 +26,7 @@ export async function GET(req: Request) {
         bookings = await prisma.booking.findMany({
           where: { guideId: guide.id },
           include: {
-            messages: { orderBy: { createdAt: "desc" }, take: 1 },
+            Message: { orderBy: { createdAt: "desc" }, take: 1 },
             tourist: { select: { name: true } }
           },
           orderBy: { createdAt: "desc" }
@@ -36,7 +36,7 @@ export async function GET(req: Request) {
       bookings = await prisma.booking.findMany({
         where: { touristId: user.id },
         include: {
-          messages: { orderBy: { createdAt: "desc" }, take: 1 },
+          Message: { orderBy: { createdAt: "desc" }, take: 1 },
           guide: { select: { displayName: true } }
         },
         orderBy: { createdAt: "desc" }
@@ -44,10 +44,10 @@ export async function GET(req: Request) {
     }
 
     const conversations = bookings
-      .filter((b: any) => b.messages.length > 0)
+      .filter((b: any) => b.Message.length > 0)
       .map((b: any) => {
-        const lastMsg = b.messages[0];
-        const unread = b.messages.filter((m: any) => !m.read && m.senderId !== userId).length;
+        const lastMsg = b.Message[0];
+        const unread = b.Message.filter((m: any) => !m.read && m.senderId !== userId).length;
         const ref = b.notes?.match(/REF:([A-Z0-9-]+)/)?.[1] || b.id.slice(0,8);
         return {
           bookingId: b.id,
