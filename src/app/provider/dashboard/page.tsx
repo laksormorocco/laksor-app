@@ -38,7 +38,8 @@ export default function ProviderDashboard() {
   const [bookings, setBookings] = useState<any[]>([]);
 
   const loadProvider = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
+        let { data: { session } } = await supabase.auth.getSession();
+        if (!session) { await new Promise(r => setTimeout(r, 800)); const retry = await supabase.auth.getSession(); session = retry.data.session; }
     if (!session) { router.push("/auth/login"); return; }
     const res = await fetch("/api/provider/me?supabaseId=" + session.user.id);
     const d = await res.json();
