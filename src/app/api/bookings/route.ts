@@ -53,81 +53,9 @@ export async function POST(req: Request) {
 
     const isPaid = paymentMethod === "deposit" || paymentMethod === "full";
 
-    let whatsappUrl = null;
-    if (guide.phone) {
-      const phone = guide.phone.replace(/[^0-9]/g, "");
-      const dateStr = new Date(date).toLocaleDateString("fr-FR");
-      const duree = duration === "FULL_DAY" ? "Journée complète (8h)" : "Demi-journée (4h)";
-
-      const netPrice = Math.round((Number(totalPrice || price) - 25) / 1.25);
-      const tourTypeLabel: Record<string,string> = {MEDINA_SECRETS:"Médina & Secrets",GASTRONOMIE:"Gastronomie",HISTOIRE_MONUMENTS:"Histoire & Monuments",DESERT_NATURE:"Désert & Nature",SHOPPING_ARTISANAT:"Shopping & Artisanat",COUCHER_SOLEIL:"Coucher de soleil",PHOTO_INSTAGRAM:"Photo Instagram"};
-      const tourLabel = tourType ? (tourTypeLabel[tourType] || tourType) : (expId ? "Expérience Laksor" : "Visite guidée");
-      const payLabel = paymentMethod === "deposit" ? "Acompte 30%" : paymentMethod === "full" ? "100% en ligne" : "Cash le jour J";
-      const teaLine = isPaid ? "\n\u{1F375} Offrez un the de bienvenu chez un cafe partenaire Laksor." : "\n Paiement cash - assurez-vous etre disponible.";
-      const hourLine = startTime ? "\n Heure : " + startTime : "";
-      const msg = encodeURIComponent(
-        "Nouvelle reservation Laksor !\n\n" +
-        "Touriste : " + (tourist.name || "Client") + "\n" +
-        "Date : " + dateStr + hourLine + "\n" +
-        "Participants : " + persons + " pers.\n" +
-        "Type : " + tourLabel + "\n" +
-        "Votre gain : " + netPrice + " MAD\n" +
-        "Paiement : " + payLabel + "\n" +
-        "Ref : " + bookingRef +
-        teaLine +
-        "\n\nBonne visite!\nDashboard : https://laksor.vercel.app/dashboard/guide?id=" + guideId
-      );
-      whatsappUrl = `https://wa.me/${phone}?text=${msg}`;
-
-    // Message de remerciement WhatsApp au touriste
-    if (guestContact && !guestContact.includes("@")) {
-      const touristPhone = guestContact.replace(/[^0-9]/g, "");
-      const touristMsg = encodeURIComponent(
-        `🌟 Merci pour votre confiance, ${tourist.name || "cher(e) voyageur(se)"} !
-
-Votre réservation Laksor est bien confirmée.
-🔖 Réf : ${bookingRef}
-📅 Date : ${dateStr}
-
-Nous sommes disponibles pour vous aider à tout moment, n'hésitez pas à nous contacter via WhatsApp.
-
-Notre équipe vous contactera 72h avant votre visite pour vous donner tous les détails.
-
-À très bientôt au Maroc authentique ! 🇲🇦
-— L'équipe Laksor
-📱 https://wa.me/212657436342`
-      );
-      fetch(`https://wa.me/${touristPhone}?text=${touristMsg}`).catch(() => {});
+    let whatsappUrl = null; // WhatsApp désactivé - notifications par email uniquement
     }
 
-    // Notification WhatsApp prestataire si expérience provider
-    if (expId) {
-      try {
-        const exp = await prisma.guideExperience.findUnique({
-          where: { id: expId },
-          include: { provider: true }
-        });
-        if (exp?.provider?.phone) {
-          const provPhone = exp.provider.phone.replace(/[^0-9]/g, "");
-          const provNetPrice = Math.round((Number(totalPrice || price) - 25) / 1.25);
-          const provMsg = encodeURIComponent(
-            `🌟 Nouvelle réservation Laksor !
-
-👤 Touriste : ${tourist.name || "Client"}
-📅 Date : ${dateStr}
-${startTime ? `⏰ Heure : ${startTime}\n` : ""}👥 Participants : ${persons} pers.
-🎯 Expérience : ${exp.title}
-💰 Votre gain : ${provNetPrice} MAD
-💳 Paiement : ${paymentMethod === "deposit" ? "Acompte 30%" : paymentMethod === "full" ? "100% en ligne" : "Cash le jour J"}
-🔖 Réf : ${bookingRef}
-
-Bonne expérience ! 🇲🇦
-🔗 Dashboard : https://laksor.vercel.app/provider/dashboard`
-          );
-          await fetch(`https://wa.me/${provPhone}?text=${provMsg}`).catch(() => {});
-        }
-      } catch(e) {}
-    }
     }
 
     // Envoyer email de confirmation
