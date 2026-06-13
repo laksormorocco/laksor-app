@@ -362,7 +362,9 @@ export default function GuideDashboard() {
                   </div>
                   <div className="text-right">
                     <div className="text-sm font-bold text-sage-300">{Math.round(((b.totalPrice || 0) - 25) / 1.25)} MAD</div>
+                  <a href={"/messages/" + b.id} className="text-[9px] bg-bronze-50 text-bronze-500 px-2 py-0.5 rounded-full font-bold no-underline mt-1 inline-block">💬 Message</a>
                     <span className="text-[9px] bg-sage-50 text-sage-300 border border-sage-300/30 px-2 py-0.5 rounded-full font-bold">✓ Confirmé</span>
+                    <a href={"/messages/" + b.id} className="text-[9px] bg-bronze-50 text-bronze-500 border border-bronze-300/30 px-2 py-0.5 rounded-full font-bold no-underline mt-1 inline-block">💬 Message</a>
                   </div>
                 </div>
               ))}
@@ -398,6 +400,7 @@ export default function GuideDashboard() {
                 </div>
                 <div className="text-right flex-shrink-0">
                   <div className="text-sm font-bold text-sage-300">{Math.round(((b.totalPrice || 0) - 25) / 1.25)} MAD</div>
+                  <a href={"/messages/" + b.id} className="text-[9px] bg-bronze-50 text-bronze-500 px-2 py-0.5 rounded-full font-bold no-underline mt-1 inline-block">💬 Message</a>
                   <span className={statusBadge(b.status)}>
                     {b.status==="CONFIRMED"?"Confirmé":b.status==="PENDING"?"En attente":"Annulé"}
                   </span>

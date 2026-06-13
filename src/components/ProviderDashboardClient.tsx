@@ -223,6 +223,7 @@ export default function ProviderDashboardClient({ provider, bookings }: { provid
                     <div className="flex items-center gap-2 text-[11px] text-charcoal-400">
                       <Users size={11} /> {b.persons} pers.
                       <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold" style={{background:"rgba(125,143,105,0.1)", color:"#7D8F69"}}>Confirmée</span>
+                      <a href={"/messages/" + b.bookingId} className="text-[9px] px-2 py-0.5 rounded-full font-bold no-underline mt-1 inline-block" style={{background:"rgba(184,138,68,0.1)", color:"#B88A44"}}>💬 Message</a>
                     </div>
                   </div>
                 ))}
