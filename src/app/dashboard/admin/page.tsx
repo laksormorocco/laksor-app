@@ -15,6 +15,7 @@ const TABS = [
   { id:"tourists", Icon: UserCircle,    label:"Clients"   },
   { id:"experiences", Icon: Sparkle, label:"Exp." },
   { id:"providers",   Icon: UsersThree, label:"Presta." },
+  { id:"messages",   Icon: PaperPlaneTilt, label:"Messages" },
 ];
 
 const TOUR_TYPES = [
@@ -75,6 +76,9 @@ export default function AdminDashboard() {
   const [touristSearch,setTouristSearch]= useState("");
   const [touristSel,   setTouristSel]   = useState<any>(null);
   const [providers,    setProviders]    = useState<any[]>([]);
+  const [allMessages, setAllMessages]  = useState<any[]>([]);
+  const [selectedConv, setSelectedConv] = useState<string|null>(null);
+  const [convMessages, setConvMessages] = useState<any[]>([]);
 
   useEffect(() => { if (auth) { fetchAll(); fetchTemplates(); } }, [auth]);
   useEffect(() => { if (auth && active === "guides") fetchGuides(); }, [guideTab, active, auth]);
@@ -997,6 +1001,52 @@ export default function AdminDashboard() {
 
         {/* ══ TOURISTES ══ */}
   
+      {active === "messages" && (
+        <div className="flex flex-col gap-3">
+          <div className="font-display text-lg font-semibold text-charcoal-800 mb-2">Toutes les conversations</div>
+          {!selectedConv ? (
+            <>
+            {bookings.filter((b:any) => b.id).map((b:any) => (
+              <button key={b.id} onClick={async () => {
+                  setSelectedConv(b.id);
+                  const res = await fetch("/api/messages?bookingId=" + b.id);
+                  const d = await res.json();
+                  setConvMessages(d.messages || []);
+                }}
+                className="bg-white rounded-2xl p-4 flex items-center gap-3 text-left w-full border border-sand-200 active:scale-[0.98]">
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-white flex-shrink-0"
+                  style={{background:"linear-gradient(135deg, #B88A44, #9A7238)"}}>
+                  {b.tourist?.name?.[0] || "T"}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="font-display text-sm font-bold text-charcoal-800">{b.tourist?.name || "Touriste"} — {b.guide?.displayName}</div>
+                  <div className="text-[10px] text-charcoal-400">{b.notes?.match(/REF:([A-Z0-9-]+)/)?.[1]} · {new Date(b.date).toLocaleDateString("fr-FR")}</div>
+                </div>
+                <span className="text-[10px] px-2 py-0.5 rounded-full" style={{background:"rgba(184,138,68,0.1)", color:"#B88A44"}}>Voir</span>
+              </button>
+            ))}
+            </>
+          ) : (
+            <>
+              <button onClick={() => setSelectedConv(null)}
+                className="flex items-center gap-2 text-sm font-semibold text-charcoal-500 mb-2">
+                &larr; Retour
+              </button>
+              <div className="bg-white rounded-2xl p-4 flex flex-col gap-3 max-h-96 overflow-y-auto" style={{boxShadow:"0 2px 12px rgba(0,0,0,0.06)"}}>
+                {convMessages.length === 0 ? (
+                  <div className="text-center text-xs text-charcoal-400 py-6">Aucun message dans cette conversation</div>
+                ) : convMessages.map((m:any) => (
+                  <div key={m.id} className="flex flex-col gap-1">
+                    <div className="text-[10px] font-bold text-charcoal-400">{m.senderRole} · {new Date(m.createdAt).toLocaleString("fr-FR")}</div>
+                    <div className="bg-sand-100 rounded-xl px-3 py-2 text-sm text-charcoal-800">{m.content}</div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+      )}
+
       {active === "providers" && (
         <div className="flex flex-col gap-3">
           <div className="font-display text-lg font-semibold text-charcoal-800 mb-2">Prestataires ({providers.length})</div>
