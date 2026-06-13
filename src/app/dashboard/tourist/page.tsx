@@ -4,7 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 import Link from "next/link";
 import {
   CalendarCheck, MapPin, Clock, Users, Star,
-  WhatsappLogo, X, Compass, SignOut, House
+  WhatsappLogo, X, Compass, SignOut, House, ChatCircle
 } from "@phosphor-icons/react";
 
 const supabase = createClient(
@@ -21,11 +21,13 @@ export default function TouristDashboard() {
   const [reviewRating, setReviewRating] = useState(5);
   const [reviewComment, setReviewComment] = useState("");
   const [reviewSaving, setReviewSaving] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (!session) { window.location.href = "/auth/login"; return; }
       setUser(session.user);
+      fetch("/api/messages/unread?userId=" + session.user.id).then(r=>r.json()).then(d=>setUnreadCount(d.count||0)).catch(()=>{});
       await fetch("/api/auth/sync", {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ supabaseId: session.user.id, email: session.user.email, name: session.user.user_metadata?.full_name || session.user.email, avatar: session.user.user_metadata?.avatar_url || null })
@@ -88,6 +90,10 @@ export default function TouristDashboard() {
         <div className="flex items-center gap-2">
           <Link href="/" className="w-9 h-9 bg-sand-200 rounded-xl border border-sand-300 flex items-center justify-center no-underline">
             <House size={16} className="text-charcoal-600" />
+          </Link>
+          <Link href="/messages" className="w-9 h-9 bg-sand-200 rounded-xl border border-sand-300 flex items-center justify-center no-underline relative">
+            <ChatCircle size={16} className="text-charcoal-600" />
+            {unreadCount > 0 && <span className="absolute -top-1 -right-1 min-w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center px-1">{unreadCount}</span>}
           </Link>
           <Link href="/logout" className="w-9 h-9 bg-sand-200 rounded-xl border border-sand-300 flex items-center justify-center no-underline">
             <SignOut size={16} className="text-charcoal-600" />
