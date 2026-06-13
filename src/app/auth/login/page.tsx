@@ -32,7 +32,7 @@ export default function LoginPage() {
   async function handleLogin() {
     setLoading(true);
     setError("");
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { data: signInData, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
       if (error.message.includes("Invalid")) setError("Mot de passe incorrect");
       else setError(error.message);
@@ -42,7 +42,7 @@ export default function LoginPage() {
       if (meData.role === "GUIDE") window.location.href = "/dashboard/guide?id=" + meData.guideId;
       else if (meData.role === "ADMIN") window.location.href = "/dashboard/admin";
         else {
-            const { data: { session: s2 } } = await supabase.auth.getSession();
+            const s2 = signInData?.session;
             if (s2) {
                 const provRes = await fetch("/api/provider/me?supabaseId=" + s2.user.id);
                 const provData = await provRes.json();
