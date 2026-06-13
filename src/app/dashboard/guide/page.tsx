@@ -351,21 +351,25 @@ export default function GuideDashboard() {
                 </button>
               </div>
               {confirmed.slice(0,3).map((b: any, i: number) => (
-                <div key={b.id} className={`flex items-center gap-3 py-3 ${i < Math.min(confirmed.length,3)-1 ? "border-b border-sand-200" : ""}`}>
-                  <div className="w-9 h-9 rounded-xl bg-sage-50 flex items-center justify-center flex-shrink-0">
-                    <Users size={16} className="text-sage-300" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-bold text-charcoal-800">{b.tourist?.name}</div>
-                    <div className="text-[10px] text-charcoal-400 mt-0.5 flex items-center gap-1">
-                      <Clock size={10} /> {new Date(b.date).toLocaleDateString("fr-FR",{day:"numeric",month:"short"})} · {b.duration==="HALF_DAY"?"4h":"8h"} · {b.persons} pers.
+                <div key={b.id} className={"py-3 " + (i < Math.min(confirmed.length,3)-1 ? "border-b border-sand-200" : "")}>
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-sage-50 flex items-center justify-center flex-shrink-0 font-bold text-sage-300 text-sm">
+                      {b.tourist?.name?.split(" ").map((n:string)=>n[0]).join("").slice(0,2).toUpperCase() || "??"}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-bold text-charcoal-800 truncate">{b.tourist?.name}</div>
+                      <div className="text-[10px] text-charcoal-400 mt-0.5">{new Date(b.date).toLocaleDateString("fr-FR",{day:"numeric",month:"short"})} · {b.duration==="HALF_DAY"?"4h":"8h"} · {b.persons} pers.</div>
+                    </div>
+                    <div className="text-right flex-shrink-0">
+                      <div className="text-sm font-bold text-sage-300">{Math.round(((b.totalPrice || 0) - 25) / 1.25)} MAD</div>
+                      <span className="text-[9px] bg-sage-50 text-sage-300 border border-sage-300/30 px-2 py-0.5 rounded-full font-bold">✓ Confirmé</span>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <div className="text-sm font-bold text-sage-300">{Math.round(((b.totalPrice || 0) - 25) / 1.25)} MAD</div>
-                  <a href={"/messages/" + b.id} className="text-[9px] bg-bronze-50 text-bronze-500 px-2 py-0.5 rounded-full font-bold no-underline mt-1 inline-block">💬 Message</a>
-                    <span className="text-[9px] bg-sage-50 text-sage-300 border border-sage-300/30 px-2 py-0.5 rounded-full font-bold">✓ Confirmé</span>
-                    <a href={"/messages/" + b.id} className="text-[9px] bg-bronze-50 text-bronze-500 border border-bronze-300/30 px-2 py-0.5 rounded-full font-bold no-underline mt-1 inline-block">💬 Message</a>
+                  <div className="mt-2">
+                    <button onClick={() => { setActive("messages"); setSelectedBookingId(b.id); }}
+                      className="text-[10px] bg-sand-100 text-bronze-500 px-3 py-1 rounded-full font-bold border border-sand-200 w-full text-center">
+                      💬 Envoyer un message
+                    </button>
                   </div>
                 </div>
               ))}
