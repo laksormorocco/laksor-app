@@ -17,6 +17,9 @@ export async function GET(req: Request) {
       where: { bookingId },
       orderBy: { createdAt: "asc" }
     });
+    // Marquer tous comme lus
+    const userId = new URL(req.url).searchParams.get("userId");
+    if (userId) await prisma.message.updateMany({ where: { bookingId, read: false, senderId: { not: userId } }, data: { read: true } });
     return NextResponse.json({ messages });
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 });

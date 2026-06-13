@@ -57,12 +57,13 @@ export default function GuideDashboard() {
   const [expLoading, setExpLoading] = useState(false);
   const [expForm, setExpForm] = useState<any>(null);
   const [selectedBookingId, setSelectedBookingId] = useState<string|null>(null);
+  const [unreadCount, setUnreadCount] = useState(0);
   const [editPrice, setEditPrice] = useState<Record<string,string>>({});
 
   useEffect(() => {
     const id = new URLSearchParams(window.location.search).get("id") || "";
     setGuideId(id);
-    if (id) { fetchData(id); fetchTours(id); fetchExperiences(id); }
+    if (id) { fetchData(id); fetchTours(id); fetchExperiences(id); fetch("/api/messages/unread?userId=" + id).then(r=>r.json()).then(d=>setUnreadCount(d.count||0)); }
     else setLoading(false);
   }, []);
 
