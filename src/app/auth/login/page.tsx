@@ -42,10 +42,13 @@ export default function LoginPage() {
       if (meData.role === "GUIDE") window.location.href = "/dashboard/guide?id=" + meData.guideId;
       else if (meData.role === "ADMIN") window.location.href = "/dashboard/admin";
         else {
-          const provRes = await fetch("/api/provider/me?supabaseId=" + session.user.id);
-          const provData = await provRes.json();
-          if (provData.provider) window.location.href = "/provider/dashboard";
-          else window.location.href = "/dashboard/tourist";
+            const { data: { session: s2 } } = await supabase.auth.getSession();
+            if (s2) {
+                const provRes = await fetch("/api/provider/me?supabaseId=" + s2.user.id);
+                const provData = await provRes.json();
+                if (provData.provider) window.location.href = "/provider/dashboard";
+                else window.location.href = "/dashboard/tourist";
+            } else window.location.href = "/dashboard/tourist";
         }
     }
     setLoading(false);

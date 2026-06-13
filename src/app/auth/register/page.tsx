@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { createClient } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, CheckCircle, User, Phone, MapPin, BookOpen, Translate, Star, Money } from "@phosphor-icons/react";
+import { ArrowLeft, CheckCircle, User, Phone, MapPin, BookOpen, Translate, Star, Money, Compass, Buildings, ArrowRight } from "@phosphor-icons/react";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || "",
@@ -25,13 +25,16 @@ function Field({ label, icon, children }: { label: string; icon: React.ReactNode
 
 export default function RegisterGuidePage() {
   const router = useRouter();
+  const [role, setRole] = useState<"guide"|"provider"|null>(null);
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [regEmail, setRegEmail] = useState("");
   const [regPassword, setRegPassword] = useState("");
+  const [regPasswordConfirm, setRegPasswordConfirm] = useState("");
   const [regName, setRegName] = useState("");
   const [regLoading, setRegLoading] = useState(false);
+  const [passwordError, setPasswordError] = useState("");
   const [form, setForm] = useState({
     displayName:"", phone:"", city:"", bio:"",
     languages:"", specialties:"", halfDayPrice:"500", fullDayPrice:"950"
@@ -48,10 +51,13 @@ export default function RegisterGuidePage() {
   }, []);
 
   async function signUpWithEmail() {
+    setPasswordError("");
     if (!regEmail || !regPassword || !regName) return alert("Remplissez tous les champs");
+    if (regPassword !== regPasswordConfirm) { setPasswordError("Les mots de passe ne correspondent pas"); return; }
+    if (regPassword.length < 6) { setPasswordError("Minimum 6 caractères"); return; }
     setRegLoading(true);
     const { data, error } = await supabase.auth.signUp({ email: regEmail, password: regPassword, options: { data: { full_name: regName } } });
-    if (error) { if (error.message.includes("already registered")) alert("Cet email est deja utilise. Connectez-vous sur /auth/login."); else alert(error.message); }
+    if (error) { if (error.message.includes("already registered")) alert("Cet email est déjà utilisé. Connectez-vous sur /auth/login."); else alert(error.message); }
     else if (data.user) { setUser(data.user); setForm(f => ({ ...f, displayName: regName })); }
     setRegLoading(false);
   }
@@ -88,29 +94,97 @@ export default function RegisterGuidePage() {
     setSubmitting(false);
   }
 
-
-
   const inputCls = "w-full border border-sand-300 rounded-xl px-4 py-3 text-sm text-charcoal-800 bg-sand-100 outline-none focus:border-bronze-500 transition-colors";
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center bg-sand-200">
-      <div className="text-4xl animate-pulse">⏳</div>
+    <div className="min-h-screen flex items-center justify-center" style={{background:"#F6F1E8"}}>
+      <div className="w-10 h-10 border-4 border-bronze-500 border-t-transparent rounded-full animate-spin" />
     </div>
   );
 
-  return (
-    <div className="min-h-screen bg-sand-200 pb-10">
-
-      {/* ── HEADER ── */}
-      <div className="sticky top-0 z-30 bg-white border-b border-sand-300 h-14 flex items-center px-4 gap-3">
-        <Link href="/" className="w-9 h-9 rounded-full border border-sand-300 flex items-center justify-center text-charcoal-700 no-underline">
-          <ArrowLeft size={16} weight="bold" />
+  // ECRAN CHOIX ROLE
+  if (!role) return (
+    <div className="min-h-screen pb-10" style={{background:"#F6F1E8"}}>
+      <div className="sticky top-0 z-30 flex items-center justify-between px-4 py-3"
+        style={{background:"rgba(246,241,232,0.92)", backdropFilter:"blur(16px)", borderBottom:"1px solid rgba(184,138,68,0.12)"}}>
+        <Link href="/" className="w-9 h-9 rounded-full bg-white flex items-center justify-center no-underline"
+          style={{border:"1.5px solid #EADCC8"}}>
+          <ArrowLeft size={15} weight="bold" className="text-charcoal-800" />
         </Link>
+        <span className="font-display text-sm font-bold text-charcoal-800">Rejoindre Laksor</span>
+        <div className="w-9" />
+      </div>
+
+      <div className="px-4 pt-8 max-w-sm mx-auto">
+        {/* HERO */}
+        <div className="rounded-3xl px-6 pt-8 pb-7 text-center mb-8"
+          style={{background:"linear-gradient(135deg, #7D8F69 0%, #B88A44 100%)"}}>
+          <div className="font-display text-2xl font-bold text-white mb-2">Bienvenue chez Laksor</div>
+          <p className="text-sm" style={{color:"rgba(255,255,255,0.8)"}}>
+            Choisissez votre rôle pour commencer
+          </p>
+        </div>
+
+        <div className="flex flex-col gap-4">
+          {/* GUIDE */}
+          <button onClick={() => setRole("guide")}
+            className="bg-white rounded-2xl p-5 flex items-center gap-4 text-left active:scale-[0.98] transition-all"
+            style={{boxShadow:"0 2px 16px rgba(0,0,0,0.08)", border:"2px solid transparent"}}
+            onMouseEnter={e => (e.currentTarget.style.border="2px solid #B88A44")}
+            onMouseLeave={e => (e.currentTarget.style.border="2px solid transparent")}>
+            <div className="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0"
+              style={{background:"linear-gradient(135deg, #B88A44, #9A7238)"}}>
+              <Compass size={28} weight="duotone" className="text-white" />
+            </div>
+            <div className="flex-1">
+              <div className="font-display text-base font-bold text-charcoal-800 mb-1">Je suis Guide</div>
+              <div className="text-xs text-charcoal-500 leading-relaxed">
+                Guidez des touristes dans votre ville. Commission transparente, validation Ministère du Tourisme.
+              </div>
+            </div>
+            <ArrowRight size={18} className="text-charcoal-400 flex-shrink-0" />
+          </button>
+
+          {/* PRESTATAIRE */}
+          <button onClick={() => router.push("/provider/register")}
+            className="bg-white rounded-2xl p-5 flex items-center gap-4 text-left active:scale-[0.98] transition-all"
+            style={{boxShadow:"0 2px 16px rgba(0,0,0,0.08)", border:"2px solid transparent"}}
+            onMouseEnter={e => (e.currentTarget.style.border="2px solid #7D8F69")}
+            onMouseLeave={e => (e.currentTarget.style.border="2px solid transparent")}>
+            <div className="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0"
+              style={{background:"linear-gradient(135deg, #7D8F69, #566547)"}}>
+              <Buildings size={28} weight="duotone" className="text-white" />
+            </div>
+            <div className="flex-1">
+              <div className="font-display text-base font-bold text-charcoal-800 mb-1">Je suis Prestataire</div>
+              <div className="text-xs text-charcoal-500 leading-relaxed">
+                Proposez vos expériences (quad, buggy, karting...). Inscription gratuite, validation sous 24h.
+              </div>
+            </div>
+            <ArrowRight size={18} className="text-charcoal-400 flex-shrink-0" />
+          </button>
+        </div>
+
+        <div className="text-center mt-6">
+          <Link href="/auth/login" className="text-xs text-charcoal-400 no-underline">
+            Déjà inscrit ? <span style={{color:"#B88A44"}} className="font-semibold">Se connecter</span>
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+
+  // FLOW GUIDE
+  return (
+    <div className="min-h-screen pb-10" style={{background:"#F6F1E8"}}>
+      <div className="sticky top-0 z-30 bg-white border-b border-sand-300 h-14 flex items-center px-4 gap-3">
+        <button onClick={() => setRole(null)} className="w-9 h-9 rounded-full border border-sand-300 flex items-center justify-center text-charcoal-700">
+          <ArrowLeft size={16} weight="bold" />
+        </button>
         <span className="font-display text-base font-semibold text-charcoal-800 flex-1 text-center">Devenir Guide</span>
         <div className="w-9" />
       </div>
 
-      {/* ── HERO ── */}
       <div className="relative overflow-hidden">
         <div className="absolute inset-0"
           style={{ backgroundImage: "url(https://images.unsplash.com/photo-1539020140153-e479b8c22e70?w=800&q=80)", backgroundSize: "cover", backgroundPosition: "center" }} />
@@ -122,7 +196,6 @@ export default function RegisterGuidePage() {
         </div>
       </div>
 
-      {/* ── PROGRESS ── */}
       <div className="bg-white border-b border-sand-300 px-4 py-3">
         <div className="flex items-center max-w-xs mx-auto">
           {[["1","Connexion", true],["2","Profil", !!user],["3","Validation", false]].map(([num, label, done], i) => (
@@ -141,17 +214,17 @@ export default function RegisterGuidePage() {
       </div>
 
       <div className="px-4 pt-4 max-w-lg mx-auto">
-
-        {/* ── PAS CONNECTÉ ── */}
         {!user ? (
-          <div className="bg-white rounded-2xl p-6 border border-sand-300 text-center">
+          <div className="bg-white rounded-2xl p-6 border border-sand-300">
             <div className="w-16 h-16 bg-sand-200 rounded-2xl flex items-center justify-center mx-auto mb-4 text-3xl">🔐</div>
-            <h2 className="font-display text-lg font-semibold text-charcoal-800 mb-2">Connectez-vous d&apos;abord</h2>
-            <p className="text-sm text-charcoal-400 mb-5 leading-relaxed">Creez un compte ou connectez-vous pour continuer</p>
-            <div className="flex flex-col gap-3 mb-5 text-left">
+            <h2 className="font-display text-lg font-semibold text-charcoal-800 mb-2 text-center">Créez votre compte</h2>
+            <p className="text-sm text-charcoal-400 mb-5 leading-relaxed text-center">Renseignez vos informations pour continuer</p>
+            <div className="flex flex-col gap-3 mb-5">
               <input type="text" value={regName} onChange={e => setRegName(e.target.value)} placeholder="Votre nom complet" className="w-full border border-sand-300 rounded-xl px-4 py-3 text-sm outline-none focus:border-bronze-500 bg-sand-100" />
               <input type="email" value={regEmail} onChange={e => setRegEmail(e.target.value)} placeholder="Email" className="w-full border border-sand-300 rounded-xl px-4 py-3 text-sm outline-none focus:border-bronze-500 bg-sand-100" />
-              <input type="password" value={regPassword} onChange={e => setRegPassword(e.target.value)} placeholder="Mot de passe (min. 8 caracteres)" className="w-full border border-sand-300 rounded-xl px-4 py-3 text-sm outline-none focus:border-bronze-500 bg-sand-100" />
+              <input type="password" value={regPassword} onChange={e => setRegPassword(e.target.value)} placeholder="Mot de passe (min. 6 caractères)" className="w-full border border-sand-300 rounded-xl px-4 py-3 text-sm outline-none focus:border-bronze-500 bg-sand-100" />
+              <input type="password" value={regPasswordConfirm} onChange={e => setRegPasswordConfirm(e.target.value)} placeholder="Confirmer le mot de passe" className="w-full border border-sand-300 rounded-xl px-4 py-3 text-sm outline-none focus:border-bronze-500 bg-sand-100" />
+              {passwordError && <div className="text-xs text-red-400 font-semibold px-1">{passwordError}</div>}
               <button onClick={signUpWithEmail} disabled={!regEmail || !regPassword || !regName || regLoading}
                 className="w-full text-white font-bold py-3.5 rounded-full text-sm disabled:opacity-40"
                 style={{background:"linear-gradient(135deg, #B88A44, #9A7238)"}}>
@@ -176,7 +249,6 @@ export default function RegisterGuidePage() {
           </div>
         ) : (
           <>
-            {/* Banner connecté */}
             <div className="bg-sage-50 border border-sage-300 rounded-2xl p-3 flex items-center gap-3 mb-4">
               <div className="w-9 h-9 rounded-full overflow-hidden bg-sand-300 flex-shrink-0">
                 {user.user_metadata?.avatar_url
@@ -187,19 +259,16 @@ export default function RegisterGuidePage() {
                 <div className="text-sm font-bold text-sage-300">{user.user_metadata?.full_name || user.email}</div>
                 <div className="text-xs text-charcoal-400 truncate">{user.email}</div>
               </div>
-              <span className="bg-sage-300 text-white text-[10px] font-bold px-2.5 py-1 rounded-full">✓ Google</span>
+              <span className="bg-sage-300 text-white text-[10px] font-bold px-2.5 py-1 rounded-full">✓ Connecté</span>
             </div>
 
-            {/* Infos perso */}
             <div className="bg-white rounded-2xl border border-sand-300 p-4 mb-3">
               <div className="text-[10px] font-bold text-bronze-500 uppercase tracking-wider mb-4">Informations personnelles</div>
               <Field label="Nom complet *" icon={<User size={11} className="text-charcoal-400" />}>
-                <input value={form.displayName} onChange={e=>setForm({...form,displayName:e.target.value})}
-                  placeholder="Mohammed El Fassi" className={inputCls} />
+                <input value={form.displayName} onChange={e=>setForm({...form,displayName:e.target.value})} placeholder="Mohammed El Fassi" className={inputCls} />
               </Field>
               <Field label="WhatsApp *" icon={<Phone size={11} className="text-charcoal-400" />}>
-                <input value={form.phone} onChange={e=>setForm({...form,phone:e.target.value})}
-                  placeholder="+212 6XX XXX XXX" className={inputCls} />
+                <input value={form.phone} onChange={e=>setForm({...form,phone:e.target.value})} placeholder="+212 6XX XXX XXX" className={inputCls} />
               </Field>
               <Field label="Ville principale *" icon={<MapPin size={11} className="text-charcoal-400" />}>
                 <select value={form.city} onChange={e=>setForm({...form,city:e.target.value})} className={inputCls}>
@@ -209,27 +278,22 @@ export default function RegisterGuidePage() {
               </Field>
             </div>
 
-            {/* Expérience */}
             <div className="bg-white rounded-2xl border border-sand-300 p-4 mb-3">
               <div className="text-[10px] font-bold text-bronze-500 uppercase tracking-wider mb-4">Expérience & Expertise</div>
               <Field label="Bio *" icon={<BookOpen size={11} className="text-charcoal-400" />}>
                 <textarea value={form.bio} onChange={e=>setForm({...form,bio:e.target.value})}
-                  rows={3} placeholder="Décrivez votre expérience, votre passion pour votre ville..."
-                  className={inputCls + " resize-none"} />
+                  rows={3} placeholder="Décrivez votre expérience, votre passion pour votre ville..." className={inputCls + " resize-none"} />
               </Field>
               <Field label="Langues *" icon={<Translate size={11} className="text-charcoal-400" />}>
-                <input value={form.languages} onChange={e=>setForm({...form,languages:e.target.value})}
-                  placeholder="Français, Anglais, Arabe" className={inputCls} />
+                <input value={form.languages} onChange={e=>setForm({...form,languages:e.target.value})} placeholder="Français, Anglais, Arabe" className={inputCls} />
                 <div className="text-[10px] text-charcoal-300 mt-1">Séparées par virgule</div>
               </Field>
               <Field label="Spécialités *" icon={<Star size={11} className="text-charcoal-400" />}>
-                <input value={form.specialties} onChange={e=>setForm({...form,specialties:e.target.value})}
-                  placeholder="Histoire, Gastronomie, Architecture" className={inputCls} />
+                <input value={form.specialties} onChange={e=>setForm({...form,specialties:e.target.value})} placeholder="Histoire, Gastronomie, Architecture" className={inputCls} />
                 <div className="text-[10px] text-charcoal-300 mt-1">Séparées par virgule</div>
               </Field>
             </div>
 
-            {/* Tarifs */}
             <div className="bg-white rounded-2xl border border-sand-300 p-4 mb-4">
               <div className="text-[10px] font-bold text-bronze-500 uppercase tracking-wider mb-3">Tarifs</div>
               <div className="bg-bronze-50 border border-bronze-500 rounded-xl p-3 mb-4 flex items-center gap-2">
@@ -238,20 +302,17 @@ export default function RegisterGuidePage() {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <Field label="½ Journée (MAD)" icon={null}>
-                  <input type="number" value={form.halfDayPrice} onChange={e=>setForm({...form,halfDayPrice:e.target.value})}
-                    className={inputCls + " font-bold text-base"} />
+                  <input type="number" value={form.halfDayPrice} onChange={e=>setForm({...form,halfDayPrice:e.target.value})} className={inputCls + " font-bold text-base"} />
                 </Field>
                 <Field label="Journée (MAD)" icon={null}>
-                  <input type="number" value={form.fullDayPrice} onChange={e=>setForm({...form,fullDayPrice:e.target.value})}
-                    className={inputCls + " font-bold text-base"} />
+                  <input type="number" value={form.fullDayPrice} onChange={e=>setForm({...form,fullDayPrice:e.target.value})} className={inputCls + " font-bold text-base"} />
                 </Field>
               </div>
             </div>
 
-            {/* Submit */}
             <button onClick={handleSubmit} disabled={submitting}
-              className={`w-full py-4 rounded-2xl text-base font-bold text-white transition-all mb-3
-                ${submitting ? "bg-sand-300 cursor-not-allowed" : "bg-bronze-500 hover:bg-bronze-600 shadow-md"}`}>
+              className={"w-full py-4 rounded-2xl text-base font-bold text-white transition-all mb-3 " + (submitting ? "bg-sand-300 cursor-not-allowed" : "bg-bronze-500 shadow-md")}
+              style={!submitting ? {background:"linear-gradient(135deg, #B88A44, #9A7238)"} : {}}>
               {submitting ? "Envoi en cours..." : "Soumettre ma candidature →"}
             </button>
             <p className="text-center text-xs text-charcoal-300 leading-relaxed">
