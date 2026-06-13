@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Eye, EyeSlash, Lock, ArrowLeft } from "@phosphor-icons/react";
 
-export default function ShowPasswordClient({ action, success, error }: { action: any; success: boolean; error: boolean }) {
+export default function ShowPasswordClient({ action, success, error, backUrl = "/provider/dashboard" }: { action: any; success: boolean; error: boolean; backUrl?: string }) {
   const [showPwd, setShowPwd] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
@@ -10,7 +10,7 @@ export default function ShowPasswordClient({ action, success, error }: { action:
     <div className="min-h-screen flex items-center justify-center px-4" style={{background:"#F6F1E8"}}>
       <div className="w-full max-w-sm">
         <div className="flex items-center gap-3 mb-5">
-          <a href="/provider/dashboard"
+          <a href={backUrl}
             className="w-9 h-9 rounded-full bg-white flex items-center justify-center no-underline"
             style={{border:"1.5px solid #EADCC8"}}>
             <ArrowLeft size={15} weight="bold" className="text-charcoal-800" />
@@ -72,7 +72,7 @@ export default function ShowPasswordClient({ action, success, error }: { action:
           )}
 
           {success && (
-            <a href="/provider/dashboard"
+            <a href={backUrl}
               className="flex items-center justify-center w-full py-4 rounded-full text-sm font-bold text-white no-underline"
               style={{background:"linear-gradient(135deg, #B88A44, #9A7238)"}}>
               Retour au dashboard

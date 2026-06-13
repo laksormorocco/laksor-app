@@ -633,10 +633,10 @@ export default function GuideDashboard() {
       {active === "profil" && guide && (
         <>
           <div className="px-4 mb-3">
-            <button onClick={() => setShowPwd(true)}
-              className="w-full py-3.5 rounded-full text-sm font-bold text-bronze-500 border-2 border-bronze-500 active:scale-[0.98]">
+            <a href="/guide/change-password"
+              className="flex items-center justify-center w-full py-3.5 rounded-full text-sm font-bold text-bronze-500 border-2 border-bronze-500 active:scale-[0.98] no-underline">
               🔒 Changer le mot de passe
-            </button>
+            </a>
           </div>
           <ProfileEditor guide={guide} guideId={guideId} onSaved={() => fetchData(guideId)} />
         </>
