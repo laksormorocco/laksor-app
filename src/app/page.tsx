@@ -4,6 +4,7 @@ import HomeHero from "./HomeHero";
 import BottomNav from "@/components/BottomNav";
 import AnimatedSection from "@/components/AnimatedSection";
 import Footer from "@/components/Footer";
+import PourquoiLaksor from "@/components/PourquoiLaksor";
 import {
   MapPin, Star, Clock, ArrowRight,
   ShieldCheck, ChatCircle, ArrowsClockwise, Car
@@ -82,6 +83,8 @@ export default async function HomePage() {
           ))}
         </div>
       </AnimatedSection>
+
+      <PourquoiLaksor />
 
       {/* TOP GUIDES */}
       <AnimatedSection className="mt-8 px-4 max-w-2xl mx-auto" delay={100}>
