@@ -254,10 +254,10 @@ export default function ProviderDashboardClient({ provider, bookings }: { provid
                 </div>
               )}
             </div>
-            <button onClick={() => setShowPwd(true)}
-              className="w-full py-3.5 rounded-full text-sm font-bold text-bronze-500 border-2 border-bronze-500 active:scale-[0.98]">
+            <a href="/provider/change-password"
+              className="flex items-center justify-center w-full py-3.5 rounded-full text-sm font-bold text-bronze-500 border-2 border-bronze-500 active:scale-[0.98] no-underline">
               🔒 Changer le mot de passe
-            </button>
+            </a>
             <div className="rounded-2xl p-4" style={{background:"rgba(184,138,68,0.08)", border:"1px solid rgba(184,138,68,0.2)"}}>
               <div className="text-xs font-bold text-bronze-500 mb-1">Commission Laksor</div>
               <div className="text-[11px] text-charcoal-500 leading-relaxed">Laksor prend 25% + 25 MAD de commission. Vos revenus affichés sont nets.</div>
