@@ -42,8 +42,7 @@ export default function BottomNav() {
     { href: "/", Icon: House, label: "Accueil" },
     { href: "/search", Icon: MagnifyingGlass, label: "Rechercher" },
     { href: "/experiences", Icon: Sparkle, label: "Expériences" },
-    ...(isLoggedIn ? [{ href: "/messages", Icon: ChatCircle, label: "Messages", badge: unread }] : []),
-    { href: isLoggedIn ? "/dashboard" : "/auth/login", Icon: isLoggedIn ? UserCircle : SignIn, label: isLoggedIn ? "Profil" : "Connexion" },
+      { href: isLoggedIn ? "/dashboard" : "/auth/login", Icon: isLoggedIn ? UserCircle : SignIn, label: isLoggedIn ? "Profil" : "Connexion" },
   ];
 
   return (
