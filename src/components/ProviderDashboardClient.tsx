@@ -32,9 +32,12 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 export default function ProviderDashboardClient({ provider, bookings }: { provider: any; bookings: any[] }) {
+  // Charger messages non lus
+  useState(() => { fetch("/api/messages/unread?userId=" + provider.supabaseId).then(r=>r.json()).then(d=>setUnreadCount(d.count||0)).catch(()=>{}); });
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<"experiences"|"bookings"|"profile"|"messages">("experiences");
   const [selectedBookingId, setSelectedBookingId] = useState<string|null>(null);
+  const [unreadCount, setUnreadCount] = useState(0);
   const [showPwd, setShowPwd] = useState(false);
   const [pwd, setPwd] = useState("");
   const [pwdConfirm, setPwdConfirm] = useState("");
@@ -135,9 +138,12 @@ export default function ProviderDashboardClient({ provider, bookings }: { provid
         <div className="flex p-1 rounded-2xl mb-4" style={{background:"rgba(184,138,68,0.08)"}}>
           {[{id:"experiences",label:"Expériences"},{id:"bookings",label:"Réservations"},{id:"messages",label:"Messages"},{id:"profile",label:"Profil"}].map(tab => (
             <button key={tab.id} onClick={() => setActiveTab(tab.id as any)}
-              className={"flex-1 py-2.5 rounded-xl text-xs font-semibold transition-all " + (activeTab === tab.id ? "text-white" : "text-charcoal-500")}
+              className={"flex-1 py-2.5 rounded-xl text-xs font-semibold transition-all relative " + (activeTab === tab.id ? "text-white" : "text-charcoal-500")}
               style={activeTab === tab.id ? {background:"linear-gradient(135deg, #B88A44, #9A7238)", boxShadow:"0 3px 8px rgba(184,138,68,0.3)"} : {}}>
               {tab.label}
+              {tab.id === "messages" && unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 min-w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center px-1">{unreadCount}</span>
+              )}
             </button>
           ))}
         </div>
