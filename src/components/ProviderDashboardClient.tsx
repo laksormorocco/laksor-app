@@ -49,7 +49,7 @@ export default function ProviderDashboardClient({ provider, bookings }: { provid
 
   async function handleSignOut() {
     await supabase.auth.signOut();
-    router.push("/");
+    window.location.href = "/experiences";
   }
 
   const experiences = provider?.experiences || [];
