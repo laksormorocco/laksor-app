@@ -11,6 +11,7 @@ import {
   CalendarX, Eye
 } from "@phosphor-icons/react";
 import MessageChat from "@/components/MessageChat";
+import BottomNav from "@/components/BottomNav";
 
 const supabase = createBrowserClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -200,7 +201,6 @@ export default function ProviderDashboardClient({ provider, bookings }: { provid
             <Plus size={14} weight="bold" /> Créer
           </Link>
           <Link href={"/experiences"}
-            target="_blank"
             className="flex-1 flex items-center justify-center gap-1.5 py-3 rounded-2xl text-xs font-bold no-underline active:scale-[0.97]"
             style={{background:"rgba(184,138,68,0.08)", color:"#B88A44"}}>
             <Eye size={14} /> Mon profil
@@ -402,7 +402,7 @@ export default function ProviderDashboardClient({ provider, bookings }: { provid
       </div>
     </div>
 
-    {/* MODAL MOT DE PASSE supprimé — page dédiée /provider/change-password */}
+    <BottomNav />
     </>
   );
 }
