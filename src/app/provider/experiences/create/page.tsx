@@ -1,12 +1,12 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@supabase/supabase-js";
+import { createBrowserClient } from "@supabase/ssr";
 import { ArrowLeft, Image, MapPin, CurrencyDollar, ListBullets, Tag, Clock } from "@phosphor-icons/react";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || "",
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ""
+const supabase = createBrowserClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
 const inputCls = "w-full border-2 border-sand-300 rounded-xl px-4 py-3 text-sm text-charcoal-800 bg-white outline-none focus:border-bronze-500 transition-colors";
