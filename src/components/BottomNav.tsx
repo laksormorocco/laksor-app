@@ -15,15 +15,19 @@ export default function BottomNav() {
   const [lastY, setLastY] = useState(0);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [unread, setUnread] = useState(0);
+  const [dashboardUrl, setDashboardUrl] = useState("/dashboard/tourist");
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setIsLoggedIn(!!session);
       if (session) {
-        fetch("/api/messages/unread?userId=" + session.user.id)
-          .then(r => r.json())
-          .then(d => setUnread(d.count || 0))
-          .catch(() => {});
+        fetch("/api/messages/unread?userId=" + session.user.id).then(r => r.json()).then(d => setUnread(d.count || 0)).catch(() => {});
+        fetch("/api/auth/me?supabaseId=" + session.user.id).then(r => r.json()).then(d => {
+          if (d.role === "GUIDE") setDashboardUrl("/dashboard/guide?id=" + d.guideId);
+          else fetch("/api/provider/me?supabaseId=" + session.user.id).then(r => r.json()).then(p => {
+            if (p.provider) setDashboardUrl("/provider/dashboard");
+          });
+        }).catch(() => {});
       }
     });
   }, []);
@@ -42,7 +46,7 @@ export default function BottomNav() {
     { href: "/", Icon: House, label: "Accueil" },
     { href: "/search", Icon: MagnifyingGlass, label: "Rechercher" },
     { href: "/experiences", Icon: Sparkle, label: "Expériences" },
-      { href: isLoggedIn ? "/dashboard" : "/auth/login", Icon: isLoggedIn ? UserCircle : SignIn, label: isLoggedIn ? "Profil" : "Connexion" },
+      { href: isLoggedIn ? dashboardUrl : "/auth/login", Icon: isLoggedIn ? UserCircle : SignIn, label: isLoggedIn ? "Dashboard" : "Connexion" },
   ];
 
   return (
