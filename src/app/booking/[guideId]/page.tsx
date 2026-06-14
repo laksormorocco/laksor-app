@@ -283,8 +283,13 @@ export default function BookingPage() {
                   <div className="text-[11px] text-charcoal-400">{persons} personne{persons > 1 ? "s" : ""} sélectionnée{persons > 1 ? "s" : ""}</div>
                 </div>
               </div>
+              {adults < 2 && (
+                <div className="mb-3 px-3 py-2 rounded-xl text-[11px] font-semibold" style={{background:"rgba(239,68,68,0.06)", color:"#ef4444"}}>
+                  ⚠️ Minimum 2 participants requis pour cette réservation
+                </div>
+              )}
               {[
-                { label:"Adultes", desc:"12 ans +", Icon: Users, val: adults, set: setAdults, min: 1 },
+                { label:"Adultes", desc:"12 ans +", Icon: Users, val: adults, set: setAdults, min: 2 },
                 { label:"Enfants", desc:"Moins de 12 ans · -50%", Icon: Baby, val: children, set: setChildren, min: 0 },
               ].map(p => (
                 <div key={p.label} className="flex items-center justify-between py-3 border-b border-sand-100 last:border-0">
