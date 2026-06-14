@@ -21,11 +21,7 @@ export default function LoginPage() {
 
   async function checkEmail() {
     if (!email) return;
-    setLoading(true);
     setError("");
-    // Verifier si compte existe
-    const { data } = await supabase.auth.signInWithOtp({ email, options: { shouldCreateUser: false } });
-    setLoading(false);
     setStep("password");
   }
 
@@ -34,8 +30,8 @@ export default function LoginPage() {
     setError("");
         const { data: signInData, error } = await supabase.auth.signInWithPassword({ email: email.toLowerCase(), password });
     if (error) {
-      if (error.message.includes("Invalid")) setError("Mot de passe incorrect");
-      else if (error.message.includes("Invalid")) setError("Email ou mot de passe incorrect. Si vous vous êtes inscrit avec Google, utilisez le bouton Google."); else setError(error.message);
+      if (error.message.includes("Invalid")) setError("Email ou mot de passe incorrect. Si vous vous êtes inscrit avec Google, utilisez le bouton Google.");
+      else setError(error.message);
     } else {
       const res = await fetch("/api/auth/me?email=" + encodeURIComponent(email));
       const meData = await res.json();
@@ -46,8 +42,8 @@ export default function LoginPage() {
             if (s2) {
                 const provRes = await fetch("/api/provider/me?supabaseId=" + s2.user.id);
         const provData = await provRes.json();
-                if (provData.provider) { setTimeout(() => { window.location.href = "/provider/dashboard"; }, 1000); return; }
-                else setTimeout(() => { window.location.href = "/dashboard/tourist"; }, 1000);
+                if (provData.provider) { setTimeout(() => { window.location.href = "/provider/dashboard"; }, 100); return; }
+                else setTimeout(() => { window.location.href = "/dashboard/tourist"; }, 100);
     }
         }
     }
