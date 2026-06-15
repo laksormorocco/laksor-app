@@ -106,6 +106,37 @@ export async function POST(req: Request) {
       } catch(e) { console.error('Guide email error:', e); }
     }
 
+    // Email de notification au prestataire si expérience provider
+    if (expId) {
+      try {
+        const exp = await prisma.guideExperience.findUnique({
+          where: { id: expId },
+          include: { provider: true }
+        });
+        if (exp?.provider?.email) {
+          const netPrice = Math.round((Number(totalPrice || price) - 25) / 1.25);
+          const payLabel = paymentMethod === 'deposit' ? 'Acompte 30%' : paymentMethod === 'full' ? '100% en ligne' : 'Cash le jour J';
+          const { Resend } = await import('resend');
+          const resend = new Resend(process.env.RESEND_API_KEY);
+          await resend.emails.send({
+            from: 'Laksor <onboarding@resend.dev>',
+            to: exp.provider.email,
+            subject: 'Nouvelle réservation — ' + bookingRef,
+            html: `<div style="font-family:sans-serif;max-width:500px;margin:auto;padding:24px">
+              <p><strong>Référence :</strong> ${bookingRef}</p>
+              <p><strong>Expérience :</strong> ${exp.title}</p>
+              <p><strong>Date :</strong> ${dateStr}</p>
+              <p><strong>Personnes :</strong> ${persons}</p>
+              <p><strong>Paiement :</strong> ${payLabel}</p>
+              <p><strong>Votre gain :</strong> ${netPrice} MAD</p>
+              <p style="color:#888;font-size:12px">Connectez-vous à votre dashboard pour gérer cette réservation.</p>
+              <a href="https://laksor.vercel.app/provider/dashboard" style="display:inline-block;background:#B88A44;color:white;padding:12px 24px;border-radius:999px;text-decoration:none;font-weight:bold;margin-top:12px">Voir mon dashboard</a>
+            </div>`
+          });
+        }
+      } catch(e) { console.error('Provider email error:', e); }
+    }
+
 
     // INVOICE DESACTIVE TEMPORAIREMENT
     /*
