@@ -602,7 +602,7 @@ export default function BookingPage() {
       {step === "dates" && (
         <div className="fixed bottom-0 left-0 right-0 z-40 px-4 pb-8 pt-3"
           style={{background:"linear-gradient(to top, #F6F1E8 75%, transparent)"}}>
-          <button onClick={() => selectedDates.length > 0 && setStep("info")}
+          <button onClick={() => selectedDates.length > 0 && adults >= 2 && setStep("info")}
             className="w-full py-4 rounded-full text-sm font-bold transition-all flex items-center justify-center gap-2 text-white active:scale-[0.98]"
             style={{
               background: selectedDates.length > 0 ? "linear-gradient(135deg, #B88A44, #9A7238)" : "#D4C9B8",
