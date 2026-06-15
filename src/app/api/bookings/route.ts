@@ -62,7 +62,7 @@ export async function POST(req: Request) {
     const emailTo = guestContact?.includes("@") ? guestContact : tourist.email;
     if (emailTo) {
       try {
-        await fetch(process.env.NEXT_PUBLIC_APP_URL + "/api/email", {
+        await fetch("https://laksor.vercel.app/api/email", {
           method: "POST",
           headers: {"Content-Type":"application/json"},
           body: JSON.stringify({
